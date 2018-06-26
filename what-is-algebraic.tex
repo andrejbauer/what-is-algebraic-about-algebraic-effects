@@ -1,0 +1,91 @@
+\documentclass{amsart}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{times}
+
+\newcommand{\NN}{\mathbb{N}}
+
+\newcommand{\all}[1]{\forall #1 \,.\,}
+\newcommand{\some}[1]{\exists #1 \,.\,}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\such}{\mid}
+
+\newcommand{\op}{\mathsf{op}}
+
+{\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{example}[definition]{Example}
+}
+
+\begin{document}
+
+\title{What is algebraic about algebraic effects?}
+
+\author{Andrej Bauer}
+
+\begin{abstract}
+  A short tutorial on algebraic theories and how they are related to the theory of
+  algebraic effects and handlers.
+\end{abstract}
+
+\maketitle
+
+\section{Algebraic theories}
+\label{sec:algebraic-theories}
+
+
+In algebra we study mathematical structures that are equipped with operations satisfying
+equational laws. For example, a group is a structure $(G, \mathsf{u}, {\cdot}, {}^{-1})$ satisfying
+the familiar group identities:
+%
+\begin{gather*}
+  (x \cdot y) \cdot z = x \cdot (y \cdot z),\\
+  \mathsf{u} \cdot x = x = x \cdot \mathsf{u},\\
+  x \cdot x^{-1} = \mathsf{u} = x^{-1} \cdot x.
+\end{gather*}
+%
+There are alternative axiomatizations of groups. For example, a group is a monoid
+$(G, \mathsf{u}, {\cdot})$ in which every element is invertible,
+$\all{x \in G} \some{y \in G} x \cdot y = \mathsf{u} = y \cdot x$. However, we prefer the
+form in which the axioms are just equations between terms built from variables and
+operations (a constant is construed as a nullary operation). Such theories are known as
+\emph{algebraic} or \emph{equational theories}.
+
+
+\begin{definition}
+  A \emph{signature $\Sigma$} is a collection of \emph{operation symbols}
+  $\op_1, \op_2, \op_3, \ldots$, each of which has an associated \emph{arity}
+  $n_i \in \NN$. The \emph{$\Sigma$-terms} are built inductively using the following
+  rules:
+  %
+  \begin{enumerate}
+  \item \emph{variables} $x_0, x_1, x_2, \ldots$ are $\Sigma$-terms,
+  \item if $t_1, \ldots, t_{n_i}$ are $\Sigma$-terms then $\op_i(t_1, \ldots, t_{n_i})$ is
+    a $\Sigma$-term.
+  \end{enumerate}
+\end{definition}
+
+It is best not to think of $\Sigma$-terms as expressions or strings of symbols, but rather
+as \emph{finite trees} whose leaves are variables and whose nodes are labeled with operation
+symbols. The node labeled with $\op_i$ has $n_i$ subtrees.
+
+\begin{definition}
+  An \emph{algebraic theory} is given by a signature~$\Sigma$ and a collection of equations
+  between $\Sigma$-terms.
+\end{definition}
+
+
+
+
+\footnote{It is \emph{not} the case that the variables appearing
+  in the equations ``implicitly universally quantified''. They could be, but we do not
+  quantify them. Instead, these are \emph{free} variables.}
+
+
+
+
+
+
+\end{document}
