@@ -15,7 +15,7 @@
 \newcommand{\op}{\mathsf{op}}
 
 {\theoremstyle{definition}
-\newtheorem{definition}{Definition}
+\newtheorem{definition}{Definition}[section]
 \newtheorem{example}[definition]{Example}
 }
 
@@ -55,6 +55,8 @@ operations (a constant is construed as a nullary operation). Such theories are k
 
 
 \begin{definition}
+  \label{def:algebraic-theory}
+  %
   A \emph{signature $\Sigma$} is a collection of \emph{operation symbols}
   $\op_1, \op_2, \op_3, \ldots$, each of which has an associated \emph{arity}
   $n_i \in \NN$. The \emph{$\Sigma$-terms} are built inductively using the following
@@ -65,26 +67,56 @@ operations (a constant is construed as a nullary operation). Such theories are k
   \item if $t_1, \ldots, t_{n_i}$ are $\Sigma$-terms then $\op_i(t_1, \ldots, t_{n_i})$ is
     a $\Sigma$-term.
   \end{enumerate}
-\end{definition}
-
-It is best not to think of $\Sigma$-terms as expressions or strings of symbols, but rather
-as \emph{finite trees} whose leaves are variables and whose nodes are labeled with operation
-symbols. The node labeled with $\op_i$ has $n_i$ subtrees.
-
-\begin{definition}
+  %
   An \emph{algebraic theory} is given by a signature~$\Sigma$ and a collection of equations
   between $\Sigma$-terms.
 \end{definition}
 
+It is best to think of $\Sigma$-terms as \emph{finite trees} whose leaves are variables
+and whose nodes are labeled with operation symbols. The node labeled with $\op_i$ has
+$n_i$ subtrees. We impose no restrictions on the number of operation symbols or equations,
+but at least in classical treatments of equational theories the arities must be
+non-negative integers.
+
+\begin{example}
+  The theory of a group is given by operation symbols $\mathsf{u}$, $\mathsf{m}$, and
+  $\mathsf{i}$ whose arities are $0$, $2$, and $1$, respectively. The equations are
+  %
+  \begin{gather*}
+    \mathsf{m}(\mathsf{m}(x_0, x_1), x_2) = \mathsf{m}(x_0, \mathsf{m}(x_1, x_2)),\\
+    \mathsf{m}(\mathsf{u}, x_0) = x_0 = \mathsf{m}(x_0, \mathsf{u}),\\
+    \mathsf{m}(x_0, \mathsf{i}(x_0)) = \mathsf{u} = \mathsf{m}(\mathsf{i}(x_0), x_0).
+  \end{gather*}
+  %
+  In order to follow closely Definition~\ref{def:algebraic-theory}, we eschewed the
+  traditional notation which uses the infix multiplication $\cdot$ and postfix inverse
+  ${}^{-1}$, and we used only the variables $x_0, x_1, x_2, \ldots$ These are
+  inessential modifications of the theory of a group.
+\end{example}
+
+It should be clear that many examples of algebraic theories can be found: ring, lattice,
+Boolean algebra, Heyting algebra, etc. It is more interesting to look for
+counter-examples.
+
+\begin{example}
+  The theory of a field, as usually given, is not algebraic because the inverse~$0^{-1}$
+  is undefined, whereas the operations of an algebraic theory are always taken to be
+  total. However, a proof is required to show that there is no equivalent algebraic
+  formulation of the theory of a field.
+\end{example}
+
+\subsection{Models and morphisms}
+\label{sec:models-and-morphisms}
 
 
+\subsection{Multisorted algebraic theories}
+\label{sec:mult-algebr-theor}
 
-\footnote{It is \emph{not} the case that the variables appearing
-  in the equations ``implicitly universally quantified''. They could be, but we do not
-  quantify them. Instead, these are \emph{free} variables.}
+\section{Computational effects as algebraic operations}
+\label{sec:comp-effects-as}
 
-
-
+\section{Algebraic handlers}
+\label{sec:algebraic-handlers}
 
 
 
