@@ -7,6 +7,7 @@
 \usepackage{xypic}
 
 \newcommand{\NN}{\mathbb{N}}
+\newcommand{\RR}{\mathbb{R}}
 
 \newcommand{\all}[1]{\forall #1 \,.\,}
 \newcommand{\some}[1]{\exists #1 \,.\,}
@@ -41,7 +42,7 @@
 \label{sec:algebraic-theories}
 
 
-\subsection{Signatures and equations}
+\subsection{Signatures, terms and equations}
 \label{sec:signatures-equations}
 
 In algebra we study mathematical structures that are equipped with operations satisfying
@@ -62,53 +63,119 @@ formulation in which the axioms are just equations between terms built from vari
 operations (a constant is construed as a nullary operation). Such theories are known as
 \emph{algebraic} or \emph{equational theories}.
 
-\begin{definition}
-  \label{def:algebraic-theory}
-  %
-  A \emph{signature $\Sigma$} is a collection of \emph{operation symbols}
-  $\op_1, \op_2, \op_3, \ldots$, each of which has an associated \emph{arity}
-  $n_i \in \NN$. The \emph{$\Sigma$-terms} are built inductively using the following
-  rules:
-  %
-  \begin{enumerate}
-  \item \emph{variables} $x_0, x_1, x_2, \ldots$ are $\Sigma$-terms,
-  \item if $t_1, \ldots, t_{n_i}$ are $\Sigma$-terms then $\op_i(t_1, \ldots, t_{n_i})$ is
-    a $\Sigma$-term.
-  \end{enumerate}
-  %
-  An \emph{algebraic theory} is given by a signature~$\Sigma$ and a collection of equations
-  between $\Sigma$-terms.
-\end{definition}
-
+A \emph{signature $\Sigma$} is a collection of \emph{operation symbols}
+$\op_1, \op_2, \op_3, \ldots$, each of which has an associated \emph{arity} $n_i \in \NN$.
 An operation symbol whose arity is~$0$ is called a \emph{constant} or a \emph{nullary}
 symbol. Operation symbols with arities $1$, $2$ and $3$ are referred to as \emph{unary},
 \emph{binary}, and \emph{ternary}, respectively.
 
-It is best to think of $\Sigma$-terms not as expressions, but as \emph{finite trees} whose
-leaves are variables and whose nodes are labeled with operation symbols. The node labeled
-with $\op_i$ has $n_i$ subtrees. Similarly, equations should be viewed as data that the
-algebraic theory incoporates, rather than logical statements, i.e., $\ell = r$ is just a
-suggestive way of displaying the two terms $\ell$ and $r$.
+A list of distinct variables $x_1, \ldots, x_k$ is called a \emph{context}. The
+\emph{$\Sigma$-terms in context $x_1, \ldots, x_k$} are built inductively using the
+following rules:
+% 
+\begin{enumerate}
+\item each variable $x_i$ is a $\Sigma$-term in context $x_1, \ldots, x_k$,
+\item if $t_1, \ldots, t_{n_i}$ are $\Sigma$-terms in context $x_1, \ldots, x_k$ then
+  $\op_i(t_1, \ldots, t_{n_i})$ is a $\Sigma$-term in context $x_1, \ldots, x_k$.
+\end{enumerate}
+%
+We write
+%
+\begin{equation*}
+  x_1, \ldots, x_k \mid t
+\end{equation*}
+%
+to indicate that $t$ is a $\Sigma$-term in the given context. A \emph{closed
+  $\Sigma$-term} is a $\Sigma$-term in the empty context, so that no variables appear
+in~$t$.
 
+A \emph{$\Sigma$-equation} in context $x_1, \ldots, x_k$ is a pair of $\Sigma$-terms
+$\ell$ and $r$ in context $x_1, \ldots, x_k$. We write
+%
+\begin{equation*}
+  x_1, \ldots, x_k \mid \ell = r
+\end{equation*}
+%
+to indicate an equation in a context. We shall often elide the context and write simply
+$\ell = r$, but it should be understood that there is an ambient context which contains at
+least all the variables mentioned by $\ell$ and $r$. When no confusion can arise we also
+drop the prefix ``$\Sigma$-'' and speak of just terms and equations instead of
+$\Sigma$-terms and $\Sigma$-equations.
+
+It is best to think of $\Sigma$-terms not as syntactic expressions, but as finite trees
+whose leaves are variables and whose nodes are labeled with operation symbols. The node
+labeled with $\op_i$ has $n_i$ subtrees. Similarly, equations should be viewed as data
+that the algebraic theory incoporates, rather than logical statements, i.e., $\ell = r$ is
+just a suggestive way of displaying the two terms $\ell$ and $r$.
+
+\begin{example}
+  \label{ex:monoid-signature}
+  %
+  The signature for the theory of a monoid has a nullary symbol $\mathsf{u}$ and a binary
+  symbol $\mathsf{m}$. There are infinitely many expressions in context $x, y$, such as
+  %
+  \begin{align*}
+    \mathsf{u}(),\quad
+    x,\quad
+    y,\quad
+    \mathsf{m}(\mathsf{u}(), \mathsf{u}()),\quad
+    \mathsf{m}(\mathsf{u}(), x),\quad
+    \mathsf{m}(y, \mathsf{u}()),\quad
+    \mathsf{m}(x, x),\quad
+    \mathsf{m}(y, x),
+    \ldots
+  \end{align*}
+  %
+  An equation in context $x, y$ is
+  %
+  \begin{equation*}
+    x, y \mid \mathsf{m}(y, x) = \mathsf{m}(\mathsf{m}(\mathsf{u}(), x), y).
+  \end{equation*}
+  %
+  It is customary to write a nullary symbol $\mathsf{u}()$ simply as $\mathsf{u}$, and to
+  use infix an infix operator~$\cdot$ in place of~$\mathsf{m}$. With such notation the
+  above equation would be written as
+  %
+  \begin{equation*}
+    x, y \mid y \cdot x = (\mathsf{u} \cdot x) \cdot y.
+  \end{equation*}
+  %
+  One might even omit $\cdot$ and the context, in which case the equation is written
+  simply as $y \, x = (\mathsf{u} \, x) \, y$. If we agree that $\cdot$ associates to the
+  left then $(\mathsf{u} \, x) \, y$ may be written as $\mathsf{u} \, x \, y$, and we are
+  left with $y \, x = \mathsf{u} \, x \, y$. Note that we are \emph{not} discussing
+  validity of equations but only methods for writing them down. It is irrelevant whether
+  the above equation is valid in monoids.
+\end{example}
+
+
+\subsection{Algebraic theories}
+\label{sec:algebraic-theories-1}
+
+An \emph{algebraic theory} is given by a signature~$\Sigma$ and a collection of
+$\Sigma$-equations in contexts.
+%
 We impose no restrictions on the number of operation symbols or equations, but at least in
 classical treatments of the subject certain complications are avoided by insisting that
 arities be non-negative integers.
 
 \begin{example}
-  The theory of a group is algebraic. In order to follow closely
-  Definition~\ref{def:algebraic-theory}, we eschew the traditional notation $\cdot$ and
-  ${}^{-1}$, and use only the variables $x_0, x_1, x_2, \ldots$ We abide by such
-  formalistic requirements once to demonstrate them, but shall take notational
-  liberties subsequently.
+  The theory of a group is algebraic. In order to follow closely the definitions we eschew
+  the traditional notation $\cdot$ and ${}^{-1}$, and explicitly display the contexts. We
+  abide by such formalistic requirements once to demonstrate them, but shall take
+  notational liberties subsequently.
   %
-  The theory of a group is given by operation symbols $\mathsf{u}$, $\mathsf{m}$, and
-  $\mathsf{i}$ whose arities are $0$, $2$, and $1$, respectively. The equations are:
+  The signature for the theory of a group is given by operation symbols $\mathsf{u}$,
+  $\mathsf{m}$, and $\mathsf{i}$ whose arities are $0$, $2$, and $1$, respectively. The
+  equations are:
   %
-  \begin{gather*}
-    \mathsf{m}(\mathsf{m}(x_0, x_1), x_2) = \mathsf{m}(x_0, \mathsf{m}(x_1, x_2)),\\
-    \mathsf{m}(\mathsf{u}(), x_0) = x_0 = \mathsf{m}(x_0, \mathsf{u}()),\\
-    \mathsf{m}(x_0, \mathsf{i}(x_0)) = \mathsf{u}() = \mathsf{m}(\mathsf{i}(x_0), x_0).
-  \end{gather*}
+  \begin{align*}
+    x, y, z &\mid \mathsf{m}(\mathsf{m}(x, y), z) = \mathsf{m}(x, \mathsf{m}(y, z)),\\
+    x &\mid \mathsf{m}(\mathsf{u}(), x) = x \\
+    x &\mid \mathsf{m}(x_0, \mathsf{u}()) = x,\\
+    x &\mid \mathsf{m}(x, \mathsf{i}(x)) = \mathsf{u}()\\
+    x &\mid \mathsf{m}(\mathsf{i}(x), x) = \mathsf{u}().
+  \end{align*}
   %
 \end{example}
 
@@ -124,6 +191,9 @@ arities be non-negative integers.
     x \vee x &= x,\\
     x \vee \bot &= x.
   \end{align*}
+  %
+  It should be clear that the first equation appears in context $x, y, z$, the second one
+  in~$x, y$, and the last two in~$x$.
 \end{example}
 
 \begin{example}
@@ -180,12 +250,12 @@ arities be non-negative integers.
 \end{example}
 
 
-\subsection{Models and morphisms}
-\label{sec:models-and-morphisms}
+\subsection{Interpretations and models}
+\label{sec:interp-and-models}
 
 Each algebraic theory describes a certain kind of mathematical structures, which we call
-the \emph{models} of the theory. Let us explain more carefully how one obtains the models
-from the theory.
+the \emph{models} of the theory. We explain the the correspondence between theories and
+its models.
 
 Let a signature $\Sigma$ be given. An \emph{interpretation~$I$} of $\Sigma$ is given by
 the following data:
@@ -199,36 +269,37 @@ the following data:
   \end{equation*}
 \end{enumerate}
 %
-We shall abbreviate an $n$-ary product $S \times \cdots \times S$ as $S^n$. A nullary
-product $S^0$ is the singleton set~$\one = \{\star\}$, which matches our expectation that
-a nullary operation symbol be interpreted by an element of~$S$. Indeed, the elements of
-$S$ are in bijective correspondence with maps $\one \to S$.
+The double bracket $\sem{{\ }}_I$ is called the \emph{semantic bracket} and is typically
+used when syntactic entities (operation symbols, terms, equations) are mapped by~$I$ to
+their mathematical counterparts. When no confusion can arise, we omit the subscript~$I$
+and write just~$\sem{{\ }}$.
 
+We abbreviate an $n$-ary product $S \times \cdots \times S$ as $S^n$. A nullary product
+$S^0$ is the singleton set~$\one = \{\star\}$, which matches our expectation that a
+nullary operation symbol be interpreted by an element of~$S$. Indeed, the elements of $S$
+are in bijective correspondence with maps $\one \to S$.
 
-An interpretation~$I$ may be extended to all $\Sigma$-terms. A \emph{context} is a list of
-variables $x_0, \ldots, x_{k-1}$. A \emph{term in a context} is a $\Sigma$-term $t$
-such that every variable appearing in $t$ is listed by the context. We write
+An interpretation~$I$ may be extended to $\Sigma$-terms. A $\Sigma$-term in context
 %
 \begin{equation*}
   x_0, \ldots, x_{k-1} \mid t
 \end{equation*}
 %
-to indicate that $t$ is a $\Sigma$-term in context $x_0, \ldots, x_{k-1}$. Such a term in
-context is interpreted by a map
+is interpreted by a map
 %
 \begin{equation*}
   \sem{x_0, \ldots, x_{k-1} \mid t}_I : S^k \to S,
 \end{equation*}
 %
 as follows:
-% 
+%
 \begin{enumerate}
 \item the variable $x_i$ is interpreted as the $i$-th projection,
   %
   \begin{equation*}
     \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : S^k \to S,
   \end{equation*}
-\item a compound term in context 
+\item a compound term in context
   %
   \begin{equation*}
     x_0, \ldots, x_{k-1} \mid \op_i(t_1, \ldots, t_{n_i})
@@ -246,12 +317,47 @@ as follows:
     }
   \end{equation*}
   %
-  where we elided the contexts $x_0, \ldots, x_{k-1}$ for the sake of brevity, and we
-  shall continue to do so.
+  where we elided the contexts $x_0, \ldots, x_{k-1}$ for the sake of brevity.
 \end{enumerate}
-%
+
+\begin{example}
+  An interpretation of the signature for a monoid from Example~\ref{ex:monoid-signature}
+  is given by the carrier set $\RR$, and the interpretations of operation symbols
+  %
+  \begin{align*}
+    \sem{\mathsf{u}}() &= 1 + \sqrt{5}, \\
+    \sem{\mathsf{m}}(a, b) &= a^2 + b^3.
+  \end{align*}
+  %
+  The term in context $x \mid \mathsf{m}(\mathsf{u}, x)$ is interpreted as the map
+  $\RR \to \RR$, given by the rule
+  %
+  \begin{equation*}
+    a \mapsto 6 + 2 \sqrt{5} + a^3.
+  \end{equation*}
+  %
+  In contrast, the same term in a different context $x, y \mid \mathsf{m}(\mathsf{u}, x)$
+  is interpreted as the map $\RR \times \RR \to \RR$, given by the rule
+  %
+  \begin{align*}
+    (a, b) &\mapsto 6 + 2 \sqrt{5} + a^3.
+  \end{align*}
+  %
+  It is irrelevant whether this interpretation satisfies the monoid laws because we have
+  not considered any equations yet.
+\end{example}
+
+The previous examples shows why contexts should not be ignored. In informal mathematical
+practice contexts are usually treated implicitly, or are even left as guesswork for the
+reader. For example, in real algebraic geometry the solution set of the equation
+$x^2 + y^2 = 1$ is either a unit circle in the plane or an infinitely extending cylinder
+of unit radius in the space, depending on whether the context might be $x, y$ or
+$x, y, z$.
+
 A \emph{model} of an algebraic theory is an interpretation of its signature which
 validates the equations. That is, if $\ell = r$ is an equation of the theory
+
+
 
 
 \subsection{Variations}
