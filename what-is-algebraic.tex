@@ -10,6 +10,11 @@
 \newcommand{\RR}{\mathbb{R}}
 \newcommand{\ZZ}{\mathbb{Z}}
 
+\newcommand{\TT}{\mathcal{t}}
+
+\newcommand{\CC}{\mathcal{C}}
+\newcommand{\Set}{\mathsf{Set}}
+
 \newcommand{\all}[1]{\forall #1 \,.\,}
 \newcommand{\some}[1]{\exists #1 \,.\,}
 \newcommand{\set}[1]{\{#1\}}
@@ -45,9 +50,6 @@
 \label{sec:algebraic-theories}
 
 
-\subsection{Signatures, terms and equations}
-\label{sec:signatures-equations}
-
 In algebra we study mathematical structures that are equipped with operations satisfying
 equational laws. For example, a group is a structure $(G, \mathsf{u}, {\cdot}, {}^{-1})$,
 where $\mathsf{u}$~is a constant, $\cdot$~is a binary operation, and ${}^{-1}$~is a unary
@@ -59,12 +61,15 @@ operation, satisfying the familiar group identities:
   x \cdot x^{-1} = \mathsf{u} = x^{-1} \cdot x.
 \end{gather*}
 %
-There are alternative axiomatizations of groups. For example, a group is a monoid
+There are alternative axiomatizations of groups: a group is a monoid
 $(G, \mathsf{u}, {\cdot})$ in which every element is invertible, i.e., for every $x$ there
 exists $y$ such that $x \cdot y = \mathsf{u} = y \cdot x$. However, we prefer the
-formulation in which the axioms are just equations between terms built from variables and
-operations (a constant is construed as a nullary operation). Such theories are known as
-\emph{algebraic} or \emph{equational theories}.
+formulation in which the axioms are just equations between terms built from variables,
+constants, and operations. Such theories are known as \emph{algebraic} or \emph{equational
+  theories}.
+
+\subsection{Signatures, terms and equations}
+\label{sec:signatures-equations}
 
 A \emph{signature $\Sigma$} is a collection of \emph{operation symbols}
 $\op_1, \op_2, \op_3, \ldots$, each of which has an associated \emph{arity} $n_i \in \NN$.
@@ -89,8 +94,8 @@ We write
 \end{equation*}
 %
 to indicate that $t$ is a $\Sigma$-term in the given context. A \emph{closed
-  $\Sigma$-term} is a $\Sigma$-term in the empty context, so that no variables appear
-in~$t$.
+  $\Sigma$-term} is a $\Sigma$-term in the empty context. No variables occur
+in a closed term.
 
 A \emph{$\Sigma$-equation} in context $x_1, \ldots, x_k$ is a pair of $\Sigma$-terms
 $\ell$ and $r$ in context $x_1, \ldots, x_k$. We write
@@ -197,7 +202,7 @@ arities be non-negative integers.
     x \vee \bot &= x.
   \end{align*}
   %
-  It should be clear that the first equation appears in context $x, y, z$, the second one
+  It should be clear that the first equation has context $x, y, z$, the second one
   in~$x, y$, and the last two in~$x$.
 \end{example}
 
@@ -280,11 +285,11 @@ arities be non-negative integers.
     \op_h(x_1, \ldots, x_m).
   \end{equation*}
   %
-  The theory contains as a subtheory the theory of a commutative ring with unit. Indeed,
-  addition, multiplication and subtraction of real numbers are smooth operations, and so
-  they appear as $\op_{+}$, $\op_{\times}$, $\op_{-}$, and so do constants $\op_0$ and
-  $\op_1$ (all maps $\RR^0 \to \RR$ are smooth). The commutative ring equations are
-  present as well because the real numbers form a commutative ring.
+  The theory contains the theory of a commutative unital ring as a subtheory. Indeed,
+  the ring operations on~$\RR$ are smooth maps, and so they appear as $\op_{+}$,
+  $\op_{\times}$, $\op_{-}$ in the signature, and so do constants $\op_0$ and $\op_1$,
+  because all maps $\RR^0 \to \RR$ are smooth. The commutative ring equations are present
+  as well because the real numbers form a commutative ring.
 \end{example}
 
 
@@ -488,7 +493,7 @@ including an infinite one.
   Let us give a model of the theory of a $\Cinfty$-ring from
   Example~\ref{ex:Cinfty-theory}. Pick a smooth manifold~$M$, and let the carrier be the
   set $\Cinfty(M, \RR)$ of all smooth scalar fields on~$M$. Given
-  $f \in \Cinfty(\RR^n, \RR)$, interpret the operation $\op_f$ as the map
+  $f \in \Cinfty(\RR^n, \RR)$, interpret the operation $\op_f$ as composition with~$f$,
   %
   \begin{align*}
     \sem{\op_f} &: \Cinfty(M, \RR)^n \to \Cinfty(M, \RR) \\
@@ -498,6 +503,141 @@ including an infinite one.
   We leave it as an exercise to verify that all equations are validated by this
   interpretation.
 \end{example}
+
+\subsection{Homomorphisms and the category of models}
+\label{sec:homom-categ-models}
+
+Suppose $L$ and $M$ are models of a given algebraic theory. A \emph{homomorphism} from $L$
+to $M$ is a map $\phi : |L| \to |M|$ between the carriers which commutes with operations:
+for every operation symbol $\op_i$ of the theory, with arity $n_i$,
+%
+\begin{equation*}
+  \phi \circ \sem{\op_i}_L = \sem{\op_i}_M \circ \underbrace{(\phi, \ldots, \phi)}_{n_i}.
+\end{equation*}
+
+\begin{example}
+  A homomorphism between groups $G$ and $H$ is a map $\phi : |G| \to |H|$ between the
+  carriers such that, for all $a, b \in |G|$,
+  %
+  \begin{align*}
+    \phi(\sem{\mathsf{u}()}_G) &= \sem{\mathsf{u}()}_H,\\
+    \phi(\sem{\mathsf{m}}_G(a,b)) &= \sem{\mathsf{m}}_H(\phi(a), \phi(b)),\\
+    \phi(\sem{\mathsf{i}}_H(a)) &= \sem{\mathsf{i}}_H(\phi(a)).
+  \end{align*}
+  %
+  This is a convoluted way of saying that the unit maps to the unit, and that $\phi$
+  commutes with the group operation and the inverses. Textbooks usually require only that
+  a group homomorphism commute with the group operation, which then implies that it also
+  preserves the unit and commutes with the inverse.
+\end{example}
+
+We may organize the models of an algebraic theory into a category whose objects are the
+models of the theory, and whose morphisms are homomorphisms of the theory.
+
+\begin{example}
+  The category of models of the theory of a group from Example~\ref{ex:theory-group} is
+  the usual category of groups.
+\end{example}
+
+\begin{example}
+  The category of models of the theory of a pointed set from Example~\ref{ex:pointed-set}
+  has as its objects the pointed sets, which are pairs $(S, s)$ with $S$ a set and
+  $s \in S$ its \emph{point}, and as homomorphisms the functions which preserve the
+  points.
+\end{example}
+
+\begin{example}
+  The category of models of the empty theory from Example~\ref{ex:theory-empty} is the
+  category $\Set$ of sets and functions.
+\end{example}
+
+\begin{example}
+  The category of models of the theory of a singleton from
+  Example~\ref{ex:theory-singleton} is the category whose objects are all the singleton
+  sets. There is precisely one morphisms between any two of them. This category is
+  equivalent to the trivial category which has just one object and one morphism.
+\end{example}
+
+\subsection{Models in a category}
+\label{sec:models-category}
+
+So far we have considered models of an algebraic theory in the category of sets. We can
+consider more generally models in any category with finite products. Indeed, we may
+transcribe the definitions of interpretation and model from
+Sections~\ref{sec:interp-of-sign} and~\ref{sec:models-algebr-theor} so that it applies
+to~$\CC$. An interpretation $I$ in $\CC$ is given by
+%
+\begin{enumerate}
+\item an object $|I|$ in $\CC$, called the \emph{carrier},
+\item for each operation symbol $\op_i$ of arity $n_i$ a morphism in $\CC$
+  %
+  \begin{equation*}
+    \sem{\op_i}_I : \underbrace{|I| \times \cdots \times |I|}_{n_i} \to |I|.
+  \end{equation*}
+\end{enumerate}
+%
+Once again, we abbreviate the $k$-fold product of $|I|$ as $|I|^k$. Notice that a nullary
+symbol is interpreted as a morphism $|I|^0 \to |I|$, which is a morphisms from the
+terminal object $\one \to |I|$ in~$\CC$.
+
+An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
+%
+\begin{enumerate}
+\item the variable $x_1, \ldots, x_k \mid x_i$ is interpreted as the $i$-th projection,
+  %
+  \begin{equation*}
+    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : |I|^k \to |I|,
+  \end{equation*}
+\item a compound term in context
+  %
+  \begin{equation*}
+    x_0, \ldots, x_{k-1} \mid \op_i(t_1, \ldots, t_{n_i})
+  \end{equation*}
+  %
+  is interpreted as the composition of morphisms
+  %
+  \begin{equation*}
+    \xymatrix@+6em{
+      {|I|^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{n_i}}_I)}
+      &
+      {|I|^{n_i}} \ar[r]^{\sem{\op_i}_I}
+      &
+      {|I|}
+    }
+  \end{equation*}
+\end{enumerate}
+%
+A model of an algebric theory in~$\CC$ is an interpretation~$M$ of its signature which
+validates all equations. That is, for every equation
+%
+\begin{equation*}
+  x_1, \ldots, x_k \mid \ell = r
+\end{equation*}
+%
+of the theory, the morphisms
+%
+\begin{equation*}
+  \sem{x_1, \ldots, x_k \mid \ell}_M : |M|^k \to |M|
+  \qquad\text{and}\qquad
+  \sem{x_1, \ldots, x_k \mid r}_M : |M|^k \to |M|
+\end{equation*}
+%
+are equal.
+
+\begin{example}
+  A model of the theory of a group from Example~\ref{ex:theory-group} in the category of
+  topological spaces and continuous maps is a topological group.
+\end{example}
+
+\begin{example}
+  A model of the theory of a group from Example~\ref{ex:theory-group} in the category of
+  topological spaces and continuous maps is a topological group.
+\end{example}
+
+\subsection{Free models}
+\label{sec:free-models}
+
+
 
 
 \subsection{Variations}
