@@ -8,6 +8,7 @@
 
 \newcommand{\NN}{\mathbb{N}}
 \newcommand{\RR}{\mathbb{R}}
+\newcommand{\ZZ}{\mathbb{Z}}
 
 \newcommand{\all}[1]{\forall #1 \,.\,}
 \newcommand{\some}[1]{\exists #1 \,.\,}
@@ -160,6 +161,8 @@ classical treatments of the subject certain complications are avoided by insisti
 arities be non-negative integers.
 
 \begin{example}
+  \label{ex:theory-group}
+  %
   The theory of a group is algebraic. In order to follow closely the definitions we eschew
   the traditional notation $\cdot$ and ${}^{-1}$, and explicitly display the contexts. We
   abide by such formalistic requirements once to demonstrate them, but shall take
@@ -211,10 +214,14 @@ arities be non-negative integers.
 \end{example}
 
 \begin{example}
+  \label{ex:theory-empty}
+  %
   The \emph{empty theory} has no operation symbols and no equations.
 \end{example}
 
 \begin{example}
+  \label{ex:theory-singleton}
+  %
   The theory of a \emph{singleton} has a constant $\star$ and the equation $x = y$.
 \end{example}
 
@@ -250,22 +257,18 @@ arities be non-negative integers.
 \end{example}
 
 
-\subsection{Interpretations and models}
-\label{sec:interp-and-models}
-
-Each algebraic theory describes a certain kind of mathematical structures, which we call
-the \emph{models} of the theory. We explain the the correspondence between theories and
-its models.
+\subsection{Interpretations of signatures}
+\label{sec:interp-of-sign}
 
 Let a signature $\Sigma$ be given. An \emph{interpretation~$I$} of $\Sigma$ is given by
 the following data:
-% 
+%
 \begin{enumerate}
-\item a set $S$, called the \emph{carrier},
+\item a set $|I|$, called the \emph{carrier},
 \item for each operation symbol $\op_i$ of arity $n_i$ a map
   %
   \begin{equation*}
-    \sem{\op_i}_I : \underbrace{S \times \cdots \times S}_{n_i} \to S.
+    \sem{\op_i}_I : \underbrace{|I| \times \cdots \times |I|}_{n_i} \to |I|.
   \end{equation*}
 \end{enumerate}
 %
@@ -274,10 +277,10 @@ used when syntactic entities (operation symbols, terms, equations) are mapped by
 their mathematical counterparts. When no confusion can arise, we omit the subscript~$I$
 and write just~$\sem{{\ }}$.
 
-We abbreviate an $n$-ary product $S \times \cdots \times S$ as $S^n$. A nullary product
-$S^0$ is the singleton set~$\one = \{\star\}$, which matches our expectation that a
-nullary operation symbol be interpreted by an element of~$S$. Indeed, the elements of $S$
-are in bijective correspondence with maps $\one \to S$.
+We abbreviate an $n$-ary product $|I| \times \cdots \times |I|$ as $|I|^n$. A nullary product
+$|I|^0$ is the singleton set~$\one = \{\star\}$, which matches our expectation that a
+nullary operation symbol be interpreted by an element of~$|I|$. Indeed, the elements of $|I|$
+are in bijective correspondence with maps $\one \to |I|$.
 
 An interpretation~$I$ may be extended to $\Sigma$-terms. A $\Sigma$-term in context
 %
@@ -288,7 +291,7 @@ An interpretation~$I$ may be extended to $\Sigma$-terms. A $\Sigma$-term in cont
 is interpreted by a map
 %
 \begin{equation*}
-  \sem{x_0, \ldots, x_{k-1} \mid t}_I : S^k \to S,
+  \sem{x_0, \ldots, x_{k-1} \mid t}_I : |I|^k \to |I|,
 \end{equation*}
 %
 as follows:
@@ -297,7 +300,7 @@ as follows:
 \item the variable $x_i$ is interpreted as the $i$-th projection,
   %
   \begin{equation*}
-    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : S^k \to S,
+    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : |I|^k \to |I|,
   \end{equation*}
 \item a compound term in context
   %
@@ -309,11 +312,11 @@ as follows:
   %
   \begin{equation*}
     \xymatrix@+6em{
-      {S^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{n_i}}_I)}
+      {|I|^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{n_i}}_I)}
       &
-      {S^{n_i}} \ar[r]^{\sem{\op_i}_I}
+      {|I|^{n_i}} \ar[r]^{\sem{\op_i}_I}
       &
-      {S}
+      {|I|}
     }
   \end{equation*}
   %
@@ -321,43 +324,133 @@ as follows:
 \end{enumerate}
 
 \begin{example}
-  An interpretation of the signature for a monoid from Example~\ref{ex:monoid-signature}
-  is given by the carrier set $\RR$, and the interpretations of operation symbols
+  One interpretation of the signature from Example~\ref{ex:monoid-signature} is given by
+  the carrier set $\RR$ and the interpretations of operation symbols
   %
   \begin{align*}
     \sem{\mathsf{u}}() &= 1 + \sqrt{5}, \\
     \sem{\mathsf{m}}(a, b) &= a^2 + b^3.
   \end{align*}
   %
-  The term in context $x \mid \mathsf{m}(\mathsf{u}, x)$ is interpreted as the map
-  $\RR \to \RR$, given by the rule
+  The term in context $x, y \mid \mathsf{m}(\mathsf{u}, \mathsf{m}(x, x))$ is interpreted
+  as the map $\RR \to \RR$, given by the rule
   %
   \begin{equation*}
-    a \mapsto 6 + 2 \sqrt{5} + a^3.
+    (a, b) \mapsto (a+1)^3 a^6 + 2 (3 + \sqrt{5}).
   \end{equation*}
   %
-  In contrast, the same term in a different context $x, y \mid \mathsf{m}(\mathsf{u}, x)$
-  is interpreted as the map $\RR \times \RR \to \RR$, given by the rule
+  The same term in a context $y, x, z$ is interpreted as the map $\RR \times \RR \to \RR$,
+  given by the rule
   %
   \begin{align*}
-    (a, b) &\mapsto 6 + 2 \sqrt{5} + a^3.
+    (a, b, c) &\mapsto (b+1)^3 b^6 + 2 (3 + \sqrt{5}).
   \end{align*}
   %
-  It is irrelevant whether this interpretation satisfies the monoid laws because we have
-  not considered any equations yet.
+  These are not the same map, as they do not even have the same domains! It is irrelevant
+  whether this interpretation satisfies the monoid laws because we have not considered any
+  equations yet.
 \end{example}
 
-The previous examples shows why contexts should not be ignored. In informal mathematical
-practice contexts are usually treated implicitly, or are even left as guesswork for the
-reader. For example, in real algebraic geometry the solution set of the equation
-$x^2 + y^2 = 1$ is either a unit circle in the plane or an infinitely extending cylinder
-of unit radius in the space, depending on whether the context might be $x, y$ or
-$x, y, z$.
+The previous examples shows why contexts should not be ignored. In mathematical practice
+contexts are often relegated to guesswork for the reader, or are handled implicitly. For
+example, in real algebraic geometry the solution set of the equation $x^2 + y^2 = 1$ is
+either a unit circle in the plane or an infinitely extending cylinder of unit radius in
+the space, depending on whether the context might be $x, y$ or $x, y, z$. Which context is
+meant is indicated one way or another by the author of the mathematical text.
 
-A \emph{model} of an algebraic theory is an interpretation of its signature which
-validates the equations. That is, if $\ell = r$ is an equation of the theory
+\subsection{Models of algebraic theories}
+\label{sec:models-algebr-theor}
 
+A \emph{model~$M$} of an algebraic theory is an interpretation of the signature which
+validates all the equations of the theory. That is, for every equation
+%
+\begin{equation*}
+  x_1, \ldots, x_k \mid \ell = r
+\end{equation*}
+%
+of the theory, the maps
+%
+\begin{equation*}
+  \sem{x_1, \ldots, x_k \mid \ell}_M : |M|^k \to |M|
+  \qquad\text{and}\qquad
+  \sem{x_1, \ldots, x_k \mid r}_M : |M|^k \to |M|
+\end{equation*}
+%
+are equal.
 
+\begin{example}
+  Every algebraic theory has the \emph{trivial model}, whose carrier is the
+  singleton~$\one$, and whose operations are interpreted by the unique maps
+  $\one^k \to \one$. All equations are satisfied because any two maps $\one^k \to \one$
+  are equal.
+\end{example}
+
+The previous example explains why one should \emph{not} require $0 \neq 1$ in a ring, as
+that prevents the theory of a ring from being algebraic.
+
+\begin{example}
+  The empty set is a model of the theory if, and only if, the signature has no constants.
+\end{example}
+
+\begin{example}
+  A model of the theory of a group from Example~\ref{ex:theory-group} is given by a
+  carrier set $G$ and maps
+  %
+  \begin{equation*}
+    u : \one \to G,\qquad
+    m : G \times G \to G,\qquad
+    i : G \to G,
+  \end{equation*}
+  %
+  interpreting the operation symbols $\mathsf{u}$, $\mathsf{m}$, and $\mathsf{i}$,
+  respectively, such that the equations listed in the example are valid. This amounts
+  precisely to $(G, u, m, i)$ being a group, except that the unit $u$ is viewed as a map
+  $\one \to G$ instead of an element of~$G$.
+\end{example}
+
+\begin{example}
+  A model of the theory of a pointed set from Example~\ref{ex:pointed-set} is a set $S$
+  and a chosen element $s \in S$, which interprets the constant $\star$.
+\end{example}
+
+\begin{example}
+  A model of the empty theory from Example~\ref{ex:theory-empty} is the same thing as a
+  set.
+\end{example}
+
+\begin{example}
+  A model of the theory of the singleton from Example~\ref{ex:theory-singleton} is any
+  set with precisely one element.
+\end{example}
+
+Suppose $L$ and $M$ are models of a given theory. Then we may form the \emph{product of
+  models} $L \times M$ by taking the cartesian product as the carrier,
+%
+\begin{equation*}
+  |L \times M| = |L| \times |M|,
+\end{equation*}
+%
+and pointwise operations,
+%
+\begin{equation*}
+  \sem{\op_i}_{M \times L}(a, b) = (\sem{\op_i}_M(a), \sem{\op_i}_L(a)).
+\end{equation*}
+%
+The equations of the theory are valid in $L \times M$ because they are valid on each
+coordinate. This construction can be extended to a product of any number of models.
+
+\begin{example}
+  We may now explain why the theory of a field from Example~\ref{ex:field} is not
+  equivalent to an algebraic theory. There are fields of size 2 and 3, namely $\ZZ_2$ and
+  $\ZZ_3$. If the fields were algebraic, $\ZZ_2 \times \ZZ_3$ would be a field too, but it
+  is not, and in fact there is no field of size~6.
+\end{example}
+
+\begin{example}
+  Similarly, the theory of a finitely generated group cannot be formulated as an algebraic
+  theory, because an infinite product of non-trivial finitely generated groups is not
+  finitely generated.
+\end{example}
 
 
 \subsection{Variations}
@@ -366,12 +459,11 @@ validates the equations. That is, if $\ell = r$ is an equation of the theory
 \subsubsection{Operations with parameters}
 \label{sec:oper-with-param}
 
+\subsubsection{Arbitrary arities}
+\label{sec:arbitrary-arities}
+
 \subsubsection{Multi-sorted algebraic theories}
 \label{sec:multi-sort-algebr}
-
-\subsubsection{Essentially algebraic theories}
-\label{sec:essent-algebr-theor}
-
 
 
 \section{Computational effects as algebraic operations}
