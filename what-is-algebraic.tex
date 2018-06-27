@@ -4,6 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{times}
+\usepackage{xypic}
 
 \newcommand{\NN}{\mathbb{N}}
 
@@ -13,6 +14,9 @@
 \newcommand{\such}{\mid}
 
 \newcommand{\op}{\mathsf{op}}
+\newcommand{\one}{\mathsf{1}}
+
+\newcommand{\sem}[1]{[\![#1]\!]}
 
 {\theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -26,8 +30,9 @@
 \author{Andrej Bauer}
 
 \begin{abstract}
-  A short tutorial on algebraic theories and how they are related to the theory of
-  algebraic effects and handlers.
+  This is a short tutorial on algebraic theories and their relation to computational
+  effects, as known in the theory of programming languages. An unusually large number of
+  examples is provided, and excursions into category theory are kept to a minimum.
 \end{abstract}
 
 \maketitle
@@ -36,9 +41,13 @@
 \label{sec:algebraic-theories}
 
 
+\subsection{Signatures and equations}
+\label{sec:signatures-equations}
+
 In algebra we study mathematical structures that are equipped with operations satisfying
-equational laws. For example, a group is a structure $(G, \mathsf{u}, {\cdot}, {}^{-1})$ satisfying
-the familiar group identities:
+equational laws. For example, a group is a structure $(G, \mathsf{u}, {\cdot}, {}^{-1})$,
+where $\mathsf{u}$~is a constant, $\cdot$~is a binary operation, and ${}^{-1}$~is a unary
+operation, satisfying the familiar group identities:
 %
 \begin{gather*}
   (x \cdot y) \cdot z = x \cdot (y \cdot z),\\
@@ -47,12 +56,11 @@ the familiar group identities:
 \end{gather*}
 %
 There are alternative axiomatizations of groups. For example, a group is a monoid
-$(G, \mathsf{u}, {\cdot})$ in which every element is invertible,
-$\all{x \in G} \some{y \in G} x \cdot y = \mathsf{u} = y \cdot x$. However, we prefer the
-form in which the axioms are just equations between terms built from variables and
+$(G, \mathsf{u}, {\cdot})$ in which every element is invertible, i.e., for every $x$ there
+exists $y$ such that $x \cdot y = \mathsf{u} = y \cdot x$. However, we prefer the
+formulation in which the axioms are just equations between terms built from variables and
 operations (a constant is construed as a nullary operation). Such theories are known as
 \emph{algebraic} or \emph{equational theories}.
-
 
 \begin{definition}
   \label{def:algebraic-theory}
@@ -72,45 +80,193 @@ operations (a constant is construed as a nullary operation). Such theories are k
   between $\Sigma$-terms.
 \end{definition}
 
-It is best to think of $\Sigma$-terms as \emph{finite trees} whose leaves are variables
-and whose nodes are labeled with operation symbols. The node labeled with $\op_i$ has
-$n_i$ subtrees. We impose no restrictions on the number of operation symbols or equations,
-but at least in classical treatments of equational theories the arities must be
-non-negative integers.
+An operation symbol whose arity is~$0$ is called a \emph{constant} or a \emph{nullary}
+symbol. Operation symbols with arities $1$, $2$ and $3$ are referred to as \emph{unary},
+\emph{binary}, and \emph{ternary}, respectively.
+
+It is best to think of $\Sigma$-terms not as expressions, but as \emph{finite trees} whose
+leaves are variables and whose nodes are labeled with operation symbols. The node labeled
+with $\op_i$ has $n_i$ subtrees. Similarly, equations should be viewed as data that the
+algebraic theory incoporates, rather than logical statements, i.e., $\ell = r$ is just a
+suggestive way of displaying the two terms $\ell$ and $r$.
+
+We impose no restrictions on the number of operation symbols or equations, but at least in
+classical treatments of the subject certain complications are avoided by insisting that
+arities be non-negative integers.
 
 \begin{example}
+  The theory of a group is algebraic. In order to follow closely
+  Definition~\ref{def:algebraic-theory}, we eschew the traditional notation $\cdot$ and
+  ${}^{-1}$, and use only the variables $x_0, x_1, x_2, \ldots$ We abide by such
+  formalistic requirements once to demonstrate them, but shall take notational
+  liberties subsequently.
+  %
   The theory of a group is given by operation symbols $\mathsf{u}$, $\mathsf{m}$, and
-  $\mathsf{i}$ whose arities are $0$, $2$, and $1$, respectively. The equations are
+  $\mathsf{i}$ whose arities are $0$, $2$, and $1$, respectively. The equations are:
   %
   \begin{gather*}
     \mathsf{m}(\mathsf{m}(x_0, x_1), x_2) = \mathsf{m}(x_0, \mathsf{m}(x_1, x_2)),\\
-    \mathsf{m}(\mathsf{u}, x_0) = x_0 = \mathsf{m}(x_0, \mathsf{u}),\\
-    \mathsf{m}(x_0, \mathsf{i}(x_0)) = \mathsf{u} = \mathsf{m}(\mathsf{i}(x_0), x_0).
+    \mathsf{m}(\mathsf{u}(), x_0) = x_0 = \mathsf{m}(x_0, \mathsf{u}()),\\
+    \mathsf{m}(x_0, \mathsf{i}(x_0)) = \mathsf{u}() = \mathsf{m}(\mathsf{i}(x_0), x_0).
   \end{gather*}
   %
-  In order to follow closely Definition~\ref{def:algebraic-theory}, we eschewed the
-  traditional notation which uses the infix multiplication $\cdot$ and postfix inverse
-  ${}^{-1}$, and we used only the variables $x_0, x_1, x_2, \ldots$ These are
-  inessential modifications of the theory of a group.
 \end{example}
-
-It should be clear that many examples of algebraic theories can be found: ring, lattice,
-Boolean algebra, Heyting algebra, etc. It is more interesting to look for
-counter-examples.
 
 \begin{example}
+  \label{ex:semi-lattice}
+  %
+  The theory of a semi-lattice is algebraic. It is given by a nullary symbol $\bot$ and a
+  binary symbol $\vee$, satisfying the equations
+  %
+  \begin{align*}
+    x \vee (y \vee z) &= (x \vee y) \vee z,\\
+    x \vee y &= y \vee x,\\
+    x \vee x &= x,\\
+    x \vee \bot &= x.
+  \end{align*}
+\end{example}
+
+\begin{example}
+  \label{ex:field}
+  %
   The theory of a field, as usually given, is not algebraic because the inverse~$0^{-1}$
   is undefined, whereas the operations of an algebraic theory are always taken to be
-  total. However, a proof is required to show that there is no equivalent algebraic
-  formulation of the theory of a field.
+  total. However, a proof is required to show that there is no equivalent algebraic theory.
 \end{example}
+
+\begin{example}
+  \label{ex:pointed-set}
+  %
+  The theory of a \emph{pointed set} has a constant $\star$ and no equations.
+\end{example}
+
+\begin{example}
+  The \emph{empty theory} has no operation symbols and no equations.
+\end{example}
+
+\begin{example}
+  The theory of a \emph{singleton} has a constant $\star$ and the equation $x = y$.
+\end{example}
+
+\begin{example}
+  \label{ex:lattice}
+  %
+  A bounded lattice is a partial order with finite infima and suprema. Such a formulation
+  is not algebraic because the infimum and supremum operators do not have fixed arities,
+  but we can reformulate it in terms of nullary and binary operations.
+  Thus, the theory of a bounded lattice has constants $\bot$ and $\top$, and two binary
+  operation symbols $\vee$ and $\wedge$, satisfying the equations:
+  %
+  \begin{align*}
+    x \vee (y \vee z) &= (x \vee y) \vee z,   &      x \wedge (y \wedge z) &= (x \wedge y) \wedge z,\\
+    x \vee y &= y \vee x,                     &      x \wedge y &= y \wedge x,\\
+    x \vee x &= x,                            &      x \wedge x &= x,\\
+    x \vee \bot &= x,                         &      x \wedge \top &= x.
+  \end{align*}
+  %
+  Notice that the theory of a bounded lattice is simply the juxtaposition of two copies of
+  the theory of a semi-lattice from Example~\ref{ex:semi-lattice}. The partial order is
+  recovered because $x \leq y$ is equivalent to $x \vee y = y$ and to $x \wedge y = x$.
+\end{example}
+
+\begin{example}
+  \label{ex:finitely-generated-group}
+  %
+  A \emph{finitely generated group} is a group which contains a finite collection of
+  elements, called the \emph{generators}, such that every element of the group is obtained
+  by multiplications and inverses of the generators. It is not clear how to express this
+  condition using only equations, but a proof is required to show that there is no
+  equivalent algebraic theory.
+\end{example}
+
 
 \subsection{Models and morphisms}
 \label{sec:models-and-morphisms}
 
+Each algebraic theory describes a certain kind of mathematical structures, which we call
+the \emph{models} of the theory. Let us explain more carefully how one obtains the models
+from the theory.
 
-\subsection{Multisorted algebraic theories}
-\label{sec:mult-algebr-theor}
+Let a signature $\Sigma$ be given. An \emph{interpretation~$I$} of $\Sigma$ is given by
+the following data:
+% 
+\begin{enumerate}
+\item a set $S$, called the \emph{carrier},
+\item for each operation symbol $\op_i$ of arity $n_i$ a map
+  %
+  \begin{equation*}
+    \sem{\op_i}_I : \underbrace{S \times \cdots \times S}_{n_i} \to S.
+  \end{equation*}
+\end{enumerate}
+%
+We shall abbreviate an $n$-ary product $S \times \cdots \times S$ as $S^n$. A nullary
+product $S^0$ is the singleton set~$\one = \{\star\}$, which matches our expectation that
+a nullary operation symbol be interpreted by an element of~$S$. Indeed, the elements of
+$S$ are in bijective correspondence with maps $\one \to S$.
+
+
+An interpretation~$I$ may be extended to all $\Sigma$-terms. A \emph{context} is a list of
+variables $x_0, \ldots, x_{k-1}$. A \emph{term in a context} is a $\Sigma$-term $t$
+such that every variable appearing in $t$ is listed by the context. We write
+%
+\begin{equation*}
+  x_0, \ldots, x_{k-1} \mid t
+\end{equation*}
+%
+to indicate that $t$ is a $\Sigma$-term in context $x_0, \ldots, x_{k-1}$. Such a term in
+context is interpreted by a map
+%
+\begin{equation*}
+  \sem{x_0, \ldots, x_{k-1} \mid t}_I : S^k \to S,
+\end{equation*}
+%
+as follows:
+% 
+\begin{enumerate}
+\item the variable $x_i$ is interpreted as the $i$-th projection,
+  %
+  \begin{equation*}
+    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : S^k \to S,
+  \end{equation*}
+\item a compound term in context 
+  %
+  \begin{equation*}
+    x_0, \ldots, x_{k-1} \mid \op_i(t_1, \ldots, t_{n_i})
+  \end{equation*}
+  %
+  is interpreted as the composition of maps
+  %
+  \begin{equation*}
+    \xymatrix@+6em{
+      {S^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{n_i}}_I)}
+      &
+      {S^{n_i}} \ar[r]^{\sem{\op_i}_I}
+      &
+      {S}
+    }
+  \end{equation*}
+  %
+  where we elided the contexts $x_0, \ldots, x_{k-1}$ for the sake of brevity, and we
+  shall continue to do so.
+\end{enumerate}
+%
+A \emph{model} of an algebraic theory is an interpretation of its signature which
+validates the equations. That is, if $\ell = r$ is an equation of the theory
+
+
+\subsection{Variations}
+\label{sec:variations}
+
+\subsubsection{Operations with parameters}
+\label{sec:oper-with-param}
+
+\subsubsection{Multi-sorted algebraic theories}
+\label{sec:multi-sort-algebr}
+
+\subsubsection{Essentially algebraic theories}
+\label{sec:essent-algebr-theor}
+
+
 
 \section{Computational effects as algebraic operations}
 \label{sec:comp-effects-as}
