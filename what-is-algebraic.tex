@@ -561,11 +561,11 @@ models of the theory, and whose morphisms are homomorphisms of the theory.
 \subsection{Models in a category}
 \label{sec:models-category}
 
-So far we have considered models of an algebraic theory in the category of sets. We can
-consider more generally models in any category with finite products. Indeed, we may
-transcribe the definitions of interpretation and model from
-Sections~\ref{sec:interp-of-sign} and~\ref{sec:models-algebr-theor} so that it applies
-to~$\CC$. An interpretation $I$ in $\CC$ is given by
+So far we have taken the models of an algebraic theory to be sets. More generally, we may
+consider models in any category with finite products. Indeed, the definitions of an
+interpretation and a model from Sections~\ref{sec:interp-of-sign}
+and~\ref{sec:models-algebr-theor} may be directly transcribed so that they apply to any
+category~$\CC$ with finite products. An interpretation $I$ in $\CC$ is given by
 %
 \begin{enumerate}
 \item an object $|I|$ in $\CC$, called the \emph{carrier},
@@ -632,6 +632,34 @@ are equal.
 \begin{example}
   A model of the theory of a group from Example~\ref{ex:theory-group} in the category of
   topological spaces and continuous maps is a topological group.
+\end{example}
+
+\begin{example}
+  What is a model of the theory of a group in the category of groups? Its carrier is a
+  group $(G, u, m, i)$ together with group homomorphisms $\upsilon : \one \to G$,
+  $\mu : G \times G \to G$, and $\iota : G \to G$ which satisfy the group laws. Because
+  $\upsilon$ is a group homomorphism, it maps the unit of the trivial group~$\one$ to $u$,
+  so the units $u$ and $\upsilon$ agree. The operations $m$ and $\mu$ agree too, because
+  %
+  \begin{equation*}
+    \mu(x, y) =
+    \mu(m(x, u), m(u, y)) =
+    m(\mu(x, u), \mu(u, y)) =
+    m(x, y),
+  \end{equation*}
+  %
+  where in the middle step we used the fact that $\mu$ is a group homomorphism. It is now
+  clear that the inverses $i$ and $\iota$ agree as well. Furthermore, taking into account
+  that $m$ and $\mu$ agree, we also obtain
+  %
+  \begin{equation*}
+    m(x, y) =
+    m(m(u, x), m(y, u)) =
+    m(m(u, y), m(x, u)) =
+    m(y, x).
+  \end{equation*}
+  %
+  The conclusion is that a group in the category of groups is an abelian group.
 \end{example}
 
 \subsection{Free models}
