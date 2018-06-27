@@ -18,6 +18,8 @@
 \newcommand{\op}{\mathsf{op}}
 \newcommand{\one}{\mathsf{1}}
 
+\newcommand{\Cinfty}{\mathcal{C}^\infty}
+
 \newcommand{\sem}[1]{[\![#1]\!]}
 
 {\theoremstyle{definition}
@@ -256,6 +258,35 @@ arities be non-negative integers.
   equivalent algebraic theory.
 \end{example}
 
+\begin{example}
+  \label{ex:Cinfty-theory}
+  %
+  An example of an algebraic theory with many operations and equations is the theory of a
+  $\Cinfty$-ring. Let $\Cinfty(\RR^n, \RR^m)$ be the set of all smooth maps from $\RR^n$
+  to $\RR^m$. The signature for the theory of a $\Cinfty$-ring contains an $n$-ary
+  operation symbol $\op_f$ for each $f \in \Cinfty(\RR^n, \RR)$. For all
+  $f \in \Cinfty(\RR^n, \RR)$, $h \in \Cinfty(\RR^m, \RR)$, and
+  $g_1, \ldots, g_n \in \Cinfty(\RR^m, \RR)$ such that
+  %
+  \begin{equation*}
+    f \circ (g_1, \ldots, g_n) = h,
+  \end{equation*}
+  %
+  the theory has the equation
+  %
+  \begin{equation*}
+    x_1, \ldots, x_m \mid
+    \op_f (\op_{g_1}(x_1, \ldots, x_m), \ldots, \op_{g_n}(x_1, \ldots, x_m)) =
+    \op_h(x_1, \ldots, x_m).
+  \end{equation*}
+  %
+  The theory contains as a subtheory the theory of a commutative ring with unit. Indeed,
+  addition, multiplication and subtraction of real numbers are smooth operations, and so
+  they appear as $\op_{+}$, $\op_{\times}$, $\op_{-}$, and so do constants $\op_0$ and
+  $\op_1$ (all maps $\RR^0 \to \RR$ are smooth). The commutative ring equations are
+  present as well because the real numbers form a commutative ring.
+\end{example}
+
 
 \subsection{Interpretations of signatures}
 \label{sec:interp-of-sign}
@@ -379,20 +410,6 @@ of the theory, the maps
 are equal.
 
 \begin{example}
-  Every algebraic theory has the \emph{trivial model}, whose carrier is the
-  singleton~$\one$, and whose operations are interpreted by the unique maps
-  $\one^k \to \one$. All equations are satisfied because any two maps $\one^k \to \one$
-  are equal.
-\end{example}
-
-The previous example explains why one should \emph{not} require $0 \neq 1$ in a ring, as
-that prevents the theory of a ring from being algebraic.
-
-\begin{example}
-  The empty set is a model of the theory if, and only if, the signature has no constants.
-\end{example}
-
-\begin{example}
   A model of the theory of a group from Example~\ref{ex:theory-group} is given by a
   carrier set $G$ and maps
   %
@@ -406,6 +423,20 @@ that prevents the theory of a ring from being algebraic.
   respectively, such that the equations listed in the example are valid. This amounts
   precisely to $(G, u, m, i)$ being a group, except that the unit $u$ is viewed as a map
   $\one \to G$ instead of an element of~$G$.
+\end{example}
+
+\begin{example}
+  Every algebraic theory has the \emph{trivial model}, whose carrier is the
+  singleton~$\one$, and whose operations are interpreted by the unique maps
+  $\one^k \to \one$. All equations are satisfied because any two maps $\one^k \to \one$
+  are equal.
+\end{example}
+
+The previous example explains why one should \emph{not} require $0 \neq 1$ in a ring, as
+that prevents the theory of a ring from being algebraic.
+
+\begin{example}
+  The empty set is a model of the theory if, and only if, the signature has no constants.
 \end{example}
 
 \begin{example}
@@ -437,19 +468,35 @@ and pointwise operations,
 \end{equation*}
 %
 The equations of the theory are valid in $L \times M$ because they are valid on each
-coordinate. This construction can be extended to a product of any number of models.
+coordinate. This construction can be extended to a product of any number of models,
+including an infinite one.
 
 \begin{example}
-  We may now explain why the theory of a field from Example~\ref{ex:field} is not
+  We may now prove that the theory of a field from Example~\ref{ex:field} is not
   equivalent to an algebraic theory. There are fields of size 2 and 3, namely $\ZZ_2$ and
-  $\ZZ_3$. If the fields were algebraic, $\ZZ_2 \times \ZZ_3$ would be a field too, but it
-  is not, and in fact there is no field of size~6.
+  $\ZZ_3$. If there were an algebraic theory of a field, then $\ZZ_2 \times \ZZ_3$ would
+  be a field too, but it is not, and in fact there is no field of size~6.
 \end{example}
 
 \begin{example}
   Similarly, the theory of a finitely generated group cannot be formulated as an algebraic
   theory, because an infinite product of non-trivial finitely generated groups is not
   finitely generated.
+\end{example}
+
+\begin{example}
+  Let us give a model of the theory of a $\Cinfty$-ring from
+  Example~\ref{ex:Cinfty-theory}. Pick a smooth manifold~$M$, and let the carrier be the
+  set $\Cinfty(M, \RR)$ of all smooth scalar fields on~$M$. Given
+  $f \in \Cinfty(\RR^n, \RR)$, interpret the operation $\op_f$ as the map
+  %
+  \begin{align*}
+    \sem{\op_f} &: \Cinfty(M, \RR)^n \to \Cinfty(M, \RR) \\
+    \sem{\op_f} &: (u_1, \ldots, u_n) \mapsto f \circ (u_1, \ldots, u_n).
+  \end{align*}
+  %
+  We leave it as an exercise to verify that all equations are validated by this
+  interpretation.
 \end{example}
 
 
