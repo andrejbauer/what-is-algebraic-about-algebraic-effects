@@ -12,10 +12,16 @@
 \newcommand{\ZZ}{\mathbb{Z}} % integers
 
 \newcommand{\theory}[1]{\mathsf{#1}} % A named theory
-\newcommand{\theoryT}{\theory{T}} % Generic theory T
+\newcommand{\signature}[1]{\Sigma_{\theory{#1}}} % The signature of a theory
+\newcommand{\equations}[1]{\mathcal{E}_{\theory{#1}}} % Equations of a theory
 
-\newcommand{\catC}{\mathcal{C}} % Generic category
-\newcommand{\Set}{\mathsf{Set}} % The category of sets
+\newcommand{\Mod}[1]{\text{\textbf{Mod}}(\theory{#1})} % Models of a theory in Set
+\newcommand{\ModC}[2]{\text{\textbf{Mod}}_{\category{#1}}(\theory{#2})} % Models of a theory in a category
+
+\newcommand{\category}[1]{\text{\textbf{#1}}} % A named category
+\newcommand{\Set}{\category{Set}} % The category of sets
+
+\newcommand{\Free}[2]{F_{\theory{#1}}(#2)} % free model
 
 \newcommand{\all}[1]{\forall #1 \,.\,} % universal quantifier
 \newcommand{\some}[1]{\exists #1 \,.\,} % existential quantifier
@@ -27,7 +33,7 @@
 \newcommand{\finpow}[1]{\mathcal{P}_{{<}\omega}(#1)} % finite powerset
 
 \newcommand{\Tree}[2]{\mathsf{Tree}_{#1}(#2)} % trees over a signature
-\newcommand{\leaf}[1]{\mathsf{leaf}\,#1} % the embedding of generators into trees
+\newcommand{\leaf}[1]{\mathsf{leaf}(#1)} % the embedding of generators into trees
 
 \newcommand{\op}[1]{\mathsf{op}_{#1}} % an operation symbol
 \newcommand{\arity}[1]{\mathsf{arity}_{#1}} % arity of a symbol
@@ -164,8 +170,9 @@ $\Sigma$-terms and $\Sigma$-equations.
 \subsection{Algebraic theories}
 \label{sec:algebraic-theories-1}
 
-An \emph{algebraic theory} is given by a signature~$\Sigma$ and a collection of
-$\Sigma$-equations in contexts.
+An \emph{algebraic theory $\theory{T} = (\signature{T}, \equations{T})$} is given by a
+signature~$\signature{T}$ and a collection $\equations{T}$ of $\signature{T}$-equations in
+contexts.
 %
 We impose no restrictions on the number of operation symbols or equations, but at least in
 classical treatments of the subject certain complications are avoided by insisting that
@@ -174,14 +181,14 @@ arities be non-negative integers.
 \begin{example}
   \label{ex:theory-group}
   %
-  The theory of a group is algebraic. In order to follow closely the definitions we eschew
-  the traditional notation $\cdot$ and ${}^{-1}$, and explicitly display the contexts. We
-  abide by such formalistic requirements once to demonstrate them, but shall take
-  notational liberties subsequently.
+  The theory~$\theory{Group}$ of a group is algebraic. In order to follow closely the
+  definitions we eschew the traditional notation $\cdot$ and ${}^{-1}$, and explicitly
+  display the contexts. We abide by such formalistic requirements once to demonstrate
+  them, but shall take notational liberties subsequently.
   %
-  The signature for the theory of a group is given by operation symbols $\mathsf{u}$,
+  The signature $\signature{Group}$ is given by operation symbols $\mathsf{u}$,
   $\mathsf{m}$, and $\mathsf{i}$ whose arities are $0$, $2$, and $1$, respectively. The
-  equations are:
+  equations $\equations{Group}$ are:
   %
   \begin{align*}
     x, y, z &\mid \mathsf{m}(\mathsf{m}(x, y), z) = \mathsf{m}(x, \mathsf{m}(y, z)),\\
@@ -196,8 +203,8 @@ arities be non-negative integers.
 \begin{example}
   \label{ex:semi-lattice}
   %
-  The theory of a semi-lattice is algebraic. It is given by a nullary symbol $\bot$ and a
-  binary symbol $\vee$, satisfying the equations
+  The theory $\theory{Semilattice}$ of a semilattice is algebraic. It is given by a
+  nullary symbol $\bot$ and a binary symbol $\vee$, satisfying the equations
   %
   \begin{align*}
     x \vee (y \vee z) &= (x \vee y) \vee z,\\
@@ -221,19 +228,21 @@ arities be non-negative integers.
 \begin{example}
   \label{ex:pointed-set}
   %
-  The theory of a \emph{pointed set} has a constant $\star$ and no equations.
+  The theory $\theory{Set_\bullet}$ of a \emph{pointed set} has a constant $\bullet$ and
+  no equations.
 \end{example}
 
 \begin{example}
   \label{ex:theory-empty}
   %
-  The \emph{empty theory} has no operation symbols and no equations.
+  The \emph{empty theory $\theory{Empty}$} has no operation symbols and no equations.
 \end{example}
 
 \begin{example}
   \label{ex:theory-singleton}
   %
-  The theory of a \emph{singleton} has a constant $\star$ and the equation $x = y$.
+  The theory of a \emph{singleton $\theory{Singleton}$} has a constant $\star$ and the
+  equation $x = y$.
 \end{example}
 
 \begin{example}
@@ -241,8 +250,8 @@ arities be non-negative integers.
   %
   A bounded lattice is a partial order with finite infima and suprema. Such a formulation
   is not algebraic because the infimum and supremum operators do not have fixed arities,
-  but we can reformulate it in terms of nullary and binary operations.
-  Thus, the theory of a bounded lattice has constants $\bot$ and $\top$, and two binary
+  but we can reformulate it in terms of nullary and binary operations. Thus, the theory
+  $\theory{Lattice}$ of a bounded lattice has constants $\bot$ and $\top$, and two binary
   operation symbols $\vee$ and $\wedge$, satisfying the equations:
   %
   \begin{align*}
@@ -401,14 +410,15 @@ meant is indicated one way or another by the author of the mathematical text.
 \subsection{Models of algebraic theories}
 \label{sec:models-algebr-theor}
 
-A \emph{model~$M$} of an algebraic theory is an interpretation of the signature which
-validates all the equations of the theory. That is, for every equation
+A \emph{model~$M$} of an algebraic theory~$\theory{T}$ is an interpretation of the signature
+$\signature{T}$ which validates all the equations $\equations{T}$. That is, for every
+equation
 %
 \begin{equation*}
   x_1, \ldots, x_k \mid \ell = r
 \end{equation*}
 %
-of the theory, the maps
+in~$\equations{T}$, the maps
 %
 \begin{equation*}
   \sem{x_1, \ldots, x_k \mid \ell}_M : |M|^k \to |M|
@@ -419,19 +429,19 @@ of the theory, the maps
 are equal.
 
 \begin{example}
-  A model of the theory of a group from Example~\ref{ex:theory-group} is given by a
-  carrier set $G$ and maps
+  A model $G$ of $\theory{Group}$, cf.\ Example~\ref{ex:theory-group}, is given by a
+  carrier set $|G|$ and maps
   %
   \begin{equation*}
-    u : \one \to G,\qquad
-    m : G \times G \to G,\qquad
-    i : G \to G,
+    u : \one \to |G|,\qquad
+    m : |G| \times |G| \to |G|,\qquad
+    i : |G| \to |G|,
   \end{equation*}
   %
   interpreting the operation symbols $\mathsf{u}$, $\mathsf{m}$, and $\mathsf{i}$,
-  respectively, such that the equations listed in the example are valid. This amounts
-  precisely to $(G, u, m, i)$ being a group, except that the unit $u$ is viewed as a map
-  $\one \to G$ instead of an element of~$G$.
+  respectively, such that the equations~$\equations{Group}$. This amounts precisely to
+  $(|G|, u, m, i)$ being a group, except that the unit $u$ is viewed as a map
+  $\one \to |G|$ instead of an element of~$|G|$.
 \end{example}
 
 \begin{example}
@@ -445,26 +455,28 @@ The previous example explains why one should \emph{not} require $0 \neq 1$ in a 
 that prevents the theory of a ring from being algebraic.
 
 \begin{example}
-  The empty set is a model of the theory if, and only if, the signature has no constants.
+  The empty set is a model of a theory~$\theory{T}$ if, and only if, every operation symbol
+  of $\theory{T}$ has non-zero arity.
 \end{example}
 
 \begin{example}
-  A model of the theory of a pointed set from Example~\ref{ex:pointed-set} is a set $S$
-  and a chosen element $s \in S$, which interprets the constant $\star$.
+  A model of the theory~$\theory{Set_\bullet}$ of a pointed set, cf.\
+  Example~\ref{ex:pointed-set}, is a set $S$ together with an element $s \in S$ which
+  interprets the constant~$\bullet$.
 \end{example}
 
 \begin{example}
-  A model of the empty theory from Example~\ref{ex:theory-empty} is the same thing as a
-  set.
+  A model of the theory~$\theory{Empty}$, cf.\ Example~\ref{ex:theory-empty}, is the same
+  thing as a set.
 \end{example}
 
 \begin{example}
-  A model of the theory of the singleton from Example~\ref{ex:theory-singleton} is any
-  set with precisely one element.
+  A model of the theory~$\theory{Singleton}$, cf.\ Example~\ref{ex:theory-singleton}, is
+  any set with precisely one element.
 \end{example}
 
-Suppose $L$ and $M$ are models of a given theory. Then we may form the \emph{product of
-  models} $L \times M$ by taking the cartesian product as the carrier,
+Suppose $L$ and $M$ are models of a theory~$\theory{T}$. Then we may form the
+\emph{product of models} $L \times M$ by taking the cartesian product as the carrier,
 %
 \begin{equation*}
   |L \times M| = |L| \times |M|,
@@ -476,9 +488,9 @@ and pointwise operations,
   \sem{\op{i}}_{M \times L}(a, b) = (\sem{\op{i}}_M(a), \sem{\op{i}}_L(a)).
 \end{equation*}
 %
-The equations of the theory are valid in $L \times M$ because they are valid on each
-coordinate. This construction can be extended to a product of any number of models,
-including an infinite one.
+The equations $\equations{T}$ are valid in $L \times M$ because they are valid on each
+coordinate separately. This construction can be extended to a product of any number of
+models, including an infinite one.
 
 \begin{example}
   We may now prove that the theory of a field from Example~\ref{ex:field} is not
@@ -488,9 +500,10 @@ including an infinite one.
 \end{example}
 
 \begin{example}
-  Similarly, the theory of a finitely generated group cannot be formulated as an algebraic
-  theory, because an infinite product of non-trivial finitely generated groups is not
-  finitely generated.
+  Similarly, the theory of a finitely generated group from
+  Example~\ref{ex:finitely-generated-group} cannot be formulated as an algebraic theory,
+  because an infinite product of non-trivial finitely generated groups is not finitely
+  generated.
 \end{example}
 
 \begin{example}
@@ -511,9 +524,10 @@ including an infinite one.
 \subsection{Homomorphisms and the category of models}
 \label{sec:homom-categ-models}
 
-Suppose $L$ and $M$ are models of a given algebraic theory. A \emph{homomorphism} from $L$
-to $M$ is a map $\phi : |L| \to |M|$ between the carriers which commutes with operations:
-for every operation symbol $\op{i}$ of the theory
+Suppose $L$ and $M$ are models of a theory~$\theory{T}$. A
+\emph{$\theory{T}$-homomorphism} from $L$ to $M$ is a map $\phi : |L| \to |M|$ between the
+carriers which commutes with operations: for every operation symbol $\op{i}$
+of~$\theory{T}$, we have
 %
 \begin{equation*}
   \phi \circ \sem{\op{i}}_L = \sem{\op{i}}_M \circ \underbrace{(\phi, \ldots, \phi)}_{\arity{i}}.
@@ -535,29 +549,31 @@ for every operation symbol $\op{i}$ of the theory
   preserves the unit and commutes with the inverse.
 \end{example}
 
-We may organize the models of an algebraic theory into a category whose objects are the
-models of the theory, and whose morphisms are homomorphisms of the theory.
+We may organize the models of an algebraic theory~$\theory{T}$ into a category $\Mod{T}$
+whose objects are the models of the theory, and whose morphisms are homomorphisms of the
+theory.
 
 \begin{example}
-  The category of models of the theory of a group from Example~\ref{ex:theory-group} is
-  the usual category of groups.
+  The category of models of theory $\theory{Group}$, cf.\ Example~\ref{ex:theory-group},
+  is the usual category of groups and group homomorphisms.
 \end{example}
 
 \begin{example}
-  The category of models of the theory of a pointed set from Example~\ref{ex:pointed-set}
-  has as its objects the pointed sets, which are pairs $(S, s)$ with $S$ a set and
-  $s \in S$ its \emph{point}, and as homomorphisms the functions which preserve the
-  points.
+  The category of models of the theory $\theory{Set_\bullet}$, cf.\
+  Example~\ref{ex:pointed-set}, has as its objects the pointed sets, which are pairs
+  $(S, s)$ with $S$ a set and $s \in S$ its \emph{point}, and as homomorphisms
+  the point-preserving functions between sets.
 \end{example}
 
 \begin{example}
-  The category of models of the empty theory from Example~\ref{ex:theory-empty} is the
-  category $\Set$ of sets and functions.
+  The category of models of the empty theory $\theory{Empty}$, cf.\
+  Example~\ref{ex:theory-empty}, is just the category $\category{Set}$ of sets and
+  functions.
 \end{example}
 
 \begin{example}
-  The category of models of the theory of a singleton from
-  Example~\ref{ex:theory-singleton} is the category whose objects are all the singleton
+  The category of models of the theory of a singleton $\theory{Singleton}$, cf.\
+  Example~\ref{ex:theory-singleton}, is the category whose objects are all the singleton
   sets. There is precisely one morphisms between any two of them. This category is
   equivalent to the trivial category which has just one object and one morphism.
 \end{example}
@@ -566,14 +582,14 @@ models of the theory, and whose morphisms are homomorphisms of the theory.
 \label{sec:models-category}
 
 So far we have taken the models of an algebraic theory to be sets. More generally, we may
-consider models in any category with finite products. Indeed, the definitions of an
-interpretation and a model from Sections~\ref{sec:interp-of-sign}
-and~\ref{sec:models-algebr-theor} may be directly transcribed so that they apply to any
-category~$\catC$ with finite products. An interpretation $I$ in $\catC$ is given by
+consider models in any category $\category{C}$ with finite products. Indeed, the
+definitions of an interpretation and a model from Sections~\ref{sec:interp-of-sign}
+and~\ref{sec:models-algebr-theor} may be directly transcribed so that they apply
+to~$\category{C}$. An interpretation $I$ in $\category{C}$ is given by
 %
 \begin{enumerate}
-\item an object $|I|$ in $\catC$, called the \emph{carrier},
-\item for each operation symbol $\op{i}$ a morphism in $\catC$
+\item an object $|I|$ in $\category{C}$, called the \emph{carrier},
+\item for each operation symbol $\op{i}$ a morphism in $\category{C}$
   %
   \begin{equation*}
     \sem{\op{i}}_I : \underbrace{|I| \times \cdots \times |I|}_{\arity{i}} \to |I|.
@@ -582,7 +598,7 @@ category~$\catC$ with finite products. An interpretation $I$ in $\catC$ is given
 %
 Once again, we abbreviate the $k$-fold product of $|I|$ as $|I|^k$. Notice that a nullary
 symbol is interpreted as a morphism $|I|^0 \to |I|$, which is a morphisms from the
-terminal object $\one \to |I|$ in~$\catC$.
+terminal object $\one \to |I|$ in~$\category{C}$.
 
 An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
 %
@@ -611,14 +627,15 @@ An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
   \end{equation*}
 \end{enumerate}
 %
-A model of an algebric theory in~$\catC$ is an interpretation~$M$ of its signature which
-validates all equations. That is, for every equation
+A model of an algebric theory~$\theory{T}$ in~$\category{C}$ is an interpretation~$M$ of
+its signature $\signature{T}$ which validates all the equations. That is, for every
+equation
 %
 \begin{equation*}
   x_1, \ldots, x_k \mid \ell = r
 \end{equation*}
 %
-of the theory, the morphisms
+in $\equations{T}$, the morphisms
 %
 \begin{equation*}
   \sem{x_1, \ldots, x_k \mid \ell}_M : |M|^k \to |M|
@@ -628,17 +645,31 @@ of the theory, the morphisms
 %
 are equal.
 
+The definition of a homomorphism carries over to the general setting as well. A
+\emph{$\theory{T}$-homomorphism} between $\theory{T}$-models $L$ and $M$ in a category
+$\category{C}$ is a morphism $\phi : |L| \to |M|$ in~$\category{C}$ such that, for every
+operation symbol~$\op{i}$ in~$\theory{T}$, $\phi$ commutes with the interpretation of
+$\op{i}$,
+%
+\begin{equation*}
+  \phi \circ \sem{\op{i}}_L = \sem{\op{i}}_M \circ \underbrace{(\phi, \ldots, \phi)}_{\arity{i}}.
+\end{equation*}
+%
+The $\theory{T}$-models and $\theory{T}$-homomorphisms in a category $\category{C}$ form a
+category $\ModC{C}{T}$.
+
 \begin{example}
-  A model of the theory of a group in the category of topological spaces and continuous
-  maps is a topological group.
+  A model of the theory of a group $\theory{Group}$ in the category $\category{Top}$ of
+  topological spaces and continuous maps is a topological group.
 \end{example}
 
 \begin{example}
-  What is a model of the theory of a group in the category of groups? Its carrier is a
-  group $(G, u, m, i)$ together with group homomorphisms $\upsilon : \one \to G$,
-  $\mu : G \times G \to G$, and $\iota : G \to G$ which satisfy the group laws. Because
-  $\upsilon$ is a group homomorphism, it maps the unit of the trivial group~$\one$ to $u$,
-  so the units $u$ and $\upsilon$ agree. The operations $m$ and $\mu$ agree too, because
+  What is a model of the theory of a group in the category of groups $\category{Grp}$? Its
+  carrier is a group $(G, u, m, i)$ together with group homomorphisms
+  $\upsilon : \one \to G$, $\mu : G \times G \to G$, and $\iota : G \to G$ which satisfy
+  the group laws. Because $\upsilon$ is a group homomorphism, it maps the unit of the
+  trivial group~$\one$ to $u$, so the units $u$ and $\upsilon$ agree. The operations $m$
+  and $\mu$ agree too, because
   %
   \begin{equation*}
     \mu(x, y) =
@@ -658,24 +689,27 @@ are equal.
     m(y, x).
   \end{equation*}
   %
-  The conclusion is that a group in the category of groups is an abelian group.
+  The conclusion is that a group in the category of groups is an abelian group. The
+  category $\ModC{Grp}{Group}$ is therefore equivalent to the category of abelian groups.
 \end{example}
 
 \begin{example}
-  A model of a pointed set, cf.\ Example~\ref{ex:pointed-set}, in the category of groups
-  is a group $(G, u, m, i)$ together with a homomorphism $\one \to G$ from the trivial
-  group~$\one$ to $G$. However, there is precisely one such homomorphism which therefore
-  need not be mentioned at all. Thus a pointed set in groups amounts to a group.
+  A model of the theory of a pointed set, cf.\ Example~\ref{ex:pointed-set}, in the
+  category of groups $\category{Grp}$ is a group $(G, u, m, i)$ together with a
+  homomorphism $\one \to G$ from the trivial group~$\one$ to $G$. However, there is
+  precisely one such homomorphism which therefore need not be mentioned at all. Thus a
+  pointed set in groups amounts to a group.
 \end{example}
 
 
 \subsection{Free models}
 \label{sec:free-models}
 
-Of special interest are the free models of an algebraic theory. Given an algebraic theory
-and a set $X$, the \emph{freel model generated by~$X$} is a model $M$ together with a map
-$\eta : X \to |M|$ such that, for every model $L$ and every map $f : X \to |L|$ there is a
-unique homomorphism $\overline{f} : M \to L$ for which the following diagram commutes:
+Of special interest are the free models of an algebraic theory. Given an algebraic
+theory~$\theory{T}$ and a set $X$, the \emph{free model generated by~$X$} is a model $M$
+together with a map $\eta : X \to |M|$ such that, for every $\theory{T}$-model $L$ and
+every map $f : X \to |L|$ there is a unique $\theory{T}$-homomorphism
+$\overline{f} : M \to L$ for which the following diagram commutes:
 %
 \begin{equation*}
   \xymatrix{
@@ -743,13 +777,12 @@ generated by $X$ is the ``most economical'' way of making a model out of the set
   the only map it could be. This example shows that~$\eta$ need not be injective.
 \end{example}
 
-Every alebraic theory has free models. We do not prove this fact, but sketch the
-construction of the free model $F(X)$ generated by a set~$X$. Given a signature $\Sigma$
-and a set~$X$, let~$\Tree{\Sigma}{X}$ be the set of well-founded trees built inductively
-as follows:
+Every alebraic theory~$\theory{T}$ has free models. Let us sketch the construction. Given
+a signature $\Sigma$ and a set~$X$, define~$\Tree{\Sigma}{X}$ to be the set of
+well-founded trees built inductively as follows:
 %
 \begin{enumerate}
-\item for each $x \in X$, there is a tree $x \in \Tree{\Sigma}{X}$,
+\item for each $x \in X$, there is a tree $\leaf{x} \in \Tree{\Sigma}{X}$,
 \item for each operation symbol $\op{i}$ and trees
   $t_1, \ldots, t_{\arity{i}} \in \Tree{\Sigma}{X}$, there is a tree
   $\op{i}(t_1, \ldots, t_n) \in \Tree{\Sigma}{X}$.
