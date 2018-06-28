@@ -2,30 +2,41 @@
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[hidelinks]{hyperref}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{times}
 \usepackage{xypic}
 
-\newcommand{\NN}{\mathbb{N}}
-\newcommand{\RR}{\mathbb{R}}
-\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\NN}{\mathbb{N}} % natural numbers
+\newcommand{\RR}{\mathbb{R}} % real numbers
+\newcommand{\ZZ}{\mathbb{Z}} % integers
 
-\newcommand{\TT}{\mathcal{t}}
+\newcommand{\theory}[1]{\mathsf{#1}} % A named theory
+\newcommand{\theoryT}{\theory{T}} % Generic theory T
 
-\newcommand{\CC}{\mathcal{C}}
-\newcommand{\Set}{\mathsf{Set}}
+\newcommand{\catC}{\mathcal{C}} % Generic category
+\newcommand{\Set}{\mathsf{Set}} % The category of sets
 
-\newcommand{\all}[1]{\forall #1 \,.\,}
-\newcommand{\some}[1]{\exists #1 \,.\,}
-\newcommand{\set}[1]{\{#1\}}
+\newcommand{\all}[1]{\forall #1 \,.\,} % universal quantifier
+\newcommand{\some}[1]{\exists #1 \,.\,} % existential quantifier
+\newcommand{\set}[1]{\{#1\}} % set description
 \newcommand{\such}{\mid}
 
-\newcommand{\op}{\mathsf{op}}
-\newcommand{\one}{\mathsf{1}}
+\newcommand{\family}[2]{\{#1\}_{#2}} % a family
+
+\newcommand{\finpow}[1]{\mathcal{P}_{{<}\omega}(#1)} % finite powerset
+
+\newcommand{\Tree}[2]{\mathsf{Tree}_{#1}(#2)} % trees over a signature
+\newcommand{\leaf}[1]{\mathsf{leaf}\,#1} % the embedding of generators into trees
+
+\newcommand{\op}[1]{\mathsf{op}_{#1}} % an operation symbol
+\newcommand{\arity}[1]{\mathsf{arity}_{#1}} % arity of a symbol
+
+\newcommand{\one}{\mathsf{1}} % the terminal object
 
 \newcommand{\Cinfty}{\mathcal{C}^\infty}
 
-\newcommand{\sem}[1]{[\![#1]\!]}
+\newcommand{\sem}[1]{[\![#1]\!]} % semantic bracket
 
 {\theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -61,21 +72,20 @@ operation, satisfying the familiar group identities:
   x \cdot x^{-1} = \mathsf{u} = x^{-1} \cdot x.
 \end{gather*}
 %
-There are alternative axiomatizations of groups: a group is a monoid
+There are alternative axiomatizations, for instance: a group is a monoid
 $(G, \mathsf{u}, {\cdot})$ in which every element is invertible, i.e., for every $x$ there
 exists $y$ such that $x \cdot y = \mathsf{u} = y \cdot x$. However, we prefer the
-formulation in which the axioms are just equations between terms built from variables,
-constants, and operations. Such theories are known as \emph{algebraic} or \emph{equational
-  theories}.
+formulation in which all the axioms are equations. Such theories are known as
+\emph{algebraic} or \emph{equational theories}.
 
 \subsection{Signatures, terms and equations}
 \label{sec:signatures-equations}
 
 A \emph{signature $\Sigma$} is a collection of \emph{operation symbols}
-$\op_1, \op_2, \op_3, \ldots$, each of which has an associated \emph{arity} $n_i \in \NN$.
-An operation symbol whose arity is~$0$ is called a \emph{constant} or a \emph{nullary}
-symbol. Operation symbols with arities $1$, $2$ and $3$ are referred to as \emph{unary},
-\emph{binary}, and \emph{ternary}, respectively.
+$\family{\op{i}}{i \in I}$, each of which has an associated \emph{arity}
+$\arity{i} \in \NN$. An operation symbol whose arity is~$0$ is called a \emph{constant} or
+a \emph{nullary} symbol. Operation symbols with arities $1$, $2$ and $3$ are referred to
+as \emph{unary}, \emph{binary}, and \emph{ternary}, respectively.
 
 A list of distinct variables $x_1, \ldots, x_k$ is called a \emph{context}. The
 \emph{$\Sigma$-terms in context $x_1, \ldots, x_k$} are built inductively using the
@@ -83,8 +93,8 @@ following rules:
 % 
 \begin{enumerate}
 \item each variable $x_i$ is a $\Sigma$-term in context $x_1, \ldots, x_k$,
-\item if $t_1, \ldots, t_{n_i}$ are $\Sigma$-terms in context $x_1, \ldots, x_k$ then
-  $\op_i(t_1, \ldots, t_{n_i})$ is a $\Sigma$-term in context $x_1, \ldots, x_k$.
+\item if $t_1, \ldots, t_{\arity{i}}$ are $\Sigma$-terms in context $x_1, \ldots, x_k$ then
+  $\op{i}(t_1, \ldots, t_{\arity{i}})$ is a $\Sigma$-term in context $x_1, \ldots, x_k$.
 \end{enumerate}
 %
 We write
@@ -109,12 +119,6 @@ $\ell = r$, but it should be understood that there is an ambient context which c
 least all the variables mentioned by $\ell$ and $r$. When no confusion can arise we also
 drop the prefix ``$\Sigma$-'' and speak of just terms and equations instead of
 $\Sigma$-terms and $\Sigma$-equations.
-
-It is best to think of $\Sigma$-terms not as syntactic expressions, but as finite trees
-whose leaves are variables and whose nodes are labeled with operation symbols. The node
-labeled with $\op_i$ has $n_i$ subtrees. Similarly, equations should be viewed as data
-that the algebraic theory incoporates, rather than logical statements, i.e., $\ell = r$ is
-just a suggestive way of displaying the two terms $\ell$ and $r$.
 
 \begin{example}
   \label{ex:monoid-signature}
@@ -269,7 +273,7 @@ arities be non-negative integers.
   An example of an algebraic theory with many operations and equations is the theory of a
   $\Cinfty$-ring. Let $\Cinfty(\RR^n, \RR^m)$ be the set of all smooth maps from $\RR^n$
   to $\RR^m$. The signature for the theory of a $\Cinfty$-ring contains an $n$-ary
-  operation symbol $\op_f$ for each $f \in \Cinfty(\RR^n, \RR)$. For all
+  operation symbol $\op{f}$ for each $f \in \Cinfty(\RR^n, \RR)$. For all
   $f \in \Cinfty(\RR^n, \RR)$, $h \in \Cinfty(\RR^m, \RR)$, and
   $g_1, \ldots, g_n \in \Cinfty(\RR^m, \RR)$ such that
   %
@@ -281,13 +285,13 @@ arities be non-negative integers.
   %
   \begin{equation*}
     x_1, \ldots, x_m \mid
-    \op_f (\op_{g_1}(x_1, \ldots, x_m), \ldots, \op_{g_n}(x_1, \ldots, x_m)) =
-    \op_h(x_1, \ldots, x_m).
+    \op{f} (\op{g_1}(x_1, \ldots, x_m), \ldots, \op{g_n}(x_1, \ldots, x_m)) =
+    \op{h}(x_1, \ldots, x_m).
   \end{equation*}
   %
   The theory contains the theory of a commutative unital ring as a subtheory. Indeed,
-  the ring operations on~$\RR$ are smooth maps, and so they appear as $\op_{+}$,
-  $\op_{\times}$, $\op_{-}$ in the signature, and so do constants $\op_0$ and $\op_1$,
+  the ring operations on~$\RR$ are smooth maps, and so they appear as $\op{+}$,
+  $\op{\times}$, $\op{-}$ in the signature, and so do constants $\op{0}$ and $\op{1}$,
   because all maps $\RR^0 \to \RR$ are smooth. The commutative ring equations are present
   as well because the real numbers form a commutative ring.
 \end{example}
@@ -301,10 +305,10 @@ the following data:
 %
 \begin{enumerate}
 \item a set $|I|$, called the \emph{carrier},
-\item for each operation symbol $\op_i$ of arity $n_i$ a map
+\item for each operation symbol $\op{i}$ a map
   %
   \begin{equation*}
-    \sem{\op_i}_I : \underbrace{|I| \times \cdots \times |I|}_{n_i} \to |I|.
+    \sem{\op{i}}_I : \underbrace{|I| \times \cdots \times |I|}_{\arity{i}} \to |I|.
   \end{equation*}
 \end{enumerate}
 %
@@ -341,16 +345,16 @@ as follows:
 \item a compound term in context
   %
   \begin{equation*}
-    x_0, \ldots, x_{k-1} \mid \op_i(t_1, \ldots, t_{n_i})
+    x_0, \ldots, x_{k-1} \mid \op{i}(t_1, \ldots, t_{\arity{i}})
   \end{equation*}
   %
   is interpreted as the composition of maps
   %
   \begin{equation*}
     \xymatrix@+6em{
-      {|I|^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{n_i}}_I)}
+      {|I|^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{\arity{i}}}_I)}
       &
-      {|I|^{n_i}} \ar[r]^{\sem{\op_i}_I}
+      {|I|^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
       &
       {|I|}
     }
@@ -469,7 +473,7 @@ Suppose $L$ and $M$ are models of a given theory. Then we may form the \emph{pro
 and pointwise operations,
 %
 \begin{equation*}
-  \sem{\op_i}_{M \times L}(a, b) = (\sem{\op_i}_M(a), \sem{\op_i}_L(a)).
+  \sem{\op{i}}_{M \times L}(a, b) = (\sem{\op{i}}_M(a), \sem{\op{i}}_L(a)).
 \end{equation*}
 %
 The equations of the theory are valid in $L \times M$ because they are valid on each
@@ -493,11 +497,11 @@ including an infinite one.
   Let us give a model of the theory of a $\Cinfty$-ring from
   Example~\ref{ex:Cinfty-theory}. Pick a smooth manifold~$M$, and let the carrier be the
   set $\Cinfty(M, \RR)$ of all smooth scalar fields on~$M$. Given
-  $f \in \Cinfty(\RR^n, \RR)$, interpret the operation $\op_f$ as composition with~$f$,
+  $f \in \Cinfty(\RR^n, \RR)$, interpret the operation $\op{f}$ as composition with~$f$,
   %
   \begin{align*}
-    \sem{\op_f} &: \Cinfty(M, \RR)^n \to \Cinfty(M, \RR) \\
-    \sem{\op_f} &: (u_1, \ldots, u_n) \mapsto f \circ (u_1, \ldots, u_n).
+    \sem{\op{f}} &: \Cinfty(M, \RR)^n \to \Cinfty(M, \RR) \\
+    \sem{\op{f}} &: (u_1, \ldots, u_n) \mapsto f \circ (u_1, \ldots, u_n).
   \end{align*}
   %
   We leave it as an exercise to verify that all equations are validated by this
@@ -509,10 +513,10 @@ including an infinite one.
 
 Suppose $L$ and $M$ are models of a given algebraic theory. A \emph{homomorphism} from $L$
 to $M$ is a map $\phi : |L| \to |M|$ between the carriers which commutes with operations:
-for every operation symbol $\op_i$ of the theory, with arity $n_i$,
+for every operation symbol $\op{i}$ of the theory
 %
 \begin{equation*}
-  \phi \circ \sem{\op_i}_L = \sem{\op_i}_M \circ \underbrace{(\phi, \ldots, \phi)}_{n_i}.
+  \phi \circ \sem{\op{i}}_L = \sem{\op{i}}_M \circ \underbrace{(\phi, \ldots, \phi)}_{\arity{i}}.
 \end{equation*}
 
 \begin{example}
@@ -565,20 +569,20 @@ So far we have taken the models of an algebraic theory to be sets. More generall
 consider models in any category with finite products. Indeed, the definitions of an
 interpretation and a model from Sections~\ref{sec:interp-of-sign}
 and~\ref{sec:models-algebr-theor} may be directly transcribed so that they apply to any
-category~$\CC$ with finite products. An interpretation $I$ in $\CC$ is given by
+category~$\catC$ with finite products. An interpretation $I$ in $\catC$ is given by
 %
 \begin{enumerate}
-\item an object $|I|$ in $\CC$, called the \emph{carrier},
-\item for each operation symbol $\op_i$ of arity $n_i$ a morphism in $\CC$
+\item an object $|I|$ in $\catC$, called the \emph{carrier},
+\item for each operation symbol $\op{i}$ a morphism in $\catC$
   %
   \begin{equation*}
-    \sem{\op_i}_I : \underbrace{|I| \times \cdots \times |I|}_{n_i} \to |I|.
+    \sem{\op{i}}_I : \underbrace{|I| \times \cdots \times |I|}_{\arity{i}} \to |I|.
   \end{equation*}
 \end{enumerate}
 %
 Once again, we abbreviate the $k$-fold product of $|I|$ as $|I|^k$. Notice that a nullary
 symbol is interpreted as a morphism $|I|^0 \to |I|$, which is a morphisms from the
-terminal object $\one \to |I|$ in~$\CC$.
+terminal object $\one \to |I|$ in~$\catC$.
 
 An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
 %
@@ -591,23 +595,23 @@ An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
 \item a compound term in context
   %
   \begin{equation*}
-    x_0, \ldots, x_{k-1} \mid \op_i(t_1, \ldots, t_{n_i})
+    x_0, \ldots, x_{k-1} \mid \op{i}(t_1, \ldots, t_{\arity{i}})
   \end{equation*}
   %
   is interpreted as the composition of morphisms
   %
   \begin{equation*}
     \xymatrix@+6em{
-      {|I|^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{n_i}}_I)}
+      {|I|^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{\arity{i}}}_I)}
       &
-      {|I|^{n_i}} \ar[r]^{\sem{\op_i}_I}
+      {|I|^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
       &
       {|I|}
     }
   \end{equation*}
 \end{enumerate}
 %
-A model of an algebric theory in~$\CC$ is an interpretation~$M$ of its signature which
+A model of an algebric theory in~$\catC$ is an interpretation~$M$ of its signature which
 validates all equations. That is, for every equation
 %
 \begin{equation*}
@@ -625,13 +629,8 @@ of the theory, the morphisms
 are equal.
 
 \begin{example}
-  A model of the theory of a group from Example~\ref{ex:theory-group} in the category of
-  topological spaces and continuous maps is a topological group.
-\end{example}
-
-\begin{example}
-  A model of the theory of a group from Example~\ref{ex:theory-group} in the category of
-  topological spaces and continuous maps is a topological group.
+  A model of the theory of a group in the category of topological spaces and continuous
+  maps is a topological group.
 \end{example}
 
 \begin{example}
@@ -662,10 +661,102 @@ are equal.
   The conclusion is that a group in the category of groups is an abelian group.
 \end{example}
 
+\begin{example}
+  A model of a pointed set, cf.\ Example~\ref{ex:pointed-set}, in the category of groups
+  is a group $(G, u, m, i)$ together with a homomorphism $\one \to G$ from the trivial
+  group~$\one$ to $G$. However, there is precisely one such homomorphism which therefore
+  need not be mentioned at all. Thus a pointed set in groups amounts to a group.
+\end{example}
+
+
 \subsection{Free models}
 \label{sec:free-models}
 
+Of special interest are the free models of an algebraic theory. Given an algebraic theory
+and a set $X$, the \emph{freel model generated by~$X$} is a model $M$ together with a map
+$\eta : X \to |M|$ such that, for every model $L$ and every map $f : X \to |L|$ there is a
+unique homomorphism $\overline{f} : M \to L$ for which the following diagram commutes:
+%
+\begin{equation*}
+  \xymatrix{
+    {X}
+    \ar[r]^{\eta}
+    \ar[rd]_{f}
+    &
+    {|M|}
+    \ar[d]^{\overline{f}}
+    \\
+    &
+    {|L|}
+  }
+\end{equation*}
+%
+The definition is a bit of a mouthful, but it can be understood as follows: the free model
+generated by $X$ is the ``most economical'' way of making a model out of the set~$X$.
 
+\begin{example}
+  Let $\finpow{X}$ be the set of all finite subsets of a set~$X$. We show that
+  $(\finpow{X}, \emptyset, {\cup})$ is the free semilattice generated by~$X$, cf.\
+  Example~\ref{ex:semi-lattice}. The map $\eta : X \to \finpow{X}$ takes $x \in X$ to the
+  singleton set $\eta(x) = \set{x}$. Given any semilattice $(L, \bot, {\vee})$ and a map
+  $f : X \to |L|$, define the homomorphism $\overline{f} : \finpow{X} \to |L|$ by
+  %
+  \begin{equation*}
+    \overline{f}(\set{x_1, \ldots, x_n}) = f(x_1) \wedge \cdots \wedge f(x_n).
+  \end{equation*}
+  %
+  Clearly, the required diagram commutes because
+  %
+  \begin{equation*}
+    \overline{f}(\eta(x)) = \overline{f}(\set{x}) = f(x).
+  \end{equation*}
+  %
+  If $g : \finpow{X} \to |L|$ is another homomorphism satisfying $g \circ \eta = f$ then
+  %
+  \begin{multline*}
+    g(\set{x_1, \ldots, x_n})
+    = g(\eta(x_1) \cup \cdots \cup \eta(x_n))
+    = g(\eta(x_1)) \wedge \cdots \wedge g(\eta(x_n)) \\
+    = f(x_1) \wedge \cdots \wedge f(x_n)
+    = \overline{f}(\set{x_1, \ldots, x_n}),
+  \end{multline*}
+  %
+  hence $\overline{f}$ is indeed unique.
+\end{example}
+
+\begin{example}
+  The free model generated by~$X$ of the theory of a pointed set, cf.\
+  Example~\ref{ex:pointed-set}, is the disjoint union $X + \one$ whose elements are of the
+  form $\iota_0(x)$ for $x \in X$ and $\iota_1(y)$ for $y \in \one$. The point is the
+  element $\iota_1(\star)$. The map $\eta : X \to X + \one$ is the canonical
+  inclusion~$\iota_0$.
+\end{example}
+
+\begin{example}
+  The free model generated by~$X$ of the empty theory, cf.\ Example~\ref{ex:theory-empty},
+  is~$X$ itself, with $\eta : X \to X$ the identity map.
+\end{example}
+
+\begin{example}
+  The free model generated by~$X$ of the theory of a singleton, cf.\
+  Example~\ref{ex:theory-singleton}, is the singleton set~$\one$, with $\eta : X \to \one$
+  the only map it could be. This example shows that~$\eta$ need not be injective.
+\end{example}
+
+Every alebraic theory has free models. We do not prove this fact, but sketch the
+construction of the free model $F(X)$ generated by a set~$X$. Given a signature $\Sigma$
+and a set~$X$, let~$\Tree{\Sigma}{X}$ be the set of well-founded trees built inductively
+as follows:
+%
+\begin{enumerate}
+\item for each $x \in X$, there is a tree $x \in \Tree{\Sigma}{X}$,
+\item for each operation symbol $\op{i}$ and trees
+  $t_1, \ldots, t_{\arity{i}} \in \Tree{\Sigma}{X}$, there is a tree
+  $\op{i}(t_1, \ldots, t_n) \in \Tree{\Sigma}{X}$.
+\end{enumerate}
+%
+The trees are in fact the same thing as $\Sigma$-terms in context $X$, except that $X$ is
+an arbitrary set rather than a list of variables.
 
 
 \subsection{Variations}
