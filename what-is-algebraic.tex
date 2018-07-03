@@ -963,10 +963,28 @@ with algebraic effects.
 \subsubsection{Operations with parameters}
 \label{sec:oper-with-param}
 
+To motivate our second generalization, consider the theory of a vector space~$V$
+over a field~$F$. For it to be an algebraic theory, we need to deal with scalar
+multiplication ${\cdot} : F \times V \to V$, because it does not fit the
+established pattern. There are three possibilities:
+%
+\begin{enumerate}
+\item We could introduce \emph{multi-sorted} alebraic theories and allow
+  operations to take arguments from several carrier sets. This does not actually
+  solve our problem because the theory of a field is not algebraic, but it would
+  work if we considered instead a module over a ring.
+\item We could introduce many operations, one for each scalar, so that instead
+  of having a single operation ``multiply with a scalar'', we would have for
+  each scalar $s \in F$ an operation ``multiply with~$s$''.
+\item We could view the scalar as an additional \emph{parameter} and the vector
+  as the proper argument.
+\end{enumerate}
+%
+We shall adopt the last solution, under which scalar multiplication is a
+\emph{unary} operation with one parameter, the scalar.
 
-
-\subsubsection{Multi-sorted algebraic theories}
-\label{sec:multi-sort-algebr}
+With all the generalizations in hand, we restate the notions of signatures and
+algebraic theories.
 
 
 \section{Computational effects as algebraic operations}
