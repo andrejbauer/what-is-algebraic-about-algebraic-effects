@@ -1,0 +1,67 @@
+\newcommand{\todo}[1]{\textcolor{red}{#1}}
+\newcommand{\cond}[1]{\quad(#1)}
+
+% Meta-syntax
+\newcommand{\bnfis}{\mathrel{\;{:}{:}\!=}\;}
+\newcommand{\bnfor}{\mathrel{\;\big|\;}}
+\newcommand{\defeq}{\mathrel{\;\stackrel{\text{def}}{=}\;}}
+
+% General syntactic constructs
+\newcommand{\kord}[1]{\mathbf{#1}}
+\newcommand{\kop}[1]{\;\mathbf{#1}\;}
+\newcommand{\kpre}[1]{\mathbf{#1}\;}
+
+\newcommand{\const}[1][k]{\mathsf{#1}}
+\newcommand{\type}[1]{\mathsf{#1}}
+\newcommand{\op}[1][op]{\mathsf{#1}}
+
+% Core syntax
+\newcommand{\seq}[2]{\kpre{do} #1 \leftarrow #2 \kop{in}}
+\newcommand{\conditional}[3]{\kpre{if} #1 \kop{then} #2 \kop{else} #3}
+\newcommand{\fls}{\kord{false}}
+\newcommand{\fun}[1]{\kpre{fun} #1 \mapsto}
+\newcommand{\recfun}[2]{\kpre{rec} \kpre{fun} #1 \, #2 \mapsto}
+\newcommand{\handler}{\kpre{handler}}
+\newcommand{\opgen}[1][\op]{#1}
+\newcommand{\opcall}[4][\op]{#1(#2; #3.\,#4)}
+\newcommand{\opclause}[3][\op]{#1(#2; #3) \mapsto}
+\newcommand{\return}{\kpre{return}}
+\newcommand{\tru}{\kord{true}}
+\newcommand{\retclause}[1]{\return #1 \mapsto}
+\newcommand{\withhandle}[2]{\kpre{with} #1 \kop{handle} #2}
+
+% Additional syntax
+\newcommand{\anon}{\mathord{\rule[-0.3pt]{1.2ex}{1pt}}}
+\newcommand{\decide}{\op[decide]}
+\newcommand{\kst}[1]{\mathord{\mathsf{#1}}}
+\newcommand{\letin}[1]{\kpre{let} #1 \kop{in}}
+\newcommand{\fail}{\op[fail]}
+\newcommand{\print}{\op[print]}
+\newcommand{\get}{\op[get]}
+\newcommand{\set}{\op[set]}
+\renewcommand{\read}{\op[read]}
+\newcommand{\str}[1]{\mathord{\text{``#1''}}}
+\newcommand{\unt}{\kord{()}}
+
+% Operational semantics
+\newcommand{\step}{\leadsto}
+
+% Types
+\newcommand{\boolty}{\type{bool}}
+\newcommand{\C}{\underline{C}}
+\newcommand{\D}{\underline{D}}
+\newcommand{\Dirt}{\Delta}
+\newcommand{\hto}{\Rightarrow}
+\newcommand{\opto}{\to}
+\newcommand{\E}{\mathop{!}}
+
+% Typing judgements
+\newcommand{\ctx}{\Gamma}
+\newcommand{\ent}{\vdash}
+\newcommand{\sig}{\Sigma}
+\newcommand{\T}{\mathrel{:}}
+
+% Denotational semantics
+\newcommand{\itp}[1]{\llbracket #1 \rrbracket}
+\newcommand{\env}{\mathcal{E}}
+\newcommand{\F}[2][\Dirt]{F_{#1}(#2)}

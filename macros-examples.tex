@@ -1,0 +1,331 @@
+\documentclass{article}
+\usepackage{mathtools}
+\usepackage{tikz}
+\input{macros}
+
+\def\lastname{Pretnar}
+\begin{document}
+
+We now informally describe the behaviour of handlers through examples. You may
+also prefer to first take a look at the operational semantics given in
+Section~\ref{sec:operational-semantics}.
+
+\subsection{Input \& output}
+
+Let us start with input \& output as it is a very simple algebraic effect, but
+one which exposes almost all important aspects of handlers. It can be described
+by two operations: $\print$, which takes a message to be printed and yields
+the unit value~$\unt$, and $\read$, which takes a unit value and yields a
+string that was read. For example, a computation that asks the user for his
+forename and surname and prints out his full name, is written as:
+%
+\begin{align*}
+  \kst{printFullName} \defeq {}
+    & \print \, \str{What is your forename?}; \\
+    & \seq{forename}{\read \, \unt} \\
+    & \print \, \str{What is your surname?}; \\
+    & \seq{surname}{\read \, \unt} \\
+    & \print \, (\kst{join} \, forename \, surname)
+\end{align*}
+%
+where $\kst{join}$ is a function that takes two strings and joins them with a
+space in the middle.
+
+\subsubsection{Constant input}
+
+A simple example of a handler is:
+%
+\begin{align*}
+  \handler \{
+    \opclause[\read]{\anon}{k} k \, \str{Bob}
+  \}
+\end{align*}
+%
+which provides a constant input string~$\str{Bob}$ each time $\read$ is called.
+We can, of course, generalise it to a function that takes a
+string~$s$ and returns a handler that feeds it to $\read$:
+\[
+  \kst{alwaysRead} \defeq \fun{s} \handler \{
+    \opclause[\read]{\anon}{k} k \, s
+  \}
+\]
+This handler works as follows: whenever $\read$ is called, we ignore its unit
+parameter and capture its continuation in a function $k$ that expects the
+resulting string and resumes the evaluation when applied. Next, instead of calling
+$\read$, we evaluate the computation in the handling clause: we resume the
+continuation $k$, but instead of reading the string from interactive input, we
+yield the constant string~$s$. The handler implicitly continues to
+handle the continuation, so any $\read$ in the handled computation again yields
+$s$. If the handled computation calls any operation other than $\read$, the call
+escapes the handler, but the handler again wraps itself around the continuation
+so that it may handle any further $\read$ calls. For example, evaluating
+\[
+  \withhandle{(\kst{alwaysRead} \, \str{Bob})}{\kst{printFullName}}
+\]
+first prints out $\str{What is your name?}$ as $\print$ is unhandled. Then, $\read$
+is handled so $\str{Bob}$ gets bound to $forename$. Similarly, the second $\print$
+is unhandled, and in the second $\read$, $\str{Bob}$ gets bound to $surname$ as
+well and finally $\str{Bob Bob}$ is printed out.
+
+It is not obvious whether handlers should continue handling operations in the
+continuation, or handle just the first call. Experience with exception handlers
+offer us no guidance here, because raised exceptions have no continuation, and so the two
+choices are equivalent. As it turns out, the first choice, which we are
+settling on in this paper, has nicer denotational semantics, is what one usually desires in practice, and is
+perhaps also more intuitive because $\withhandle{h}{c}$ suggests that the whole~$c$ should be handled by $h$. The second choice leads to \emph{shallow
+handlers}~\cite{DBLP:conf/icfp/KammarLO13}, which are more convenient for certain uses,
+and can be considered a more elementary approach as they can express the usual
+handlers through recursion.
+
+\subsubsection{Reversed output}
+
+We can use handlers to not only change what is fed to the continuation, but also
+to change the way the continuation is used. For example, to reverse the order of printouts,
+we use:
+%
+\begin{align*}
+  \kst{reverse} \defeq \handler \{
+    \opclause[\print]{s}{k} k \, \unt; \print \, s
+  \}
+\end{align*}
+%
+Here, we handle a $\print$ by first calling the continuation, and only after
+this is finished, print out $s$. Since the handler wraps itself around $k$, the
+same rule applies for the continuation and so all printouts are reversed.
+So, if we define
+\[
+  \kst{abc} \defeq \print \, \str{A}; \print \, \str{B}; \print \, \str{C}
+\]
+then $\withhandle{\kst{reverse}}{\kst{abc}}$ prints out first
+$\str{C}$, then $\str{B}$, and finally $\str{A}$.
+
+\subsubsection{Collecting output}
+\label{sec:collect}
+
+A more useful handler is one that collects all printouts into one big string
+and returns it together with the final value:
+%
+\begin{align*}
+  \kst{collect} \defeq \handler \{
+  & \retclause{x} \return (x, \str{\,}) \\
+  & \opclause[\print]{s}{k} \\
+  &\quad \seq{(x, acc)}{k \, \unt} \\
+  &\quad \return (x, \kst{join} \, s \, acc)
+  \}
+\end{align*}
+%
+If the handled computation does not print anything and just returns some
+value~$x$, we need to handle it by returning an empty string in addition to $x$.
+But if a computation prints some string $s$, we resume the continuation. Since
+this is handled in the same way, it returns the accumulated string $acc$ in
+addition to the final value~$x$. Now, we only need to join $s$ with $acc$ and
+return it together with $x$. If we handle $\kst{abc}$ with $\kst{collect}$, we
+get a pair $(\unt, \str{A B C})$, where~$\unt$ is the unit result of the last
+$\print$.
+
+We can also nest handlers, and
+%
+\[
+  \withhandle{\kst{collect}}{(\withhandle{\kst{reverse}}{\kst{abc}})}
+\]
+%
+evaluates to $(\unt, \str{C B A})$. The order in which we nest the handlers is
+significant as it is the innermost handler that determines how to first handle the
+call. If we switch the handlers in the above example, we get
+$(\unt, \str{A B C})$ because $\kst{collect}$ handles all $\print$ calls,
+and so none reach the $\kst{reverse}$ handler, which then does nothing.
+
+Alternatively, we could implement the same handler using a technique called
+\emph{parameter-passing}~\cite{DBLP:journals/corr/PlotkinP13},
+where we transform the handled computation into a function that passes around a parameter,
+in our case the accumulated string:
+%
+\begin{align*}
+  \kst{collect'} \defeq \handler \{
+  &\retclause{x}
+    \fun{acc} \return (x, acc) \\
+  &\opclause[\print]{s}{k} \\
+  &\quad \fun{acc} (k \, \unt) \, (\kst{join} \, acc \, s)
+  \}
+\end{align*}
+%
+When a computation returns a value $x$, there will be no further printouts,
+so we can return the given accumulator~$acc$ in addition to $x$. But if $\print$
+is called, we resume the continuation by yielding it the expected unit result.
+Since the continuation is further handled into a function, we need to
+pass $k \, \unt$ the new accumulator, which is $acc$ extended with~$s$. To obtain the collected
+output of a computation $c$, we apply the resulting function to the empty
+accumulator as:
+\[
+  (\withhandle{\kst{collect'}}{c}) \, \str{\,}
+\]
+In Section~\ref{sec:reasoning}, we show that $\kst{collect}$ and $\kst{collect'}$
+indeed exhibit equivalent behaviour.
+Using parameter-passing, we can also implement a converse handler that feeds
+words from a given string to the input. 
+
+\subsection{Exceptions}
+
+Exception handlers are, of course, a special instance of handlers. We represent
+exceptions with an operation $\op[raise]$ that takes an exception argument
+(e.g.~error message) and yields nothing to the continuation (for more details
+on how this can be enforced, see Example~\ref{exa:signatures}).
+
+In practice, exception handlers are rarely reused, but an example of a more
+general exception handler is:
+\[
+  \kst{default} \defeq \fun{x} \handler \{
+    \opclause[{\op[raise]}]{\anon}{\anon} \return x
+  \}
+\]
+which returns a default value~$x$ in case the handled computation raises an
+exception.
+
+\subsection{Non-determinism}
+
+Handlers can be used not only to override existing effectful behaviour, but to
+define new one as well. To implement non-determinism, we take a single operation
+$\decide$, which takes a unit parameter, and non-deterministically yields a
+boolean. Then, a binary choice can be implemented as a function
+%
+\begin{align*}
+  \kst{choose} \defeq {} & \fun{(x, y)} \\
+  &\quad \seq{b}{\decide \, \unt} \\
+  &\quad \conditional{b}{(\return x)}{(\return y)}
+\end{align*}
+%
+However, unlike $\print$, we assume no intrinsic behaviour for $\decide$, and we
+must use handlers to determine whether to return a fixed result, a random result,
+an optimal result, or all results. Without an encompassing handler, an
+application $\kst{choose} \, (3, 4)$ is stuck when it encounters the $\decide$
+call. The simplest handler for $\decide$ is
+%
+\begin{align*}
+  \kst{pickTrue} \defeq \handler \{
+  \opclause[\decide]{\anon}{k} k \, \tru
+  \}
+\end{align*}
+%
+which makes each $\decide$ yield $\tru$ to the continuation, so $\kst{choose}$
+always chooses the left argument. So, if we define
+%
+\begin{align*}
+  \kst{chooseDiff} \defeq {}
+    &\seq{x_1}{\kst{choose} \, (15, 30)} \\
+    &\seq{x_2}{\kst{choose} \, (5, 10)} \\
+    &\return (x_1 - x_2)
+\end{align*}
+%
+then $\withhandle{\kst{pickTrue}}{\kst{chooseDiff}}$ will choose $15$ for $x_1$ and $5$ for $x_2$,
+and will thus evaluate to $\return 10$.
+
+\subsubsection{Maximal result}
+\label{sec:pickmax}
+
+With handlers, we can also traverse all possible branches to select the maximal
+result:
+\begin{align*}
+  \kst{pickMax} \defeq \handler \{
+  &\opclause[\decide]{\anon}{k} \\
+  &\quad \seq{x_t}{k \, \tru} \\
+  &\quad \seq{x_f}{k \, \fls} \\
+  &\quad \return \kst{max} \, (x_t, x_f) 
+  \}
+\end{align*}
+In this case, evaluating $\withhandle{\kst{pickMax}}{\kst{chooseDiff}}$ will
+make the choices needed to get the maximal possible difference $25$, even if
+this means choosing the smaller argument of $\kst{choose}$ (in particular, we pick $30$ for $x_1$ and $5$ for $x_2$).
+
+If we included lists in our language, we could adapt $\kst{pickMax}$ to a handler~$\kst{pickAll}$ that select all possible results~\cite{DBLP:journals/jlp/BauerP15}. To do so, the return clause would return a singleton list containing the returned value, while the $\decide$ clause would concatenate the lists $x_t$ and $x_f$ that result from yielding both possible results to the handled continuation.
+
+\subsubsection{Backtracking}
+\label{sec:backtrack}
+
+To implement backtracking, where we employ non-deterministic search for a given
+solution, we add an operation $\fail$ to signify that no solution exists. Then,
+for example:
+%
+\begin{align*}
+  &\recfun{\kst{chooseInt}}{(m, n)} \\
+  &\quad \conditional{m > n}{\fail \, \unt}{ \\
+  &\quad\quad \seq{b}{\decide \, \unt} \\
+  &\quad\quad \conditional{b}{(\return m)}{\kst{chooseInt} \, (m + 1, n)}
+  }
+\end{align*}
+%
+is a function that non-deterministically chooses an integer in the interval $[m, n]$,
+or fails if this interval is empty, while:
+%
+\begin{align*}
+  \kst{pythagorean} \defeq {} &\fun{(m, n)} \\
+  &\quad\seq{a}{\kst{chooseInt} \, (m, n - 1)} \\
+  &\quad\seq{b}{\kst{chooseInt} \, (a + 1, n)} \\
+  &\quad\conditional{\kst{isSquare} \, (a^2 + b^2)}{(\return (a, b, \sqrt{a^2 + b^2}))}{\fail \, ()}
+\end{align*}
+%
+is a function that searches for an integer Pythagorean triple $(a, b, c)$ such that
+${m \leq a < b \leq n}$.
+We perform backtracking by handling each $\decide$ by first trying to yield
+$\tru$, and if this fails, yield $\fls$:
+%
+\begin{align*}
+  \kst{backtrack} \defeq \handler \{
+  &\opclause[\decide]{\anon}{k} \\
+  &\quad \withhandle{\\
+  &\quad\quad \handler \{ \opclause[\fail]{\anon}{\anon} k \, \fls \} \\
+  &\quad}{\\
+  &\quad\quad k \, \tru} \}
+\end{align*}
+%
+Then, $\withhandle{\kst{backtrack}}{\kst{pythagorean} \, (m, n)}$
+finds $(5, 12, 13)$ for ${(m, n) = (4, 15)}$ but fails for $(m, n) = (7, 10)$.
+The exact triple found depends on the implementation of the handler. If, instead, we first tried yielding $\fls$, the resulting triple for $(m, n) = (4, 15)$ would be $(9, 12, 15)$. To get a list of all possible triples, we can use the handler~$\kst{pickAll}$ from Section~\ref{sec:pickmax}, but extended with a clause that handles $\fail$ with an empty list.
+
+\subsection{State}
+
+We represent state with operations $\set$ for setting the state contents, and
+$\get$ for reading them. For simplicity, we assume a single memory location that
+holds an integer. So, $\set$ takes an integer, stores it, and returns a unit
+result, while $\get$ takes a unit parameter, reads the stored integer, and
+returns it.
+
+We can use handlers to temporarily alter the stored value or to log all updates.
+But we can also use them to implement stateful behaviour
+even if we do not assume a built-in one. Like in Section~\ref{sec:collect},
+we use a parameter-passing handler to pass around the current state:
+%
+\begin{align*}
+  \kst{state} \defeq \handler \{
+  &\opclause[\get]{\anon}{k} \fun{s} (k \, s) \, s \\
+  &\opclause[\set]{s}{k} \fun{\anon} (k \, \unt) \, s \\
+  &\retclause{x} \fun{\anon} \return x \}
+\end{align*}
+%
+We handle $\get$ with a function that takes the current state $s$ and passes it
+first as a result of $\get$ to the continuation, and then again as the unchanged
+state. Conversely, we handle $\set$ by first yielding the unit result, and then
+applying the handled continuation to the new state $s$ as given in the parameter
+of $\set$.
+
+The return clause of $\kst{state}$ ignores the final state, but if we want to
+inspect it, we can return it together with the final value by changing the
+return clause to:
+\[
+  \retclause{x} \fun{s} \return (s, x)
+\]
+
+\subsubsection{Transactions}
+
+In a similar way, we can implement transactional memory, where we commit the
+changed state only after the handled computation successfully terminated with a
+value, so in case an exception is raised, the memory contents remain unchanged:
+%
+\begin{align*}
+  \kst{transaction} \defeq \handler \{
+  &\opclause[\get]{\anon}{k} \fun{s} (k \, s) \, s \\
+  &\opclause[\set]{s}{k} \fun{\anon} (k \, \unt) \, s \\
+  &\retclause{x} \fun{s} \set \, s; \return x
+  \}
+\end{align*}
+
+\end{document}
