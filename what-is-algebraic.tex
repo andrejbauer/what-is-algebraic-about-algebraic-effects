@@ -83,15 +83,19 @@
 
 \maketitle
 
-At the Dagstuhl seminar ``Algebraic effect handlers go
-mainstream''~\cite{chandrasekaran18:_algeb} I gave a short tutorial on algebraic
-theories and how they relate to algebraic effects and handlers. This note
-recapitulates and somewhat expands the contents of the tutorial. I assume some
-amount of undergraduate mathematics and familiarity with algebraic effects and
-handlers. Matija Pretnar's tutorial on algebraic effects and
-handlers~\cite{Pretnar15} is a prerequisite, as we will use the programming
-language presented therein. As is becoming of a tutorial, numerous examples are
-provided.
+This note recapitulates and expands the contents of a tutorial on mathematical
+background of algebraic effects and handlers which I gave at the Dagstuhl
+seminar \emph{``Algebraic effect handlers go
+  mainstream''}~\cite{chandrasekaran18:_algeb} You might find it relevant if you
+already are familiar with algebraic effects and handlers as programming concepts
+and would like to know what they have to do with algebra.
+
+Our goal is to draw an uninterrupted line of thought between algebra and
+computational effects. We begin on the mathematical side of things, by reviewing
+the classic notions of universal algebra: signatures, algebraic theories, and
+their models. We then generalize and adapt the theory so that it applies to
+computational effects. In the last step we replace traditional mathematical
+notation with one that is closer to programming languages.
 
 
 \section{Algebraic theories}
@@ -110,10 +114,14 @@ operation, satisfying the familiar group identities:
 \end{gather*}
 %
 There are alternative axiomatizations, for instance: a group is a monoid
-$(G, \mathsf{u}, {\cdot})$ in which every element is invertible, i.e., for every $x$ there
-exists $y$ such that $x \cdot y = \mathsf{u} = y \cdot x$. However, we prefer a
-formulation whose axioms are equations. Such theories are known as
-\emph{algebraic} or \emph{equational theories}.
+$(G, \mathsf{u}, {\cdot})$ in which every element is invertible, i.e.,
+$\all{x \in G} \some{y \in G} x \cdot y = \mathsf{u} = y \cdot x$. However, a
+formulation all of whose axioms are equations is preferred, because its simple
+logical form grants its models good structural properties.
+
+It is important to distinguish the theory of an algebraic structure from the
+algebraic structures it describes. In this section we shall study the
+descriptions, which are known as \emph{algebraic} or \emph{equational theories}.
 
 \subsection{Signatures, terms and equations}
 \label{sec:signatures-equations}
@@ -129,7 +137,7 @@ symbols with arities $1$, $2$ and $3$ are referred to as \emph{unary},
 A (possibly empty) list of distinct variables $x_1, \ldots, x_k$ is called a
 \emph{context}. The \emph{$\Sigma$-terms in context $x_1, \ldots, x_k$} are
 built inductively using the following rules:
-% 
+%
 \begin{enumerate}
 \item each variable $x_i$ is a $\Sigma$-term in context $x_1, \ldots, x_k$,
 \item if $t_1, \ldots, t_{\arity{i}}$ are $\Sigma$-terms in context $x_1, \ldots, x_k$ then
@@ -155,9 +163,21 @@ $x_1, \ldots, x_k$. We write
 %
 to indicate an equation in a context. We shall often elide the context and write simply
 $\ell = r$, but it should be understood that there is an ambient context which contains at
-least all the variables mentioned by $\ell$ and $r$. When no confusion can arise we also
-drop the prefix ``$\Sigma$-'' and speak of just terms and equations instead of
-$\Sigma$-terms and $\Sigma$-equations.
+least all the variables mentioned by $\ell$ and $r$.
+
+A $\Sigma$-equation really is just a list of variables and a pair of terms, and
+\emph{not} a logical statement. The context variables are \emph{not} universally
+quantified, and we are not talking about first-order logic. Of course, a
+$\Sigma$-equation is suggestively written as an equation because we do
+eventually want to \emph{interpret} it as an assertion of equality, but until
+such time (and even afterwards) it is better to think of contexts, terms, and
+equations as ordinary mathematical objects, devoid of any imagined or special
+meta-mathematical status. This remark will hopefully become clearer in
+Section~\ref{sec:algebr-theor-with}.
+
+When no confusion can arise we drop the prefix ``$\Sigma$-'' and simply speak about
+terms and equations instead of $\Sigma$-terms and $\Sigma$-equations.
+
 
 \begin{example}
   \label{ex:monoid-signature}
@@ -191,12 +211,13 @@ $\Sigma$-terms and $\Sigma$-equations.
     x, y \mid y \cdot x = (\mathsf{u} \cdot x) \cdot y.
   \end{equation*}
   %
-  One might even omit $\cdot$ and the context, in which case the equation is written
-  simply as $y \, x = (\mathsf{u} \, x) \, y$. If we agree that $\cdot$ associates to the
-  left then $(\mathsf{u} \, x) \, y$ may be written as $\mathsf{u} \, x \, y$, and we are
-  left with $y \, x = \mathsf{u} \, x \, y$. Note that we are \emph{not} discussing
-  validity of equations but only methods for writing them down. It is irrelevant whether
-  the above equation is valid in monoids.
+  One might even omit $\cdot$ and the context, in which case the equation is
+  written simply as $y \, x = (\mathsf{u} \, x) \, y$. If we agree that $\cdot$
+  associates to the left then $(\mathsf{u} \, x) \, y$ may be written as
+  $\mathsf{u} \, x \, y$, and we are left with $y \, x = \mathsf{u} \, x \, y$,
+  which is what your algebra professor might write down. Note that we are
+  \emph{not} discussing validity of equations but only ways of displaynig them.
+  It is irrelevant whether the above equation is valid in monoids.
 \end{example}
 
 
@@ -761,6 +782,22 @@ The definition is a bit of a mouthful, but it can be understood as follows: the 
 generated by $X$ is the ``most economical'' way of making a model out of the set~$X$.
 
 \begin{example}
+  The free group generated by the empty set is the trivial group~$\one$ with
+  just one element. The map $\eta : \emptyset \to \one$ is the unique one, and
+  given any (unique) map $f : \emptyset \to |G|$ to a carrier of another
+  group~$G$, there is a unique group homomorphism $\overline{f} : \one \to G$.
+  The relevant triangle commutes automatically because it originates
+  at~$\emptyset$.
+\end{example}
+
+\begin{example}
+  The free group generated by the singleton set $\set{\star}$ is the group of
+  integers $(\ZZ, 0, {+}, {-})$. The map $\eta : \set{\star} \to \ZZ$ takes
+  $\star$ to $0$. As an exercise you should verifty that the integers have the
+  required universal property.
+\end{example}
+
+\begin{example}
   Let $\finpow{X}$ be the set of all finite subsets of a set~$X$. We show that
   $(\finpow{X}, \emptyset, {\cup})$ is the free semilattice generated by~$X$, cf.\
   Example~\ref{ex:semi-lattice}. The map $\eta : X \to \finpow{X}$ takes $x \in X$ to the
@@ -809,11 +846,10 @@ generated by $X$ is the ``most economical'' way of making a model out of the set
   the only map it could be. This example shows that~$\eta$ need not be injective.
 \end{example}
 
-Every alebraic theory~$\theory{T}$ has free models. Let us sketch the construction of the
-free $\theory{T}$-model generated by a set~$X$.
-
-Given a signature $\Sigma$ and a set~$X$, define~$\Tree{\Sigma}{X}$ to be the set of
-well-founded trees built inductively as follows:
+Every alebraic theory~$\theory{T}$ has free models. Let us sketch its
+construction. Given a signature $\Sigma$ and a set~$X$,
+define~$\Tree{\Sigma}{X}$ to be the set of well-founded trees built inductively
+as follows:
 %
 \begin{enumerate}
 \item for each $x \in X$, there is a tree $\leaf{x} \in \Tree{\Sigma}{X}$,
@@ -825,9 +861,10 @@ well-founded trees built inductively as follows:
 Notice that the $\Sigma$-terms in context $x_1, \ldots, x_n$ are precisely the trees
 in $\Tree{\Sigma}{\set{x_1, \ldots, x_n}}$.
 
-Suppose $x_1, \ldots, x_n \mid t$ is a $\Sigma$-term in context, and we are given an
-assignment $\sigma : \set{x_1, \ldots, x_n} \to \Tree{\Sigma}{X}$ of trees to
-variables in the context. Then we may build the tree $\sigma(t)$ inductively as follows:
+Suppose $x_1, \ldots, x_n \mid t$ is a $\Sigma$-term in context, and we are
+given an assignment $\sigma : \set{x_1, \ldots, x_n} \to \Tree{\Sigma}{X}$ of
+trees to variables. Then we may build the tree $\sigma(t)$ inductively as
+follows:
 %
 \begin{enumerate}
 \item $\sigma(t) = \sigma(x_i)$ if $t = x_i$,
@@ -850,8 +887,9 @@ $\Tree{\signature{T}}{X}$ such that:
     \sigma(\ell) \approx_{\theory{T}} \sigma(r).
   \end{equation*}
   %
-\item $\approx_{\theory{T}}$ is a $\signature{T}$-congruence: for every operation symbol
-  $\op{i}$ in $\signature{T}$, if
+\item $\approx_{\theory{T}}$ is a \emph{$\signature{T}$-congruence}: for every
+  operation symbol $\op{i}$ in $\signature{T}$, and for all trees
+  $s_1, \ldots, s_{\arity{i}}$ and $t_1, \ldots, t_{\arity{i}}$, if
   %
   \begin{equation*}
     s_1 \approx_{\theory{T}} t_1,
@@ -898,9 +936,9 @@ set of trees $\Tree{T}{X}$ because the relation $\approx_{\theory{T}}$ is equali
 \subsection{Operations with general arities and parameters}
 \label{sec:oper-gener-arit-param}
 
-We have so far presented the classic topic of algebraic theories, as studied in
-universal algebra. To get a better fit with computational effects, we need to
-generalize to generalize the notion of operation.
+We have so far followed the classic mathematical presentation of algebraic
+theories. To get a better fit with computational effects, we need to generalize
+operations in two ways.
 
 \subsubsection{General arities}
 \label{sec:general-arities}
@@ -925,9 +963,20 @@ can think of a map
   X^A \to X
 \end{equation*}
 %
-as taking $A$-many arguments. However, rather than trying to devise a notation
-for tuples with $A$-many components, we shall use what is already provided to us
-by the exponentials, namely the $\lambda$-calculus.
+as taking $A$-many arguments. We need reasonable notation for writing down an
+operation symbol applied to $A$-many arguments, where $A$ is an arbitrary set. One
+might be tempted to adapt the tuple notation and write something silly, such as
+%
+\begin{equation*}
+  \op{i}(\cdots t_a \cdots)_{a \in A},
+\end{equation*}
+%
+but as compter scientists we know better than that. Let us use the notation that
+is already provided to us by the exponentials, namely the $\lambda$-calculus. To
+have $A$-many elements of a set $X$ is to have a map $\kappa : A \to X$, and
+thus to apply the operation symbol $\op{i}$ to $A$-many arguments $\kappa$ we
+simply write~$\op{i}(\kappa)$.
+
 
 \begin{example}
   Let us rewrite the group operations in the new notation. The empty set
@@ -978,37 +1027,93 @@ by the exponentials, namely the $\lambda$-calculus.
   %
   The symbol $\_$ indicates that the argument of the $\lambda$-abstraction is
   ignored, i.e., that the function defined by the abstraction is constant. One
-  more example might help: $x \cdot x$ may be written not only as
-  $\mathsf{m}(\lam{b} \cond{b}{x}{x})$ but also as $\mathsf{m}(\lam{\_} x)$.
+  more example might help: $x$ squared may be written as
+  $\mathsf{m}(\lam{b} \cond{b}{x}{x})$ as well as $\mathsf{m}(\lam{\_} x)$.
 \end{example}
 
-Such notation is not appropriate for performing algebraic manipulations, but it
-turns out to be quite convenient for programming with algebraic effects.
-
+Such notation is not appropriate for performing algebraic manipulations, but is
+bringing us closer to the syntax of a programming language.
 
 \subsubsection{Operations with parameters}
 \label{sec:oper-with-param}
 
-To motivate our second generalization, consider the theory of a module~$V$ over
-a ring~$R$ (if you are not familiar with modules, think of the elements of $V$
+To motivate our second generalization, consider the theory of a module~$M$ over
+a ring~$R$ (if you are not familiar with modules, think of the elements of $M$
 as vectors and the elements of~$R$ as scalars). For it to be an algebraic
 theory, we need to deal with scalar multiplication ${\cdot} : R \times M \to M$,
 because it does not fit the established pattern. There are three possibilities:
 %
 \begin{enumerate}
 \item We could introduce \emph{multi-sorted} alebraic theories whose operations
-  take arguments from several carrier sets.
+  take arguments from several carrier sets. The theory of a module would have
+  two sorts, say $\mathsf{R}$ and $\mathsf{M}$, and scalar multiplication would
+  be a binary operation of arity $(\mathsf{R}, \mathsf{M}; \mathsf{M})$. (We
+  hesitate to write $\mathsf{R} \times \mathsf{M} \to \mathsf{M}$ lest the type
+  theorists get useful ideas.)
 \item Instead of having a single binary operation taking a scalar and a vector,
   we could have many unary operations taking a vector, one for each scalar.
 \item We could view the scalar as an additional \emph{parameter} of a
   unary opertion on vectors.
 \end{enumerate}
 %
-The second and the third options are quite similar, but they do differ in their
-treatment of parameters. In one case the parameters are part of the indexing of
-the signature, while in the other they are properly part of the algebraic
-theory. We shall adopt operations with parameters because it best reflects
-computational effects that arise in practice.
+The second and the third options are superficially similar, but they differ in
+their treatment of parameters. In one case the parameters are part of the
+indexing of the signature, while in the other they are properly part of the
+algebraic theory. We shall adopt operations with parameters because they
+naturally model algebraic operations that arise as computational effects.
+
+\begin{example}
+  The theory of a module over a ring~$(R, 0, {+}, {-}, {\cdot})$ has several
+  operations. One of them is scalar multiplication, which is a \emph{unary}
+  operation $\mathsf{mul}$ parameterized by element of~$R$. That is, for every
+  $r \in R$ and term $t$, we may form the term
+  %
+  \begin{equation*}
+    \mathsf{mul}(r; t),
+  \end{equation*}
+  %
+  which we think of as~$t$ multiplied with~$r$. The remaining operations seem
+  not to be parametrized, but we can force them to be parametrized by fiat.
+  Addition is a binary operation $\mathsf{add}$ parameterized by the singleton
+  set~$\one = \set{\star}$: the sum of $t_1$ and $t_2$ is written as
+  %
+  \begin{equation*}
+    \mathsf{add}(\star; t_1, t_2).
+  \end{equation*}
+  %
+  We can use this trick in general: an operation without parameters is an
+  operation taking parameters from the singleton set.
+\end{example}
+
+Note that in the previous example we mixed theories and models. We spoke about
+the \emph{theory} of a module with respect to a \emph{specific ring}~$R$.
+
+\begin{example}
+  The theory of a $\Cinfty$-ring, cf.\ Example~\ref{ex:Cinfty-theory}, may be
+  reformulated using parameters. For every $n \in \NN$ there is an $n$-ary
+  operation symbol $\mathsf{app}_n$ and whose parameter set is
+  $\Cinfty(\RR^n, \RR)$. What was written as
+  %
+  \begin{equation*}
+    \op{f}(t_1, \ldots, t_n)
+  \end{equation*}
+  %
+  in Example~\ref{ex:Cinfty-theory} is now written as
+  %
+  \begin{equation*}
+    \mathsf{app}_n(f; t_1, \ldots, t_n).
+  \end{equation*}
+  %
+  The notation tells us what $\Cinfty$-rings are about: they are rings whose
+  elements can feature as arguments to smooth functions. In contrast, an
+  ordinary (commutative unital) ring is one whose elements can feature as
+  arguments to ``finite degree'' smooth maps, i.e., the polynomials.
+
+  If you insist on the~$\lambda$-notation, replace the tuple
+  $(t_1, \ldots, t_n)$ of terms with a single function $t$ mapping from $[n]$ to
+  terms, and write $\mathsf{app}_n(f; t)$.
+\end{example}
+
 
 \subsection{Algebraic theories with parametrized operations and general arities}
 \label{sec:algebr-theor-with}
@@ -1103,6 +1208,14 @@ built as a quotient of the set of well-founded trees.
 \section{Computational effects as algebraic operations}
 \label{sec:comp-effects-as}
 
+It is high time we provide some examples from programming. The original insight
+of Gordon Plotkin and John Power~\cite{plotkin-power} was that many
+computational effects are naturally described by algebraic theories.
+
+\section{Algebraic handlers}
+\label{sec:algebraic-handlers}
+
+
 \begin{figure}[ht]
   \centering
   \parbox{0.75\textwidth}{
@@ -1134,8 +1247,6 @@ built as a quotient of the set of well-founded trees.
   \label{fig:mini-eff}
 \end{figure}
 
-\section{Algebraic handlers}
-\label{sec:algebraic-handlers}
 
 \bibliographystyle{plain}
 \bibliography{what-is-algebraic}
