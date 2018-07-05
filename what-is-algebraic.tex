@@ -51,6 +51,25 @@
 \newcommand{\false}{\mathsf{false}}
 \newcommand{\cond}[3]{\mathsf{if}\;#1\;\mathsf{then}\;#2\;\mathsf{else}\;#3}
 
+%%% Macros for the programming language
+
+% General syntactic constructs
+\newcommand{\kode}[1]{\mathtt{#1}}
+
+% Core syntax
+\newcommand{\seq}[2]{\kode{do}\; #1 \leftarrow #2 \;\kode{in}\;}
+\newcommand{\conditional}[3]{\kode{if}\; #1 \;\kode{then}\; #2 \;\kode{else}\; #3}
+\newcommand{\fun}[1]{\kode{fun}\; #1 \mapsto}
+\newcommand{\handler}{\kode{handler}\;}
+\newcommand{\opgen}[1]{\op{#1}}
+\newcommand{\opcall}[4]{#1(#2; #3.\,#4)}
+\newcommand{\opclause}[3]{#1(#2; #3) \mapsto}
+\newcommand{\return}[1]{\kode{return}\;#1}
+\newcommand{\retclause}[1]{\return{#1} \mapsto}
+\newcommand{\withhandle}[2]{\kode{with}\; #1\; \kode{handle}\; #2}
+
+
+
 {\theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
 \newtheorem{example}[definition]{Example}
@@ -58,17 +77,22 @@
 
 \begin{document}
 
-\title{What is algebraic about algebraic effects?}
+\title{What is algebraic about algebraic effects and handlers?}
 
 \author{Andrej Bauer}
 
-\begin{abstract}
-  This is a short tutorial on algebraic theories and their relation to computational
-  effects, as known in the theory of programming languages. An unusually large number of
-  examples is provided, and excursions into category theory are kept to a minimum.
-\end{abstract}
-
 \maketitle
+
+At the Dagstuhl seminar ``Algebraic effect handlers go
+mainstream''~\cite{chandrasekaran18:_algeb} I gave a short tutorial on algebraic
+theories and how they relate to algebraic effects and handlers. This note
+recapitulates and somewhat expands the contents of the tutorial. I assume some
+amount of undergraduate mathematics and familiarity with algebraic effects and
+handlers. Matija Pretnar's tutorial on algebraic effects and
+handlers~\cite{Pretnar15} is a prerequisite, as we will use the programming
+language presented therein. As is becoming of a tutorial, numerous examples are
+provided.
+
 
 \section{Algebraic theories}
 \label{sec:algebraic-theories}
@@ -1070,7 +1094,7 @@ given by a signature $\signature{T}$ and a collection of $\Sigma$-equations
 $\equations{T}$. A \emph{$\theory{T}$-model} is an interpretation for
 $\signature{T}$ which validates all the equations~$\equations{T}$.
 
-The notions of $\theory{T}$-morphisms and the category $\Mod{}{T}$ of
+The notions of $\theory{T}$-morphisms and the category $\Mod{T}$ of
 $\theory{T}$-models and $\theory{T}$-morphisms may be similarly generalized. We
 do not repeat the definitions here, as they are almost the same. You should
 convince yourself that every algebraic theory has a free model, which is still
@@ -1079,9 +1103,42 @@ built as a quotient of the set of well-founded trees.
 \section{Computational effects as algebraic operations}
 \label{sec:comp-effects-as}
 
+\begin{figure}[ht]
+  \centering
+  \parbox{0.75\textwidth}{
+    \newcommand{\bnfis}{\mathrel{\;{:}{:}\!=}\;}
+    \newcommand{\bnfor}{\mathrel{\;\big|\;}}
+    \begin{align*}
+      \text{Value}\ v
+        \bnfis& x                                & & \text{variable} \\
+        \bnfor& \kode{false} \bnfor \kode{true}  & & \text{boolean constant} \\
+        \bnfor& \fun{x} c                        & & \text{function} \\
+        \bnfor&
+          \handler \{
+          \begin{aligned}[t]
+            & \retclause{x} c_r, \\
+            & \opclause{\op{1}}{x}{k} c_1, \ldots, \opclause{\op{n}}{x}{k} c_n\}
+          \end{aligned}
+          & & \text{handler}
+      \\
+      \text{Computation}\ c
+        \bnfis& \return{v}                       & & \text{return a value} \\
+        \bnfor& \opcall{\op{i}}{v}{y}{c}         & & \text{operation call} \\
+        \bnfor& \seq{x}{c_1} c_2                 & & \text{sequencing} \\
+        \bnfor& \conditional{v}{c_1}{c_2}        & & \text{conditional} \\
+        \bnfor& v_1 \, v_2                       & & \text{application} \\
+        \bnfor& \withhandle{v}{c}                & & \text{handle a computation}
+    \end{align*}
+  }
+  \caption{Syntax of miniEff}
+  \label{fig:mini-eff}
+\end{figure}
+
 \section{Algebraic handlers}
 \label{sec:algebraic-handlers}
 
+\bibliographystyle{plain}
+\bibliography{what-is-algebraic}
 
 
 \end{document}

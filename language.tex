@@ -1,0 +1,159 @@
+\section{Language}
+\label{sec:language}
+
+\begin{figure}
+\small
+\hrulefill
+\begin{align*}
+  \text{value}~v
+    \bnfis {} &x & & \text{variable} \\
+    \bnfor {} &\tru \bnfor \fls & & \text{boolean constants} \\
+    \bnfor {} &\fun{x} c & & \text{function} \\
+    \bnfor {} &h & & \text{handler} \\
+  \text{handler}~h
+    \bnfis {} &\handler \{
+      \retclause{x} c_r, & & \text{(optional) return clause} \\
+      &\hphantom{\handler \{ {}}
+      \opclause[\op_1]{x}{k} c_1,
+      \dots,
+      \opclause[\op_n]{x}{k} c_n \} & & \text{operation clauses} \\
+  \text{computation}~c
+    \bnfis {} &\return v & & \text{return} \\
+    \bnfor {} &\opcall{v}{y}{c} & & \text{operation call} \\
+    \bnfor {} &\seq{x}{c_1} c_2 & & \text{sequencing} \\
+    \bnfor {} &\conditional{v}{c_1}{c_2} & & \text{conditional} \\
+    \bnfor {} &v_1 \, v_2 & & \text{application} \\
+    \bnfor {} &\withhandle{v}{c} & & \text{handling}
+\end{align*}
+\hrulefill
+\caption{Syntax of terms.}
+\label{fig:terms}  
+\end{figure}
+
+Before we dive into examples of handlers, we need to fix a language in which to
+work. As the order of evaluation is important when dealing with effects, we
+split language terms (Figure~\ref{fig:terms}) into inert \emph{values} and
+potentially effectful \emph{computations}, following an approach called
+\emph{fine-grain call-by-value}~\cite{DBLP:journals/iandc/LevyPT03}. There are a few
+things worth mentioning:
+%
+\begin{description}
+\item[Sequencing]
+In $\seq{x}{c_1}{c_2}$, we first evaluate $c_1$, and once this returns a value,
+we bind it to $x$ and proceed by $c_2$. If $x$ does not appear in $c_2$,
+we abbreviate the sequencing to $c_1; c_2$.
+\item[Operation calls]
+The call~$\opcall{v}{y}{c}$ passes a \emph{parameter} value~$v$
+(e.g.\ the memory location to be read) to the operation $\op$, and after
+$\op$ performs the effect, its \emph{result} value (e.g.\ the contents of the memory
+location) is bound to~$y$ and the evaluation of $c$, called a \emph{continuation},
+resumes. However, note that encompassing handlers may override this behaviour.
+\item[Generic effects]
+Having an explicit continuation in the call is convenient for the semantics, but
+less so for a programmer, who just wants to get back the result of an
+operation. So, instead of a full-blown operation call, we define a function,
+called a \emph{generic effect}~\cite{DBLP:journals/acs/PlotkinP03}, also labelled
+as $\opgen$, which takes a parameter and passes it to an operation call
+with the trivial continuation:
+\[
+  \opgen \defeq \fun{x} \opcall{x}{y}{\return y}
+\]
+Though simpler to use, generic effects are just as expressive because we can
+recover the operation call $\opcall{v}{y}{c}$ by evaluating $\seq{y}{\opgen \, v} c$.
+\item[Language extensions]
+To focus on new constructs, we shall keep our language small, but for examples,
+we are going to extend its values with integers, primitive arithmetic functions,
+strings, recursive functions $\recfun{f}{x} c$, the unit $\unt$ and pairs $(v_1,
+v_2)$. Furthermore, we allow patterns in binding constructs (functions, handler
+clauses, operation calls, and sequencing). In particular, we use the pattern
+$\anon$ to denote ignored parameters, and a pair pattern $(x_1, x_2)$ to extract
+components from a pair. For example, we bind $7$ to $x$ and ignore $8$ in the
+application $(\fun{(x, \anon)} 6 + x) \, (7, 8)$.
+\item[Separation of values \& computations]
+We were a bit lax about the separation of values and computations when writing
+the last example. Since the addition $6 + x$ is in fact a double application
+$((+) \, 6) \, x$, the first application $(+) \, 6$ is already a
+computation. Thus, it cannot be applied to $x$ because both subterms of an application
+must be values. Instead, we need to use sequencing and write the example in our restricted syntax as:
+\[
+  (\fun{(x, \anon)} \seq{f}{(+) \, 6} f \, x) \, (7, 8)    
+\]
+However, this longer form adds little value and makes examples hard to read, so
+while keeping it in mind, we are going to use the shorter form from now on.
+
+Conversely, we shall implicitly insert $\kord{return}$ whenever we use a value
+where a computation is expected. For example, we shall write
+${\fun{x} \fun{y} (x, y)}$ instead of
+$\fun{x} \return (\fun{y} \return (x, y))$.
+
+\item[Semantics]
+Observe that each operation call
+creates a branching point in the evaluation, with as many branches as there are
+possible results that can be yielded to the continuation. For example, $\decide$
+will have two branches, $\print$ just one, and $\read$ will have infinite many
+branches: one for each possible input. Thus, we can imagine computations as
+trees, whose leaves are returned values and branching points are called operations. For an
+example, see Figure~\ref{fig:tree}.
+
+\begin{figure}[h]
+\small
+\hrulefill
+\[
+  \begin{aligned}
+    &\print \, \str{A}; \\
+    &\seq{n}{\get \, \unt} \\
+    &\conditional{n < 0}{\\&\quad\print \, \str{B};\\&\quad \return{-n^2}\\&}{\\&\quad \return{n + 1}}
+  \end{aligned}
+  \qquad
+  \begin{tikzpicture}[level distance=1cm,baseline=(current bounding box.east)]
+    \node {$\print \, \str{A}$}
+      child {
+        node {$\get \, \unt$}
+          child {
+            node {$\cdots$}
+          }
+          child {
+            node {$\print \, \str{B}$}
+              child {
+                node {$-4$}
+              }
+            edge from parent node[fill=white, inner sep=0pt] {\tiny $-2$}
+          }
+          child {
+            node {$\print \, \str{B}$}
+              child {
+                node {$-1$}
+              }
+            edge from parent node[fill=white, inner sep=1pt] {\tiny $-1$}
+          }
+          child {
+            node {$1$}
+            edge from parent node[fill=white, inner sep=1pt] {\tiny $0$}
+          }
+          child {
+            node {$2$}
+            edge from parent node[fill=white, inner sep=1pt] {\tiny $1$}
+          }
+          child {
+            node {$3$}
+            edge from parent node[fill=white, inner sep=1pt] {\tiny $2$}
+          }
+          child {
+            node {$\cdots$}
+          }
+      };
+  \end{tikzpicture}
+\]
+\hrulefill
+\caption{A computation and a corresponding tree.}
+\label{fig:tree}  
+\end{figure}
+
+\noindent
+In the presence of recursion, some of the leaves of the
+tree may also be labelled by $\bot$ to indicate a divergent computation that
+does not call any operations. A divergent computation that repeatedly calls
+operations is represented by a non-well-founded tree. Denotational semantics
+is further discussed in Section~\ref{sec:denotational-semantics}.
+
+\end{description}
