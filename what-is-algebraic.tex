@@ -22,6 +22,7 @@
 \newcommand{\Set}{\category{Set}} % The category of sets
 
 \newcommand{\Free}[2]{F_{\theory{#1}}(#2)} % free model
+\newcommand{\FreeFun}[1]{F_{\theory{#1}}} % free model functor
 
 \newcommand{\all}[1]{\forall #1 \,.\,} % universal quantifier
 \newcommand{\some}[1]{\exists #1 \,.\,} % existential quantifier
@@ -44,6 +45,8 @@
 \newcommand{\one}{\mathsf{1}} % the terminal object
 \newcommand{\unit}{()} % the sole element of the singleton
 
+\newcommand{\lift}[1]{#1^\dagger} % monad lift
+
 \newcommand{\Cinfty}{\mathcal{C}^\infty}
 
 \newcommand{\sem}[1]{[\![#1]\!]} % semantic bracket
@@ -63,7 +66,7 @@
 \newcommand{\conditional}[3]{\kode{if}\; #1 \;\kode{then}\; #2 \;\kode{else}\; #3}
 \newcommand{\fun}[1]{\kode{fun}\; #1 \mapsto}
 \newcommand{\handler}{\kode{handler}\;}
-\newcommand{\opgen}[1]{\op{#1}}
+\newcommand{\opgen}[2]{\op{#1}(#2)}
 \newcommand{\opcall}[3]{\kode{#1}(#2; #3)}
 \newcommand{\opclause}[3]{#1(#2; #3) \mapsto}
 \newcommand{\return}[1]{\kode{return}\;#1}
@@ -1601,17 +1604,74 @@ free model ought to be the desired one.
     }.
   \end{equation*}
   %
-  Functional programers will surely recognize the genesis of the state monad!
+  Functional programers will surely recognize the genesis of the state monad.
 \end{example}
 
-
+Let us expand on the last thought of the previous example and show, at the risk
+of wading a bit deeper into category theory, that free models of an algebraic
+theory~$\theory{T}$ form a monad. We describe the monad in a form familiar to
+Haskell programmers. First, we have an endofunctor $\FreeFun{T}$ on the category
+of sets which takes a set~$X$ to the free model $\Free{T}{X}$ and a map
+$f : X \to Y$ to the unique $\theory{T}$-homomorphism $\overline{f}$ for which
+the following diagram commutes:
+%
+\begin{equation*}
+  \xymatrix{
+    {X}
+    \ar[r]^{\eta_X}
+    \ar[d]_{f}
+    &
+    **[r]{\Free{T}{X}}
+    \ar[d]^{\overline{f}}
+    \\
+    {Y}
+    \ar[r]_{\eta_Y}
+    &
+    **[r]{\Free{T}{Y}}
+  }
+\end{equation*}
+%
+Second, the unit of the monad is the map $\eta_X : X \to \Free{T}{X}$ which
+takes an element~$x$ to the element of $\Free{T}{X}$ represented by
+$\return{x}$. Third, a map $h : X \to \Free{T}{Y}$ is lifted to the unique map
+$\lift{h} : \Free{T}{X} \to \Free{T}{Y}$ for which the following diagram commutes:
+%
+\begin{equation*}
+  \xymatrix{
+    {X}
+    \ar[r]^{\eta_X}
+    \ar[rd]_{h}
+    &
+    **[r]{\Free{T}{X}}
+    \ar[d]^{\lift{h}}
+    \\
+    &
+    **[r]{\Free{T}{Y}}
+  }
+\end{equation*}
+%
+Concretely, $\lift{h}$ is defined by recursion on
+($\approx_{\theory{T}}$-equivalence classes of) trees by
+%
+\begin{align*}
+  \lift{h}([\return{x}]) &= [h(x)], \\
+  \lift{h}([\opcall{op}{p}{\kappa}]) &= [\opcall{op}{p}{\lift{h} \circ \kappa}],
+\end{align*}
+%
+where~$\kode{op}$ ranges over the operations of~$\theory{T}$. The familiar
+binding operator from Haskell may be defined as
+%
+\begin{equation*}
+  (u \mathbin{{>}\!{>}\!{=}} h) = \lift{h}(u).
+\end{equation*}
 
 \subsection{Generic operations and binding}
 \label{sec:gener-oper-bind}
 
-We seem to have a good theory of computations, but the notation we are using is
-an abomination which neither mathematicians nor programmers would ever want to
-use. Let us provide a syntax that programmers will find acceptable.
+We seem to have a good theory of computations, but our notation is an
+abomination which neither mathematicians nor programmers would ever want to use.
+Let us provide a syntax that programmers will find acceptable.
+
 
 
 
