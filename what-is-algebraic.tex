@@ -1539,7 +1539,9 @@ The non-standard arrow $\leadsto$ is there to remind you that $\kode{op}$ is
   present case the instances $\iota \in I$ index the operations themselves.
   Second, all memory locations in Example~\ref{ex:theory-state} must store
   elements of one and the same set~$S$, whereas the present case allows a
-  different set $S_\iota$ for every instance~$\iota$.
+  different set $S_\iota$ for every instance~$\iota$. The price of combining the
+  two possibilities into a theory of parametrized locations, each of which stores
+  its own type, is steep---dependent types.
 \end{example}
 
 \subsection{Computations are free algebras}
@@ -1609,9 +1611,9 @@ free model ought to be the desired one.
 
 Let us expand on the last thought of the previous example and show, at the risk
 of wading a bit deeper into category theory, that free models of an algebraic
-theory~$\theory{T}$ form a monad. We describe the monad in a form familiar to
-Haskell programmers. First, we have an endofunctor $\FreeFun{T}$ on the category
-of sets which takes a set~$X$ to the free model $\Free{T}{X}$ and a map
+theory~$\theory{T}$ form a monad. We describe the monad structure in the form of
+a Kleisli triple. First, we have an endofunctor $\FreeFun{T}$ on the category of
+sets which takes a set~$X$ to the free model $\Free{T}{X}$ and a map
 $f : X \to Y$ to the unique $\theory{T}$-homomorphism $\overline{f}$ for which
 the following diagram commutes:
 %
@@ -1658,12 +1660,15 @@ Concretely, $\lift{h}$ is defined by recursion on
   \lift{h}([\opcall{op}{p}{\kappa}]) &= [\opcall{op}{p}{\lift{h} \circ \kappa}],
 \end{align*}
 %
-where~$\kode{op}$ ranges over the operations of~$\theory{T}$. The familiar
-binding operator from Haskell may be defined as
-%
-\begin{equation*}
-  (u \mathbin{{>}\!{>}\!{=}} h) = \lift{h}(u).
-\end{equation*}
+where~$\kode{op}$ ranges over the operations of~$\theory{T}$. We omit the
+verification of the Kleisli triple laws.
+
+\begin{example}
+  The monad structure of the free model is the one we expect in each particular
+  case. That is, the theory of state gives the usual state monad.
+\end{example}
+
+
 
 \subsection{Generic operations and binding}
 \label{sec:gener-oper-bind}
