@@ -24,6 +24,7 @@
 \newcommand{\Set}{\category{Set}} % The category of sets
 \newcommand{\opcat}[1]{\ensuremath{#1^{\text{\textbf{op}}}}}
 
+\newcommand{\carrier}[1]{|#1|} % carrier of a model
 \newcommand{\Free}[2]{F_{\theory{#1}}(#2)} % free model
 \newcommand{\FreeFun}[1]{F_{\theory{#1}}} % free model functor
 
@@ -47,7 +48,7 @@
 \newcommand{\opdecl}[3]{#1 : #2 \leadsto #3} % operation declaration
 
 \newcommand{\one}{\mathsf{1}} % the terminal object
-\newcommand{\unit}{()} % the sole element of the singleton
+\newcommand{\unit}{{\text{\small$()$}}} % the sole element of the singleton
 
 \newcommand{\lift}[1]{#1^\dagger} % monad lift
 
@@ -60,6 +61,10 @@
 \newcommand{\false}{\mathsf{false}}
 \newcommand{\cond}[3]{\mathsf{if}\;#1\;\mathsf{then}\;#2\;\mathsf{else}\;#3}
 
+\newcommand{\hto}{\Rightarrow} % Handler arrow
+
+\newcommand{\defeq}{\mathbin{{:}{=}}} % definitional equality
+
 %%% Macros for the programming language
 
 % General syntactic constructs
@@ -71,7 +76,8 @@
 \newcommand{\conditional}[3]{\kode{if}\; #1 \;\kode{then}\; #2 \;\kode{else}\; #3}
 \newcommand{\fun}[1]{\kode{fun}\; #1 \mapsto}
 \newcommand{\handler}{\kode{handler}\;}
-\newcommand{\opgen}[2]{\overline{\kode{#1}}(#2)}
+\newcommand{\xopgen}[2]{\overline{#1}(#2)}
+\newcommand{\opgen}[2]{\xopgen{\kode{#1}}{#2}}
 \newcommand{\opcall}[3]{\kode{#1}(#2; #3)}
 \newcommand{\opclause}[3]{#1(#2; #3) \mapsto}
 \newcommand{\return}[1]{\kode{return}\;#1}
@@ -386,11 +392,11 @@ Let a signature $\Sigma$ be given. An \emph{interpretation~$I$} of $\Sigma$ is g
 the following data:
 %
 \begin{enumerate}
-\item a set $|I|$, called the \emph{carrier},
+\item a set $\carrier{I}$, called the \emph{carrier},
 \item for each operation symbol $\op{i}$ a map
   %
   \begin{equation*}
-    \sem{\op{i}}_I : \underbrace{|I| \times \cdots \times |I|}_{\arity{i}} \to |I|.
+    \sem{\op{i}}_I : \underbrace{\carrier{I} \times \cdots \times \carrier{I}}_{\arity{i}} \to \carrier{I}.
   \end{equation*}
 \end{enumerate}
 %
@@ -399,11 +405,11 @@ used when syntactic entities (operation symbols, terms, equations) are mapped by
 their mathematical counterparts. When no confusion can arise, we omit the subscript~$I$
 and write just~$\sem{{\ }}$.
 
-We abbreviate an $n$-ary product $|I| \times \cdots \times |I|$ as $|I|^n$. A
-nullary product $|I|^0$ contains a single element, namely the empty tuple
-$\unit$, so it makes sense to write $|I|^0 = \one = \set{\unit}$. Thus a nullary
-operation symbol is interpreted by an map $\one \to |I|$, and such maps are in
-bijective correspondence with the elements of~$|I|$, which would be the constants.
+We abbreviate an $n$-ary product $\carrier{I} \times \cdots \times \carrier{I}$ as $\carrier{I}^n$. A
+nullary product $\carrier{I}^0$ contains a single element, namely the empty tuple
+$\unit$, so it makes sense to write $\carrier{I}^0 = \one = \set{\unit}$. Thus a nullary
+operation symbol is interpreted by an map $\one \to \carrier{I}$, and such maps are in
+bijective correspondence with the elements of~$\carrier{I}$, which would be the constants.
 
 An interpretation~$I$ may be extended to $\Sigma$-terms. A $\Sigma$-term in context
 %
@@ -414,7 +420,7 @@ An interpretation~$I$ may be extended to $\Sigma$-terms. A $\Sigma$-term in cont
 is interpreted by a map
 %
 \begin{equation*}
-  \sem{x_0, \ldots, x_{k-1} \mid t}_I : |I|^k \to |I|,
+  \sem{x_0, \ldots, x_{k-1} \mid t}_I : \carrier{I}^k \to \carrier{I},
 \end{equation*}
 %
 as follows:
@@ -423,7 +429,7 @@ as follows:
 \item the variable $x_i$ is interpreted as the $i$-th projection,
   %
   \begin{equation*}
-    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : |I|^k \to |I|,
+    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : \carrier{I}^k \to \carrier{I},
   \end{equation*}
 \item a compound term in context
   %
@@ -435,11 +441,11 @@ as follows:
   %
   \begin{equation*}
     \xymatrix@+6em{
-      {|I|^k} \ar[r]^{(\sem{t_1}_I, \ldots, \sem{t_{\arity{i}}}_I)}
+      {\carrier{I}^k} \ar[r]^{(\sem{t_1}_I, \ldots, \sem{t_{\arity{i}}}_I)}
       &
-      {|I|^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
+      {\carrier{I}^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
       &
-      {|I|}
+      {\carrier{I}}
     }
   \end{equation*}
   %
@@ -495,27 +501,28 @@ equation
 in~$\equations{T}$, the maps
 %
 \begin{equation*}
-  \sem{x_1, \ldots, x_k \mid \ell}_M : |M|^k \to |M|
+  \sem{x_1, \ldots, x_k \mid \ell}_M : \carrier{M}^k \to \carrier{M}
   \qquad\text{and}\qquad
-  \sem{x_1, \ldots, x_k \mid r}_M : |M|^k \to |M|
+  \sem{x_1, \ldots, x_k \mid r}_M : \carrier{M}^k \to \carrier{M}
 \end{equation*}
 %
-are equal.
+are equal. We refer to a model of~$\theory{T}$ as a \emph{$\theory{T}$-model} or
+a \emph{$\theory{T}$-algebra}.
 
 \begin{example}
   A model $G$ of $\theory{Group}$, cf.\ Example~\ref{ex:theory-group}, is given by a
-  carrier set $|G|$ and maps
+  carrier set $\carrier{G}$ and maps
   %
   \begin{equation*}
-    u : \one \to |G|,\qquad
-    m : |G| \times |G| \to |G|,\qquad
-    i : |G| \to |G|,
+    u : \one \to \carrier{G},\qquad
+    m : \carrier{G} \times \carrier{G} \to \carrier{G},\qquad
+    i : \carrier{G} \to \carrier{G},
   \end{equation*}
   %
   interpreting the operation symbols $\mathsf{u}$, $\mathsf{m}$, and $\mathsf{i}$,
   respectively, such that the equations~$\equations{Group}$. This amounts precisely to
-  $(|G|, u, m, i)$ being a group, except that the unit $u$ is viewed as a map
-  $\one \to |G|$ instead of an element of~$|G|$.
+  $(\carrier{G}, u, m, i)$ being a group, except that the unit $u$ is viewed as a map
+  $\one \to \carrier{G}$ instead of an element of~$\carrier{G}$.
 \end{example}
 
 \begin{example}
@@ -553,7 +560,7 @@ Suppose $L$ and $M$ are models of a theory~$\theory{T}$. Then we may form the
 \emph{product of models} $L \times M$ by taking the cartesian product as the carrier,
 %
 \begin{equation*}
-  |L \times M| = |L| \times |M|,
+  \carrier{L \times M} = \carrier{L} \times \carrier{M},
 \end{equation*}
 %
 and pointwise operations,
@@ -599,7 +606,7 @@ models, including an infinite one.
 \label{sec:homom-categ-models}
 
 Suppose $L$ and $M$ are models of a theory~$\theory{T}$. A
-\emph{$\theory{T}$-homomorphism} from $L$ to $M$ is a map $\phi : |L| \to |M|$ between the
+\emph{$\theory{T}$-homomorphism} from $L$ to $M$ is a map $\phi : \carrier{L} \to \carrier{M}$ between the
 carriers which commutes with operations: for every operation symbol $\op{i}$
 of~$\theory{T}$, we have
 %
@@ -608,8 +615,8 @@ of~$\theory{T}$, we have
 \end{equation*}
 
 \begin{example}
-  A homomorphism between groups $G$ and $H$ is a map $\phi : |G| \to |H|$ between the
-  carriers such that, for all $a, b \in |G|$,
+  A homomorphism between groups $G$ and $H$ is a map $\phi : \carrier{G} \to \carrier{H}$ between the
+  carriers such that, for all $a, b \in \carrier{G}$,
   %
   \begin{align*}
     \phi(\sem{\mathsf{u}()}_G) &= \sem{\mathsf{u}()}_H,\\
@@ -662,17 +669,17 @@ and~\ref{sec:models-algebr-theor} may be directly transcribed so that they apply
 to~$\category{C}$. An interpretation $I$ in $\category{C}$ is given by
 %
 \begin{enumerate}
-\item an object $|I|$ in $\category{C}$, called the \emph{carrier},
+\item an object $\carrier{I}$ in $\category{C}$, called the \emph{carrier},
 \item for each operation symbol $\op{i}$ a morphism in $\category{C}$
   %
   \begin{equation*}
-    \sem{\op{i}}_I : \underbrace{|I| \times \cdots \times |I|}_{\arity{i}} \to |I|.
+    \sem{\op{i}}_I : \underbrace{\carrier{I} \times \cdots \times \carrier{I}}_{\arity{i}} \to \carrier{I}.
   \end{equation*}
 \end{enumerate}
 %
-Once again, we abbreviate the $k$-fold product of $|I|$ as $|I|^k$. Notice that a nullary
-symbol is interpreted as a morphism $|I|^0 \to |I|$, which is a morphisms from the
-terminal object $\one \to |I|$ in~$\category{C}$.
+Once again, we abbreviate the $k$-fold product of $\carrier{I}$ as $\carrier{I}^k$. Notice that a nullary
+symbol is interpreted as a morphism $\carrier{I}^0 \to \carrier{I}$, which is a morphisms from the
+terminal object $\one \to \carrier{I}$ in~$\category{C}$.
 
 An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
 %
@@ -680,7 +687,7 @@ An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
 \item the variable $x_1, \ldots, x_k \mid x_i$ is interpreted as the $i$-th projection,
   %
   \begin{equation*}
-    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : |I|^k \to |I|,
+    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : \carrier{I}^k \to \carrier{I},
   \end{equation*}
 \item a compound term in context
   %
@@ -692,11 +699,11 @@ An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
   %
   \begin{equation*}
     \xymatrix@+6em{
-      {|I|^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{\arity{i}}}_I)}
+      {\carrier{I}^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{\arity{i}}}_I)}
       &
-      {|I|^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
+      {\carrier{I}^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
       &
-      {|I|}
+      {\carrier{I}}
     }
   \end{equation*}
 \end{enumerate}
@@ -712,16 +719,16 @@ equation
 in $\equations{T}$, the morphisms
 %
 \begin{equation*}
-  \sem{x_1, \ldots, x_k \mid \ell}_M : |M|^k \to |M|
+  \sem{x_1, \ldots, x_k \mid \ell}_M : \carrier{M}^k \to \carrier{M}
   \qquad\text{and}\qquad
-  \sem{x_1, \ldots, x_k \mid r}_M : |M|^k \to |M|
+  \sem{x_1, \ldots, x_k \mid r}_M : \carrier{M}^k \to \carrier{M}
 \end{equation*}
 %
 are equal.
 
 The definition of a homomorphism carries over to the general setting as well. A
 \emph{$\theory{T}$-homomorphism} between $\theory{T}$-models $L$ and $M$ in a category
-$\category{C}$ is a morphism $\phi : |L| \to |M|$ in~$\category{C}$ such that, for every
+$\category{C}$ is a morphism $\phi : \carrier{L} \to \carrier{M}$ in~$\category{C}$ such that, for every
 operation symbol~$\op{i}$ in~$\theory{T}$, $\phi$ commutes with the interpretation of
 $\op{i}$,
 %
@@ -779,11 +786,13 @@ category $\ModC{C}{T}$.
 \subsection{Free models}
 \label{sec:free-models}
 
-Of special interest are the free models of an algebraic theory. Given an algebraic
-theory~$\theory{T}$ and a set $X$, the \emph{free model generated by~$X$} is a model $M$
-together with a map $\eta : X \to |M|$ such that, for every $\theory{T}$-model $L$ and
-every map $f : X \to |L|$ there is a unique $\theory{T}$-homomorphism
-$\overline{f} : M \to L$ for which the following diagram commutes:
+Of special interest are the free models of an algebraic theory. Given an
+algebraic theory~$\theory{T}$ and a set $X$, the \emph{free $\theory{T}$-model},
+also called the \emph{free $\theory{T}$-algebra}, generated by~$X$ is a model
+$M$ together with a map $\eta : X \to \carrier{M}$ such that, for every
+$\theory{T}$-model $L$ and every map $f : X \to \carrier{L}$ there is a unique
+$\theory{T}$-homomorphism $\overline{f} : M \to L$ for which the following
+diagram commutes:
 %
 \begin{equation*}
   \xymatrix{
@@ -791,21 +800,22 @@ $\overline{f} : M \to L$ for which the following diagram commutes:
     \ar[r]^{\eta}
     \ar[rd]_{f}
     &
-    {|M|}
+    {\carrier{M}}
     \ar[d]^{\overline{f}}
     \\
     &
-    {|L|}
+     \carrier{L}
   }
 \end{equation*}
 %
-The definition is a bit of a mouthful, but it can be understood as follows: the free model
-generated by $X$ is the ``most economical'' way of making a model out of the set~$X$.
+The definition is a bit of a mouthful, but it can be understood as follows: the
+free $\theory{T}$-model generated by $X$ is the ``most economical'' way of
+making a $\theory{T}$-model out of the set~$X$.
 
 \begin{example}
   The free group generated by the empty set is the trivial group~$\one$ with
   just one element. The map $\eta : \emptyset \to \one$ is the unique one, and
-  given any (unique) map $f : \emptyset \to |G|$ to a carrier of another
+  given any (unique) map $f : \emptyset \to \carrier{G}$ to a carrier of another
   group~$G$, there is a unique group homomorphism $\overline{f} : \one \to G$.
   The relevant triangle commutes automatically because it originates
   at~$\emptyset$.
@@ -823,7 +833,7 @@ generated by $X$ is the ``most economical'' way of making a model out of the set
   $(\finpow{X}, \emptyset, {\cup})$ is the free semilattice generated by~$X$, cf.\
   Example~\ref{ex:semi-lattice}. The map $\eta : X \to \finpow{X}$ takes $x \in X$ to the
   singleton set $\eta(x) = \set{x}$. Given any semilattice $(L, \bot, {\vee})$ and a map
-  $f : X \to |L|$, define the homomorphism $\overline{f} : \finpow{X} \to |L|$ by
+  $f : X \to \carrier{L}$, define the homomorphism $\overline{f} : \finpow{X} \to \carrier{L}$ by
   %
   \begin{equation*}
     \overline{f}(\set{x_1, \ldots, x_n}) = f(x_1) \wedge \cdots \wedge f(x_n).
@@ -835,7 +845,7 @@ generated by $X$ is the ``most economical'' way of making a model out of the set
     \overline{f}(\eta(x)) = \overline{f}(\set{x}) = f(x).
   \end{equation*}
   %
-  If $g : \finpow{X} \to |L|$ is another homomorphism satisfying $g \circ \eta = f$ then
+  If $g : \finpow{X} \to \carrier{L}$ is another homomorphism satisfying $g \circ \eta = f$ then
   %
   \begin{multline*}
     g(\set{x_1, \ldots, x_n})
@@ -929,7 +939,7 @@ $\Tree{\signature{T}}{X}$ such that:
 Define the carrier of the free model $\Free{T}{X}$ to be the quotient set
 %
 \begin{equation*}
-  |\Free{T}{X}| = \Tree{\signature{T}}{X} / {\approx_{\theory{T}}}.
+  \carrier{\Free{T}{X}} = \Tree{\signature{T}}{X} / {\approx_{\theory{T}}}.
 \end{equation*}
 %
 Let $[t]$ be the $\approx_{\theory{T}}$-equivalence class of
@@ -1164,12 +1174,12 @@ $\Tree{\Sigma}{\set{x_1, \ldots, x_k}}$.
 An \emph{interpretation $I$ of a signature $\Sigma$} is given by:
 %
 \begin{enumerate}
-\item a carrier set $|I|$,
+\item a carrier set $\carrier{I}$,
 \item for each operation symbol $\op{i}$ with parameter set~$P_i$ and arity~$A_i$,
   a map
   %
   \begin{equation*}
-    \sem{\op{i}}_I : P_i \times |I|^{A_i} \longrightarrow |I|.
+    \sem{\op{i}}_I : P_i \times \carrier{I}^{A_i} \longrightarrow \carrier{I}.
   \end{equation*}
 \end{enumerate}
 %
@@ -1177,7 +1187,7 @@ The interpretation $I$ may be extended to terms in contexts. A term
 $x_1, \ldots, x_k \mid t$ is interpreted as a map
 %
 \begin{equation*}
-  \sem{x_1, \ldots, x_k \mid t}_I : |I|^k \to |I|
+  \sem{x_1, \ldots, x_k \mid t}_I : \carrier{I}^k \to \carrier{I}
 \end{equation*}
 %
 as follows:
@@ -1186,7 +1196,7 @@ as follows:
 \item the variable $x_i$ is interpreted as the $i$-th projection,
   %
   \begin{equation*}
-    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : |I|^k \to |I|,
+    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : \carrier{I}^k \to \carrier{I},
   \end{equation*}
 \item a compound term in context
   %
@@ -1197,7 +1207,7 @@ as follows:
   is interpreted as the map
   %
   \begin{align*}
-    \sem{\op{i}(p, \kappa)}_I &: |I|^k \longrightarrow |I| \\
+    \sem{\op{i}(p, \kappa)}_I &: \carrier{I}^k \longrightarrow \carrier{I} \\
     \sem{\op{i}(p, \kappa)}_I &:
       \eta \mapsto
       \sem{\op{i}}_I(p, \lam{a \in A_i} \sem{\kappa(a)}_I(\eta)),
@@ -1549,7 +1559,7 @@ The non-standard arrow $\leadsto$ is there to remind you that $\kode{op}$ is
   its own type, is steep---dependent types.
 \end{example}
 
-\subsection{Computations are free algebras}
+\subsection{Computations are free models}
 \label{sec:comp-are-free}
 
 We have theories of computational effects, but among all the models of such
@@ -1563,8 +1573,8 @@ free model ought to be the desired one.
   Consider the theory $\theory{State}$ of a single state storing elements of~$S$
   from Example~\ref{ex:theory-single-state}. We expect that computations which
   use $\kode{put}$ and $\kode{get}$, and return values from a set~$V$ are
-  adequately modeled by the free algebra $\Free{State}{V}$. As we saw in
-  Section~\ref{sec:free-models}, the free algebra is a quotient of the set of
+  adequately modeled by the free model $\Free{State}{V}$. As we saw in
+  Section~\ref{sec:free-models}, the free model is a quotient of the set of
   trees $\Tree{\signature{State}}{V}$ by a congruence
   relation~$\approx_{\theory{State}}$. Every tree is congruent to one of the
   form
@@ -1761,7 +1771,7 @@ Consider an algebraic theory~$\theory{T}$. For an operation $\opdecl{op}{P}{A}$
 in $\signature{T}$, define the corresponding \emph{generic operation}
 %
 \begin{equation*}
-  \opgen{op}{p} = \opcall{op}{p}{\lam{x} \return{x}}.
+  \opgen{op}{p} \defeq \opcall{op}{p}{\lam{x} \return{x}}.
 \end{equation*}
 %
 In words, the generic version performs the operation and returns its result.
@@ -1802,9 +1812,9 @@ Even better, nested operations
 may be written in Haskell-like notation
 %
 \begin{align*}
-  &\seq{x_1}{\opgen{op_1}{p_1}} \\
-  &\seq{x_2}{\opgen{op_3}{p_3}} \\
-  &\seq{x_2}{\opgen{op_3}{p_3}}
+  &\seq{x_1}{\xopgen{\kode{op}_1}{p_1}} \\
+  &\seq{x_2}{\xopgen{\kode{op}_3}{p_3}} \\
+  &\seq{x_2}{\xopgen{\kode{op}_3}{p_3}}
   \cdots
 \end{align*}
 %
@@ -1813,7 +1823,8 @@ operations. The generic operation $\overline{\kode{op}}$ with parameter set~$P$
 and arity~$A$ looks to a programmer like a function of type $P \to A$, which is
 why we use the notation $\opdecl{\kode{op}}{P}{A}$ to specify signatures.
 
-Because sequencing is just lifting, it is governed by the same equations:
+Because sequencing is just lifting in disguise, it is governed by the same
+equations as lifting:
 %
 \begin{align*}
   (\seq{x}{\return{v}} h(x)) &= h(v), \\
@@ -1821,25 +1832,172 @@ Because sequencing is just lifting, it is governed by the same equations:
   \opcall{op}{p}{\lam{y} \seq{x}{\kappa(y)} h(x)}.
 \end{align*}
 %
-If we rewrite the second equation with generic operations we get an
-associativity law for sequencing,
+These allow us to eliminate sequencing from any expression. When we rewrite the
+second equation with generic operations we get an associativity law for
+sequencing:
 %
 \begin{equation*}
   (\seq{x}{(\seq{y}{\opgen{op}{p}} \kappa(y))} h(x)) =
   (\seq{y}{\opgen{op}{p}} \seq{x}{\kappa(y)} h(x)).
 \end{equation*}
 
-Finally, let us point out to the ML aficionados may be pleased to learn that the
-sequencing notation in ML-style language is none other than $\kode{let}$-binding
+The ML aficionados may be pleased to learn that the sequencing notation in
+an ML-style language is none other than $\kode{let}$-binding,
 %
 \begin{equation*}
   \kode{let}\; x = t\;\kode{in}\;h(x).
 \end{equation*}
 
 
+\section{Handlers}
+\label{sec:handlers}
 
-\section{Algebraic handlers}
-\label{sec:algebraic-handlers}
+So far the main takeway is that computations returing values from~$V$ and
+performing operations of a theory~$\theory{T}$ are the elements of the free
+model $\Free{T}{X}$. What about \emph{transformations} between computations,
+what are they? An easy but useless answer is that they are just maps between the
+carriers of free models,
+%
+\begin{equation*}
+  \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}},
+\end{equation*}
+%
+whereas a better answer should take into account the algebraic structure. Having
+put so much faith in algebra, let us continue to do so and postulate that a
+transformation between computations be a homomorphism. Should it be a
+homomorphism with respect to~$\theory{T}$ or~$\theory{T}'$? We could weasle out
+of the question by considering only homomorphisms of the form
+$\Free{T}{X} \to \Free{T}{X'}$, but such homomorphisms are rather uninteresting,
+because they amount to the same thing as map~$X \to \Free{T}{X'}$. We want
+transformation between computations that transform the operations as well as
+values.
+
+To get a reasonable notion of transformation, let us recall that the universal
+property of free models speaks about maps \emph{from} a free model. Thus, a
+transformation between computations should be a $\theory{T}$-homomorphism
+%
+\begin{equation*}
+  H : \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}}.
+\end{equation*}
+%
+For this to make any sense, the carrier $\carrier{\Free{T'}{X'}}$ must carry the
+structure of a $\theory{T}$-model, i.e., in addition to~$H$ we must also
+provide a $\theory{T}$-model on $\carrier{\Free{T'}{X'}}$. If we take into account the
+fact that $H$ is uniquely determined by its action on the generators, we
+arrive at the following notion, which we call a handler.
+
+A \emph{handler} from computations $\Free{T}{X}$ to computations $\Free{T'}{X'}$
+is given by the following data:
+%
+\begin{enumerate}
+\item a map $f : X \to \carrier{\Free{T'}{X'}}$,
+\item for every operation $\opdecl{\op{i}}{P_i}{A_i}$ in $\signature{T}$, a map
+  %
+  \begin{equation*}
+    h_i : P_i \times \carrier{\Free{T'}{X'}}^{A_i} \to \carrier{\Free{T'}{X'}}
+  \end{equation*}
+  %
+  such that
+\item the maps $h_i$ form a $\theory{T}$-model on~$\carrier{\Free{T'}{X'}}$, i.e., they
+ validate the equations~$\equations{T}$.
+\end{enumerate}
+%
+The map $H : \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}}$ induced by these
+data is the unique one satisfying
+%
+\begin{align*}
+  H([\return{x}]) &= f(x), \\
+  H([\opcall{op}{p}{\kappa}]) &= h_i(p, H \circ \kappa).
+\end{align*}
+%
+We write
+%
+\begin{equation*}
+  H : \Free{T}{X} \hto \Free{T'}{X'}
+\end{equation*}
+%
+when $H$ is a handler from $\Free{T}{X}$ to $\Free{T'}{X'}$.
+
+From a mathematical point of view handlers are just a fairly unnatural
+combination of algebraic notions, but they are much more interesting from a
+programming point of view, as we shall demonstrate next.
+
+We need a notation for handlers that neatly collects its defining data. Let us write
+%
+\begin{equation}
+  \label{eq:handler-notation}
+  %
+  \handler \{
+    \retclause{x} f(x), \;
+    \big( \opclause{\op{i}}{y}{\kappa} h_i(y, \kappa) \big)_{\op{i} \in \signature{T}}
+  \}
+\end{equation}
+%
+for the handler~$H$ determined by the maps $f$ and $h_i$, as above, and
+%
+\begin{equation*}
+  \withhandle{H}{C}
+\end{equation*}
+%
+for the application of handler~$H$ to a computation~$C$. The defining
+equations for handlers written in the new notation are, where $H$ stands for the
+handler~\eqref{eq:handler-notation}:
+%
+\begin{align*}
+  (\withhandle{H}{\return v}) &= f(v), \\
+  (\withhandle{H}{\seq{x}{\xopgen{\op{i}}{p}} \kappa(x)}) &=
+  h_i (p, \lam{x} \withhandle{H}{\kappa(x)})
+\end{align*}
+
+\begin{example}
+  Let us consider the theory $\theory{Exn}$ of an exception, cf.\
+  Example~\ref{ex:theory-exception}. A handler
+  %
+  \begin{equation*}
+    H : \Free{Exn}(X) \hto \Free{T}{Y}
+  \end{equation*}
+  %
+  is given by a $\kode{return}$ clause and an $\kode{abort}$ clause,
+  %
+  \begin{equation*}
+    \handler \{
+      \retclause{x} f(x),
+      \opclause{\kode{abort}}{y}{\kappa} c
+    \},
+  \end{equation*}
+  %
+  where $f : X \to \Free{T}{Y}$ and $c \in \Free{T}{Y}$. Note that $c$ does not
+  depend on $y \in \one$ and $\kappa : \emptyset \to \Free{T}{Y}$ because they
+  are both useless. The theory of an exception has no equations, so such a
+  handler is automatically well defined. Such a handler is quite similar to
+  exception handlers from mainstream programming languages, except that it
+  handles both the exception and the return value.
+\end{example}
+
+We could now give many examples of handlers to show that they are a very useful
+programming concept which unifies and generalizes a number of techniques:
+exception handlers, backtracking and other search strategies, I/O redirection,
+transactional memory, coroutines, coopreative multi-threading, delimited
+continuations, probabilistic programming, and many others. As this note is
+already getting quite long, we recommend existing
+tutorials~\cite{handler-tutorials}.
+
+There is a programming language design question regarding handlers which we have
+to answer before we can design a programming language with handlers.
+For~\eqref{eq:handler-notation} to define a handler
+$\Free{Exn}(X) \hto \Free{T}{Y}$, the operation clauses $h_i$ must satisfy the
+equations of~$\theory{T}$. In general it is impossible to check algorithmically
+whether this is the case, and so a compiler or a language interpreter should
+avoid even trying to. Existing languages with handlers solve the problem by
+ignoring the equations. This is not as bad as it sounds, because in practice we
+often want handlers that break the equations. Moreover, dropping equations just
+means that we work with trees as representatives of their equivalence classes,
+which is a common implementation technique (for instance, when we represent
+finite sets by lists).
+
+
+\section{Making a programming language}
+\label{sec:making-progr-lang}
 
 
 \begin{figure}[ht]
