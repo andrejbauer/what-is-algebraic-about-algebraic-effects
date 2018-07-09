@@ -1,101 +1,9 @@
-\documentclass{amsart}
+\section{What is coalgebraic about algebraic effects and handlers?}
 
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage[hidelinks]{hyperref}
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{times}
-\usepackage{xypic}
+Besides strong connection with algebras, algebraic effects also have some relatively unexplored coalgebraic features. The main objects of our study will be \emph{comodels} of an algebraic theory. Let us start with an abstract categorical definition and work back from there to a useful characterization. Those not interested in categorical manipulations may skip to Section~\ref{sec:comodels} and take that as a starting point.
 
-\newcommand{\NN}{\mathbb{N}} % natural numbers
-\newcommand{\RR}{\mathbb{R}} % real numbers
-\newcommand{\ZZ}{\mathbb{Z}} % integers
-
-\newcommand{\theory}[1]{\mathsf{#1}} % A named theory
-\newcommand{\signature}[1]{\Sigma_{\theory{#1}}} % The signature of a theory
-\newcommand{\equations}[1]{\mathcal{E}_{\theory{#1}}} % Equations of a theory
-
-\newcommand{\Mod}[1]{\text{\textbf{Mod}}(\theory{#1})} % Models of a theory in Set
-\newcommand{\ModC}[2]{\text{\textbf{Mod}}_{\category{#1}}(\theory{#2})} % Models of a theory in a category
-\newcommand{\ComodC}[2]{\text{\textbf{CoMod}}_{\category{#1}}(\theory{#2})} % Comodels of a theory in a category
-\newcommand{\opcat}[1]{\ensuremath{#1^{\text{\textbf{op}}}}}
-\newcommand{\from}{\leftarrow}
-
-\newcommand{\category}[1]{\text{\textbf{#1}}} % A named category
-\newcommand{\Set}{\category{Set}} % The category of sets
-
-\newcommand{\Free}[2]{F_{\theory{#1}}(#2)} % free model
-
-\newcommand{\all}[1]{\forall #1 \,.\,} % universal quantifier
-\newcommand{\some}[1]{\exists #1 \,.\,} % existential quantifier
-\newcommand{\set}[1]{\{#1\}} % set description
-\newcommand{\such}{\mid}
-
-\newcommand{\lam}[1]{\lambda #1 \,.\,}
-
-\newcommand{\family}[2]{\{#1\}_{#2}} % a family
-
-\newcommand{\finpow}[1]{\mathcal{P}_{{<}\omega}(#1)} % finite powerset
-
-\newcommand{\Tree}[2]{\mathsf{Tree}_{#1}(#2)} % trees over a signature
-\newcommand{\leaf}[1]{\mathsf{leaf}(#1)} % the embedding of generators into trees
-
-\newcommand{\op}[1]{\mathsf{op}_{#1}} % an operation symbol
-\newcommand{\arity}[1]{\mathsf{ar}_{#1}} % arity of a symbol
-
-\newcommand{\one}{\mathsf{1}} % the terminal object
-
-\newcommand{\Cinfty}{\mathcal{C}^\infty}
-
-\newcommand{\sem}[1]{[\![#1]\!]} % semantic bracket
-
-\newcommand{\bool}{\mathsf{bool}} % booleans
-\newcommand{\true}{\mathsf{true}}
-\newcommand{\false}{\mathsf{false}}
-\newcommand{\cond}[3]{\mathsf{if}\;#1\;\mathsf{then}\;#2\;\mathsf{else}\;#3}
-\newcommand{\conf}[2]{\langle #1, #2 \rangle}
-
-%%% Macros for the programming language
-
-% General syntactic constructs
-\newcommand{\kode}[1]{\mathtt{#1}}
-
-% Core syntax
-\newcommand{\seq}[2]{\kode{do}\; #1 \leftarrow #2 \;\kode{in}\;}
-\newcommand{\conditional}[3]{\kode{if}\; #1 \;\kode{then}\; #2 \;\kode{else}\; #3}
-\newcommand{\fun}[1]{\kode{fun}\; #1 \mapsto}
-\newcommand{\handler}{\kode{handler}\;}
-\newcommand{\opgen}[1]{\op{#1}}
-\newcommand{\opcall}[4]{#1(#2; #3.\,#4)}
-\newcommand{\opclause}[3]{#1(#2; #3) \mapsto}
-\newcommand{\return}[1]{\kode{return}\;#1}
-\newcommand{\retclause}[1]{\return{#1} \mapsto}
-\newcommand{\withhandle}[2]{\kode{with}\; #1\; \kode{handle}\; #2}
-
-
-
-{\theoremstyle{definition}
-\newtheorem{definition}{Definition}[section]
-\newtheorem{example}[definition]{Example}
-}
-
-\begin{document}
-
-\title{What is coalgebraic about algebraic effects and handlers?}
-\thanks{The author acknowledges that this material is based upon work
- supported by the Air Force Office of Scientific Research under award number
- FA9550-17-1-0326.}
-\author{Matija Pretnar}
-
-\maketitle
-
-As the name suggests and as Andrej Bauer explained in his note \emph{``What is algebraic about algebraic effects and handlers?''} above, algebraic effects and their handlers have a strong connection with algebras. In this note, I will try to show that they also have some relatively unexplored coalgebraic features. We will continue where the previous note left off, so make sure to read that one first.
-
-
-\section{Dualizing models of algebraic theories}
+\subsection{Dualizing models of algebraic theories}
 \label{sec:dualizing-models}
-
-The main objects of our study will be \emph{comodels} of an algebraic theory. Let us start with an abstract categorical definition and work back from there to a useful characterization. Those not interested in categorical manipulations may skip to Section~\ref{sec:comodels} and take that as a starting point.
 
 Recall that for a given category $\category{C}$, the dual category $\opcat{\category{C}}$ has the same objects as $\category{C}$, whereas its morphisms go in the other direction: morphisms between $A$ and $B$ in $\opcat{\category{C}}$ correspond exactly to morphisms $B \to A$ in $\category{C}$, which is why we will write them as $A \from B$, keeping objects in the same place and reversing the arrows. We use bold letters to write $\text{\textbf{op}}$, the standard notation for a dual category, in order to distinguish it from $\op{}$, the standard notation for an algebraic operation.
 
@@ -179,7 +87,7 @@ in the category $\opcat{C}$. If we state this in terms of $\category{C}$, we get
 
 Let us now move to the category of sets, and while doing this, let us also switch to operations with parameters and a general arity. We see that in sets, $k \cdot |W| = [k] \times |W|$, so an operation symbol $\op{}$ with parameter set~$P$ and arity~$A$ can be interpreted as a cooperation $P \cdot |W| \to A \cdot |W|$.
 
-\section{Comodels of algebraic theories}
+\subsection{Comodels of algebraic theories}
 \label{sec:comodels}
 
 A \emph{cointerpretation $I$ of a signature $\Sigma$} is given by:
@@ -257,7 +165,7 @@ Output is represented with a unary operation symbol $\mathsf{print}$ with a para
 Note that if $\Sigma$ contains a nullary operation symbol $\op : 0$, no nontrivial cointerpretation of $\Sigma$ exists, as that would entail a set $|W|$ and a map $|W| \to \emptyset$, which is possible only if $|W|$ is itself $\emptyset$.
 \end{example}
 
-\section{Using comodels for interpreting hardware}
+\subsection{Using comodels for interpreting hardware}
 
 We can think of comodels~$W$ as hardware on which operations are executed. The carrier~$|W|$ represents the state, while cooperations $|W| \times P \to |W| \times A$ take the initial state and a parameter, and produce the result and the altered state.
 
@@ -271,9 +179,7 @@ We label the resulting quotient set $(M \times W) / \equiv$ by $M \otimes W$ and
 
 In case the theory~$\theory{T}$ is nontrivial, we must check that the relation is well-defined, for $\op{M}(p, \kappa)$ may be equivalent to some other $m' \in M$. Since $W$ is also a comodel, $\op{}^W$ obeys the same equations. We leave the proof as an exercise for the reader.
 
-\section{Tensoring models and comodels of algebraic theories}
+\subsection{Tensoring models and comodels of algebraic theories}
 \label{sec:tensoring-models}
 
 We have used comodels to represent the hardware that executes the operations that escape all handlers and reach the toplevel. Another frequent viewpoint is to represent it with a ``default handler'' which sits at the top and encompasses the whole executed computation. Let us compare the two representations and see why the former seems a better fit. First, we can show that any such hardware can indeed be simulated by a paramater-passing handler. For a comodel $W$ with cooperations, we can define a model $(X \times W)^W$ where the program computing values from $V$ can be ...
-
-\end{document}
