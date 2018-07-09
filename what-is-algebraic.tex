@@ -21,6 +21,7 @@
 \newcommand{\category}[1]{\text{\textbf{#1}}} % A named category
 \newcommand{\Set}{\category{Set}} % The category of sets
 
+\newcommand{\carrier}[1]{|#1|} % carrier of a model
 \newcommand{\Free}[2]{F_{\theory{#1}}(#2)} % free model
 \newcommand{\FreeFun}[1]{F_{\theory{#1}}} % free model functor
 
@@ -383,11 +384,11 @@ Let a signature $\Sigma$ be given. An \emph{interpretation~$I$} of $\Sigma$ is g
 the following data:
 %
 \begin{enumerate}
-\item a set $|I|$, called the \emph{carrier},
+\item a set $\carrier{I}$, called the \emph{carrier},
 \item for each operation symbol $\op{i}$ a map
   %
   \begin{equation*}
-    \sem{\op{i}}_I : \underbrace{|I| \times \cdots \times |I|}_{\arity{i}} \to |I|.
+    \sem{\op{i}}_I : \underbrace{\carrier{I} \times \cdots \times \carrier{I}}_{\arity{i}} \to \carrier{I}.
   \end{equation*}
 \end{enumerate}
 %
@@ -396,11 +397,11 @@ used when syntactic entities (operation symbols, terms, equations) are mapped by
 their mathematical counterparts. When no confusion can arise, we omit the subscript~$I$
 and write just~$\sem{{\ }}$.
 
-We abbreviate an $n$-ary product $|I| \times \cdots \times |I|$ as $|I|^n$. A
-nullary product $|I|^0$ contains a single element, namely the empty tuple
-$\unit$, so it makes sense to write $|I|^0 = \one = \set{\unit}$. Thus a nullary
-operation symbol is interpreted by an map $\one \to |I|$, and such maps are in
-bijective correspondence with the elements of~$|I$, which would be the constants.
+We abbreviate an $n$-ary product $\carrier{I} \times \cdots \times \carrier{I}$ as $\carrier{I}^n$. A
+nullary product $\carrier{I}^0$ contains a single element, namely the empty tuple
+$\unit$, so it makes sense to write $\carrier{I}^0 = \one = \set{\unit}$. Thus a nullary
+operation symbol is interpreted by an map $\one \to \carrier{I}$, and such maps are in
+bijective correspondence with the elements of~$\carrier{I}$, which would be the constants.
 
 An interpretation~$I$ may be extended to $\Sigma$-terms. A $\Sigma$-term in context
 %
@@ -411,7 +412,7 @@ An interpretation~$I$ may be extended to $\Sigma$-terms. A $\Sigma$-term in cont
 is interpreted by a map
 %
 \begin{equation*}
-  \sem{x_0, \ldots, x_{k-1} \mid t}_I : |I|^k \to |I|,
+  \sem{x_0, \ldots, x_{k-1} \mid t}_I : \carrier{I}^k \to \carrier{I},
 \end{equation*}
 %
 as follows:
@@ -420,7 +421,7 @@ as follows:
 \item the variable $x_i$ is interpreted as the $i$-th projection,
   %
   \begin{equation*}
-    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : |I|^k \to |I|,
+    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : \carrier{I}^k \to \carrier{I},
   \end{equation*}
 \item a compound term in context
   %
@@ -432,11 +433,11 @@ as follows:
   %
   \begin{equation*}
     \xymatrix@+6em{
-      {|I|^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{\arity{i}}}_I)}
+      {\carrier{I}^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{\arity{i}}}_I)}
       &
-      {|I|^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
+      {\carrier{I}^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
       &
-      {|I|}
+      {\carrier{I}}
     }
   \end{equation*}
   %
@@ -492,9 +493,9 @@ equation
 in~$\equations{T}$, the maps
 %
 \begin{equation*}
-  \sem{x_1, \ldots, x_k \mid \ell}_M : |M|^k \to |M|
+  \sem{x_1, \ldots, x_k \mid \ell}_M : \carrier{M}^k \to \carrier{M}
   \qquad\text{and}\qquad
-  \sem{x_1, \ldots, x_k \mid r}_M : |M|^k \to |M|
+  \sem{x_1, \ldots, x_k \mid r}_M : \carrier{M}^k \to \carrier{M}
 \end{equation*}
 %
 are equal. We refer to a model of~$\theory{T}$ as a \emph{$\theory{T}$-model} or
@@ -502,18 +503,18 @@ a \emph{$\theory{T}$-algebra}.
 
 \begin{example}
   A model $G$ of $\theory{Group}$, cf.\ Example~\ref{ex:theory-group}, is given by a
-  carrier set $|G|$ and maps
+  carrier set $\carrier{G}$ and maps
   %
   \begin{equation*}
-    u : \one \to |G|,\qquad
-    m : |G| \times |G| \to |G|,\qquad
-    i : |G| \to |G|,
+    u : \one \to \carrier{G},\qquad
+    m : \carrier{G} \times \carrier{G} \to \carrier{G},\qquad
+    i : \carrier{G} \to \carrier{G},
   \end{equation*}
   %
   interpreting the operation symbols $\mathsf{u}$, $\mathsf{m}$, and $\mathsf{i}$,
   respectively, such that the equations~$\equations{Group}$. This amounts precisely to
-  $(|G|, u, m, i)$ being a group, except that the unit $u$ is viewed as a map
-  $\one \to |G|$ instead of an element of~$|G|$.
+  $(\carrier{G}, u, m, i)$ being a group, except that the unit $u$ is viewed as a map
+  $\one \to \carrier{G}$ instead of an element of~$\carrier{G}$.
 \end{example}
 
 \begin{example}
@@ -551,7 +552,7 @@ Suppose $L$ and $M$ are models of a theory~$\theory{T}$. Then we may form the
 \emph{product of models} $L \times M$ by taking the cartesian product as the carrier,
 %
 \begin{equation*}
-  |L \times M| = |L| \times |M|,
+  \carrier{L \times M} = \carrier{L} \times \carrier{M},
 \end{equation*}
 %
 and pointwise operations,
@@ -597,7 +598,7 @@ models, including an infinite one.
 \label{sec:homom-categ-models}
 
 Suppose $L$ and $M$ are models of a theory~$\theory{T}$. A
-\emph{$\theory{T}$-homomorphism} from $L$ to $M$ is a map $\phi : |L| \to |M|$ between the
+\emph{$\theory{T}$-homomorphism} from $L$ to $M$ is a map $\phi : \carrier{L} \to \carrier{M}$ between the
 carriers which commutes with operations: for every operation symbol $\op{i}$
 of~$\theory{T}$, we have
 %
@@ -606,8 +607,8 @@ of~$\theory{T}$, we have
 \end{equation*}
 
 \begin{example}
-  A homomorphism between groups $G$ and $H$ is a map $\phi : |G| \to |H|$ between the
-  carriers such that, for all $a, b \in |G|$,
+  A homomorphism between groups $G$ and $H$ is a map $\phi : \carrier{G} \to \carrier{H}$ between the
+  carriers such that, for all $a, b \in \carrier{G}$,
   %
   \begin{align*}
     \phi(\sem{\mathsf{u}()}_G) &= \sem{\mathsf{u}()}_H,\\
@@ -660,17 +661,17 @@ and~\ref{sec:models-algebr-theor} may be directly transcribed so that they apply
 to~$\category{C}$. An interpretation $I$ in $\category{C}$ is given by
 %
 \begin{enumerate}
-\item an object $|I|$ in $\category{C}$, called the \emph{carrier},
+\item an object $\carrier{I}$ in $\category{C}$, called the \emph{carrier},
 \item for each operation symbol $\op{i}$ a morphism in $\category{C}$
   %
   \begin{equation*}
-    \sem{\op{i}}_I : \underbrace{|I| \times \cdots \times |I|}_{\arity{i}} \to |I|.
+    \sem{\op{i}}_I : \underbrace{\carrier{I} \times \cdots \times \carrier{I}}_{\arity{i}} \to \carrier{I}.
   \end{equation*}
 \end{enumerate}
 %
-Once again, we abbreviate the $k$-fold product of $|I|$ as $|I|^k$. Notice that a nullary
-symbol is interpreted as a morphism $|I|^0 \to |I|$, which is a morphisms from the
-terminal object $\one \to |I|$ in~$\category{C}$.
+Once again, we abbreviate the $k$-fold product of $\carrier{I}$ as $\carrier{I}^k$. Notice that a nullary
+symbol is interpreted as a morphism $\carrier{I}^0 \to \carrier{I}$, which is a morphisms from the
+terminal object $\one \to \carrier{I}$ in~$\category{C}$.
 
 An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
 %
@@ -678,7 +679,7 @@ An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
 \item the variable $x_1, \ldots, x_k \mid x_i$ is interpreted as the $i$-th projection,
   %
   \begin{equation*}
-    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : |I|^k \to |I|,
+    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : \carrier{I}^k \to \carrier{I},
   \end{equation*}
 \item a compound term in context
   %
@@ -690,11 +691,11 @@ An interpretation~$I$ is extended to $\Sigma$-terms in contexts as follows:
   %
   \begin{equation*}
     \xymatrix@+6em{
-      {|I|^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{\arity{i}}}_I)}
+      {\carrier{I}^k} \ar[r]^{(\sem{t_0}_I, \ldots, \sem{t_{\arity{i}}}_I)}
       &
-      {|I|^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
+      {\carrier{I}^{\arity{i}}} \ar[r]^{\sem{\op{i}}_I}
       &
-      {|I|}
+      {\carrier{I}}
     }
   \end{equation*}
 \end{enumerate}
@@ -710,16 +711,16 @@ equation
 in $\equations{T}$, the morphisms
 %
 \begin{equation*}
-  \sem{x_1, \ldots, x_k \mid \ell}_M : |M|^k \to |M|
+  \sem{x_1, \ldots, x_k \mid \ell}_M : \carrier{M}^k \to \carrier{M}
   \qquad\text{and}\qquad
-  \sem{x_1, \ldots, x_k \mid r}_M : |M|^k \to |M|
+  \sem{x_1, \ldots, x_k \mid r}_M : \carrier{M}^k \to \carrier{M}
 \end{equation*}
 %
 are equal.
 
 The definition of a homomorphism carries over to the general setting as well. A
 \emph{$\theory{T}$-homomorphism} between $\theory{T}$-models $L$ and $M$ in a category
-$\category{C}$ is a morphism $\phi : |L| \to |M|$ in~$\category{C}$ such that, for every
+$\category{C}$ is a morphism $\phi : \carrier{L} \to \carrier{M}$ in~$\category{C}$ such that, for every
 operation symbol~$\op{i}$ in~$\theory{T}$, $\phi$ commutes with the interpretation of
 $\op{i}$,
 %
@@ -780,8 +781,8 @@ category $\ModC{C}{T}$.
 Of special interest are the free models of an algebraic theory. Given an
 algebraic theory~$\theory{T}$ and a set $X$, the \emph{free $\theory{T}$-model},
 also called the \emph{free $\theory{T}$-algebra}, generated by~$X$ is a model
-$M$ together with a map $\eta : X \to |M|$ such that, for every
-$\theory{T}$-model $L$ and every map $f : X \to |L|$ there is a unique
+$M$ together with a map $\eta : X \to \carrier{M}$ such that, for every
+$\theory{T}$-model $L$ and every map $f : X \to \carrier{L}$ there is a unique
 $\theory{T}$-homomorphism $\overline{f} : M \to L$ for which the following
 diagram commutes:
 %
@@ -791,11 +792,11 @@ diagram commutes:
     \ar[r]^{\eta}
     \ar[rd]_{f}
     &
-    {|M|}
+    {\carrier{M}}
     \ar[d]^{\overline{f}}
     \\
     &
-    {|L|}
+     \carrier{L}
   }
 \end{equation*}
 %
@@ -806,7 +807,7 @@ making a $\theory{T}$-model out of the set~$X$.
 \begin{example}
   The free group generated by the empty set is the trivial group~$\one$ with
   just one element. The map $\eta : \emptyset \to \one$ is the unique one, and
-  given any (unique) map $f : \emptyset \to |G|$ to a carrier of another
+  given any (unique) map $f : \emptyset \to \carrier{G}$ to a carrier of another
   group~$G$, there is a unique group homomorphism $\overline{f} : \one \to G$.
   The relevant triangle commutes automatically because it originates
   at~$\emptyset$.
@@ -824,7 +825,7 @@ making a $\theory{T}$-model out of the set~$X$.
   $(\finpow{X}, \emptyset, {\cup})$ is the free semilattice generated by~$X$, cf.\
   Example~\ref{ex:semi-lattice}. The map $\eta : X \to \finpow{X}$ takes $x \in X$ to the
   singleton set $\eta(x) = \set{x}$. Given any semilattice $(L, \bot, {\vee})$ and a map
-  $f : X \to |L|$, define the homomorphism $\overline{f} : \finpow{X} \to |L|$ by
+  $f : X \to \carrier{L}$, define the homomorphism $\overline{f} : \finpow{X} \to \carrier{L}$ by
   %
   \begin{equation*}
     \overline{f}(\set{x_1, \ldots, x_n}) = f(x_1) \wedge \cdots \wedge f(x_n).
@@ -836,7 +837,7 @@ making a $\theory{T}$-model out of the set~$X$.
     \overline{f}(\eta(x)) = \overline{f}(\set{x}) = f(x).
   \end{equation*}
   %
-  If $g : \finpow{X} \to |L|$ is another homomorphism satisfying $g \circ \eta = f$ then
+  If $g : \finpow{X} \to \carrier{L}$ is another homomorphism satisfying $g \circ \eta = f$ then
   %
   \begin{multline*}
     g(\set{x_1, \ldots, x_n})
@@ -930,7 +931,7 @@ $\Tree{\signature{T}}{X}$ such that:
 Define the carrier of the free model $\Free{T}{X}$ to be the quotient set
 %
 \begin{equation*}
-  |\Free{T}{X}| = \Tree{\signature{T}}{X} / {\approx_{\theory{T}}}.
+  \carrier{\Free{T}{X}} = \Tree{\signature{T}}{X} / {\approx_{\theory{T}}}.
 \end{equation*}
 %
 Let $[t]$ be the $\approx_{\theory{T}}$-equivalence class of
@@ -1165,12 +1166,12 @@ $\Tree{\Sigma}{\set{x_1, \ldots, x_k}}$.
 An \emph{interpretation $I$ of a signature $\Sigma$} is given by:
 %
 \begin{enumerate}
-\item a carrier set $|I|$,
+\item a carrier set $\carrier{I}$,
 \item for each operation symbol $\op{i}$ with parameter set~$P_i$ and arity~$A_i$,
   a map
   %
   \begin{equation*}
-    \sem{\op{i}}_I : P_i \times |I|^{A_i} \longrightarrow |I|.
+    \sem{\op{i}}_I : P_i \times \carrier{I}^{A_i} \longrightarrow \carrier{I}.
   \end{equation*}
 \end{enumerate}
 %
@@ -1178,7 +1179,7 @@ The interpretation $I$ may be extended to terms in contexts. A term
 $x_1, \ldots, x_k \mid t$ is interpreted as a map
 %
 \begin{equation*}
-  \sem{x_1, \ldots, x_k \mid t}_I : |I|^k \to |I|
+  \sem{x_1, \ldots, x_k \mid t}_I : \carrier{I}^k \to \carrier{I}
 \end{equation*}
 %
 as follows:
@@ -1187,7 +1188,7 @@ as follows:
 \item the variable $x_i$ is interpreted as the $i$-th projection,
   %
   \begin{equation*}
-    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : |I|^k \to |I|,
+    \sem{x_0, \ldots, x_{k-1} \mid  x_i}_I = \pi_i : \carrier{I}^k \to \carrier{I},
   \end{equation*}
 \item a compound term in context
   %
@@ -1198,7 +1199,7 @@ as follows:
   is interpreted as the map
   %
   \begin{align*}
-    \sem{\op{i}(p, \kappa)}_I &: |I|^k \longrightarrow |I| \\
+    \sem{\op{i}(p, \kappa)}_I &: \carrier{I}^k \longrightarrow \carrier{I} \\
     \sem{\op{i}(p, \kappa)}_I &:
       \eta \mapsto
       \sem{\op{i}}_I(p, \lam{a \in A_i} \sem{\kappa(a)}_I(\eta)),
@@ -1850,7 +1851,7 @@ what are they? An easy but useless answer is that they are just maps between the
 carriers of free models,
 %
 \begin{equation*}
-  |\Free{T}{X}| \longrightarrow |\Free{T'}{X'}|,
+  \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}},
 \end{equation*}
 %
 whereas a better answer should take into account the algebraic structure. Having
@@ -1868,12 +1869,12 @@ property of free models speaks about maps \emph{from} a free model. Thus, a
 transformation between computations should be a $\theory{T}$-homomorphism
 %
 \begin{equation*}
-  \phi : |\Free{T}{X}| \longrightarrow |\Free{T'}{X'}|.
+  \phi : \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}}.
 \end{equation*}
 %
-For this to make any sense, the carrier $|\Free{T'}{X'}|$ must carry the
+For this to make any sense, the carrier $\carrier{\Free{T'}{X'}}$ must carry the
 structure of a $\theory{T}$-model, i.e., in addition to~$\phi$ we must also
-provide a $\theory{T}$-model on $|\Free{T'}{X'}|$. If we take into account the
+provide a $\theory{T}$-model on $\carrier{\Free{T'}{X'}}$. If we take into account the
 fact that $\phi$ is uniquely determined by its action on the generators, we
 arrive at the following notion, which we call a handler.
 
@@ -1881,19 +1882,19 @@ A \emph{handler} from computations $\Free{T}{X}$ to computations $\Free{T'}{X'}$
 is given by the following data:
 %
 \begin{enumerate}
-\item a map $f : X \to |\Free{T'}{X'}|$,
+\item a map $f : X \to \carrier{\Free{T'}{X'}}$,
 \item for every operation $\opdecl{\op{i}}{P_i}{A_i}$ in $\signature{T}$, a map
   %
   \begin{equation*}
-    h_i : P_i \times |\Free{T'}{X'}|^{A_i} \to |\Free{T'}{X'}|
+    h_i : P_i \times \carrier{\Free{T'}{X'}}^{A_i} \to \carrier{\Free{T'}{X'}}
   \end{equation*}
   %
   such that
-\item the maps $h_i$ form a $\theory{T}$-model on~$|\Free{T'}{X'}}|$, i.e., they
+\item the maps $h_i$ form a $\theory{T}$-model on~$\carrier{\Free{T'}{X'}}$, i.e., they
  validate the equations~$\equations{T}$.
 \end{enumerate}
 %
-The map $\phi : |\Free{T}{X}| \longrightarrow |\Free{T'}{X'}|$ induced by these
+The map $\phi : \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}}$ induced by these
 data is the unique one satisfying
 %
 \begin{align*}
