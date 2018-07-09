@@ -56,6 +56,8 @@
 \newcommand{\false}{\mathsf{false}}
 \newcommand{\cond}[3]{\mathsf{if}\;#1\;\mathsf{then}\;#2\;\mathsf{else}\;#3}
 
+\newcommand{\defeq}{\mathbin{{:}{=}}} % definitional equality
+
 %%% Macros for the programming language
 
 % General syntactic constructs
@@ -1756,7 +1758,7 @@ Consider an algebraic theory~$\theory{T}$. For an operation $\opdecl{op}{P}{A}$
 in $\signature{T}$, define the corresponding \emph{generic operation}
 %
 \begin{equation*}
-  \opgen{op}{p} = \opcall{op}{p}{\lam{x} \return{x}}.
+  \opgen{op}{p} \defeq \opcall{op}{p}{\lam{x} \return{x}}.
 \end{equation*}
 %
 In words, the generic version performs the operation and returns its result.
@@ -1808,7 +1810,8 @@ operations. The generic operation $\overline{\kode{op}}$ with parameter set~$P$
 and arity~$A$ looks to a programmer like a function of type $P \to A$, which is
 why we use the notation $\opdecl{\kode{op}}{P}{A}$ to specify signatures.
 
-Because sequencing is just lifting, it is governed by the same equations:
+Because sequencing is just lifting in disguise, it is governed by the same
+equations:
 %
 \begin{align*}
   (\seq{x}{\return{v}} h(x)) &= h(v), \\
@@ -1816,25 +1819,42 @@ Because sequencing is just lifting, it is governed by the same equations:
   \opcall{op}{p}{\lam{y} \seq{x}{\kappa(y)} h(x)}.
 \end{align*}
 %
-If we rewrite the second equation with generic operations we get an
-associativity law for sequencing,
+These allow us to eliminate sequencing from any expression. When we rewrite the
+second equation with generic operations we get an associativity law for
+sequencing:
 %
 \begin{equation*}
   (\seq{x}{(\seq{y}{\opgen{op}{p}} \kappa(y))} h(x)) =
   (\seq{y}{\opgen{op}{p}} \seq{x}{\kappa(y)} h(x)).
 \end{equation*}
 
-Finally, let us point out to the ML aficionados may be pleased to learn that the
-sequencing notation in ML-style language is none other than $\kode{let}$-binding
+The ML aficionados may be pleased to learn that the sequencing notation in
+an ML-style language is none other than $\kode{let}$-binding,
 %
 \begin{equation*}
   \kode{let}\; x = t\;\kode{in}\;h(x).
 \end{equation*}
 
 
+\section{Handlers}
+\label{sec:handlers}
 
-\section{Algebraic handlers}
-\label{sec:algebraic-handlers}
+So far the main takeway is that computations returing values from~$V$ and
+performing operations of a theory~$\theory{T}$ are the elements of the free
+algebra $\Free{T}{V}$. In this section we study transformations between
+computations. An easy but useless answer is that they are just maps between the
+carriers
+%
+\begin{equation*}
+  \Free{T}{V} \longrightarrow \Free{T'}{V'}.
+\end{equation*}
+%
+A better answer should take into account the algebraic structure.
+
+
+
+\section{Making a programming language}
+\label{sec:making-progr-lang}
 
 
 \begin{figure}[ht]
