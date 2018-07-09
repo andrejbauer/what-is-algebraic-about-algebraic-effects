@@ -18,11 +18,8 @@
 \newcommand{\Mod}[1]{\text{\textbf{Mod}}(\theory{#1})} % Models of a theory in Set
 \newcommand{\ModC}[2]{\text{\textbf{Mod}}_{\category{#1}}(\theory{#2})} % Models of a theory in a category
 
-\newcommand{\ComodC}[2]{\text{\textbf{CoMod}}_{\category{#1}}(\theory{#2})} % Comodels of a theory in a category
-
 \newcommand{\category}[1]{\text{\textbf{#1}}} % A named category
 \newcommand{\Set}{\category{Set}} % The category of sets
-\newcommand{\opcat}[1]{\ensuremath{#1^{\text{\textbf{op}}}}}
 
 \newcommand{\carrier}[1]{|#1|} % carrier of a model
 \newcommand{\Free}[2]{F_{\theory{#1}}(#2)} % free model
@@ -32,7 +29,6 @@
 \newcommand{\some}[1]{\exists #1 \,.\,} % existential quantifier
 \newcommand{\set}[1]{\{#1\}} % set description
 \newcommand{\such}{\mid}
-\newcommand{\from}{\leftarrow}
 
 \newcommand{\lam}[1]{\lambda #1 \,.\,}
 
@@ -69,7 +65,6 @@
 
 % General syntactic constructs
 \newcommand{\kode}[1]{\mathsf{#1}}
-\newcommand{\conf}[2]{\langle #1, #2 \rangle}
 
 % Core syntax
 \newcommand{\seq}[2]{\kode{do}\; #1 \leftarrow #2 \;\kode{in}\;}
@@ -242,7 +237,7 @@ terms and equations instead of $\Sigma$-terms and $\Sigma$-equations.
   associates to the left then $(\mathsf{u} \, x) \, y$ may be written as
   $\mathsf{u} \, x \, y$, and we are left with $y \, x = \mathsf{u} \, x \, y$,
   which is what your algebra professor might write down. Note that we are
-  \emph{not} discussing validity of equations but only ways of displaying them.
+  \emph{not} discussing validity of equations but only ways of displaynig them.
   It is irrelevant whether the above equation is valid in monoids.
 \end{example}
 
@@ -566,7 +561,7 @@ Suppose $L$ and $M$ are models of a theory~$\theory{T}$. Then we may form the
 and pointwise operations,
 %
 \begin{equation*}
-  \sem{\op{i}}_{M \times L}(a, b) = (\sem{\op{i}}_M(a), \sem{\op{i}}_L(b)).
+  \sem{\op{i}}_{M \times L}(a, b) = (\sem{\op{i}}_M(a), \sem{\op{i}}_L(a)).
 \end{equation*}
 %
 The equations $\equations{T}$ are valid in $L \times M$ because they are valid on each
@@ -621,7 +616,7 @@ of~$\theory{T}$, we have
   \begin{align*}
     \phi(\sem{\mathsf{u}()}_G) &= \sem{\mathsf{u}()}_H,\\
     \phi(\sem{\mathsf{m}}_G(a,b)) &= \sem{\mathsf{m}}_H(\phi(a), \phi(b)),\\
-    \phi(\sem{\mathsf{i}}_G(a)) &= \sem{\mathsf{i}}_H(\phi(a)).
+    \phi(\sem{\mathsf{i}}_H(a)) &= \sem{\mathsf{i}}_H(\phi(a)).
   \end{align*}
   %
   This is a convoluted way of saying that the unit maps to the unit, and that $\phi$
