@@ -57,6 +57,8 @@
 \newcommand{\false}{\mathsf{false}}
 \newcommand{\cond}[3]{\mathsf{if}\;#1\;\mathsf{then}\;#2\;\mathsf{else}\;#3}
 
+\newcommand{\hto}{\Rightarrow} % Handler arrow
+
 \newcommand{\defeq}{\mathbin{{:}{=}}} % definitional equality
 
 %%% Macros for the programming language
@@ -69,7 +71,8 @@
 \newcommand{\conditional}[3]{\kode{if}\; #1 \;\kode{then}\; #2 \;\kode{else}\; #3}
 \newcommand{\fun}[1]{\kode{fun}\; #1 \mapsto}
 \newcommand{\handler}{\kode{handler}\;}
-\newcommand{\opgen}[2]{\overline{\kode{#1}}(#2)}
+\newcommand{\xopgen}[2]{\overline{#1}(#2)}
+\newcommand{\opgen}[2]{\xopgen{\kode{#1}}{#2}}
 \newcommand{\opcall}[3]{\kode{#1}(#2; #3)}
 \newcommand{\opclause}[3]{#1(#2; #3) \mapsto}
 \newcommand{\return}[1]{\kode{return}\;#1}
@@ -1804,9 +1807,9 @@ Even better, nested operations
 may be written in Haskell-like notation
 %
 \begin{align*}
-  &\seq{x_1}{\opgen{op_1}{p_1}} \\
-  &\seq{x_2}{\opgen{op_3}{p_3}} \\
-  &\seq{x_2}{\opgen{op_3}{p_3}}
+  &\seq{x_1}{\xopgen{\kode{op}_1}{p_1}} \\
+  &\seq{x_2}{\xopgen{\kode{op}_3}{p_3}} \\
+  &\seq{x_2}{\xopgen{\kode{op}_3}{p_3}}
   \cdots
 \end{align*}
 %
@@ -1869,13 +1872,13 @@ property of free models speaks about maps \emph{from} a free model. Thus, a
 transformation between computations should be a $\theory{T}$-homomorphism
 %
 \begin{equation*}
-  \phi : \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}}.
+  H : \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}}.
 \end{equation*}
 %
 For this to make any sense, the carrier $\carrier{\Free{T'}{X'}}$ must carry the
-structure of a $\theory{T}$-model, i.e., in addition to~$\phi$ we must also
+structure of a $\theory{T}$-model, i.e., in addition to~$H$ we must also
 provide a $\theory{T}$-model on $\carrier{\Free{T'}{X'}}$. If we take into account the
-fact that $\phi$ is uniquely determined by its action on the generators, we
+fact that $H$ is uniquely determined by its action on the generators, we
 arrive at the following notion, which we call a handler.
 
 A \emph{handler} from computations $\Free{T}{X}$ to computations $\Free{T'}{X'}$
@@ -1894,22 +1897,98 @@ is given by the following data:
  validate the equations~$\equations{T}$.
 \end{enumerate}
 %
-The map $\phi : \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}}$ induced by these
+The map $H : \carrier{\Free{T}{X}} \longrightarrow \carrier{\Free{T'}{X'}}$ induced by these
 data is the unique one satisfying
 %
 \begin{align*}
-  \phi([\return{x}]) &= f(x), \\
-  \phi([\opcall{op}{p}{\kappa}]) &= h_i(p, \phi \circ \kappa).
+  H([\return{x}]) &= f(x), \\
+  H([\opcall{op}{p}{\kappa}]) &= h_i(p, H \circ \kappa).
 \end{align*}
 %
-From a mathematical point of view handlers are just a somewhat unnatural
-combination of algebraic notions. They are much more interesting from a
-programming point of view, as they vastly generalize the notion of exception
-handlers and unify many hitherto separate programming concepts.
+We write
+%
+\begin{equation*}
+  H : \Free{T}{X} \hto \Free{T'}{X'}
+\end{equation*}
+%
+when $H$ is a handler from $\Free{T}{X}$ to $\Free{T'}{X'}$.
 
-Before giving some support for our claim, let us introduce a notation for
-handlers.
+From a mathematical point of view handlers are just a fairly unnatural
+combination of algebraic notions, but they are much more interesting from a
+programming point of view, as we shall demonstrate next.
 
+We need a notation for handlers that neatly collects its defining data. Let us write
+%
+\begin{equation}
+  \label{eq:handler-notation}
+  %
+  \handler \{
+    \retclause{x} f(x), \;
+    \big( \opclause{\op{i}}{y}{\kappa} h_i(y, \kappa) \big)_{\op{i} \in \signature{T}}
+  \}
+\end{equation}
+%
+for the handler~$H$ determined by the maps $f$ and $h_i$, as above, and
+%
+\begin{equation*}
+  \withhandle{H}{C}
+\end{equation*}
+%
+for the application of handler~$H$ to a computation~$C$. The defining
+equations for handlers written in the new notation are, where $H$ stands for the
+handler~\eqref{eq:handler-notation}:
+%
+\begin{align*}
+  (\withhandle{H}{\return v}) &= f(v), \\
+  (\withhandle{H}{\seq{x}{\xopgen{\op{i}}{p}} \kappa(x)}) &=
+  h_i (p, \lam{x} \withhandle{H}{\kappa(x)})
+\end{align*}
+
+\begin{example}
+  Let us consider the theory $\theory{Exn}$ of an exception, cf.\
+  Example~\ref{ex:theory-exception}. A handler
+  %
+  \begin{equation*}
+    H : \Free{Exn}(X) \hto \Free{T}{Y}
+  \end{equation*}
+  %
+  is given by a $\kode{return}$ clause and an $\kode{abort}$ clause,
+  %
+  \begin{equation*}
+    \handler \{
+      \retclause{x} f(x),
+      \opclause{\kode{abort}}{y}{\kappa} c
+    \},
+  \end{equation*}
+  %
+  where $f : X \to \Free{T}{Y}$ and $c \in \Free{T}{Y}$. Note that $c$ does not
+  depend on $y \in \one$ and $\kappa : \emptyset \to \Free{T}{Y}$ because they
+  are both useless. The theory of an exception has no equations, so such a
+  handler is automatically well defined. Such a handler is quite similar to
+  exception handlers from mainstream programming languages, except that it
+  handles both the exception and the return value.
+\end{example}
+
+We could now give many examples of handlers to show that they are a very useful
+programming concept which unifies and generalizes a number of techniques:
+exception handlers, backtracking and other search strategies, I/O redirection,
+transactional memory, coroutines, coopreative multi-threading, delimited
+continuations, probabilistic programming, and many others. As this note is
+already getting quite long, we recommend existing
+tutorials~\cite{handler-tutorials}.
+
+There is a programming language design question regarding handlers which we have
+to answer before we can design a programming language with handlers.
+For~\eqref{eq:handler-notation} to define a handler
+$\Free{Exn}(X) \hto \Free{T}{Y}$, the operation clauses $h_i$ must satisfy the
+equations of~$\theory{T}$. In general it is impossible to check algorithmically
+whether this is the case, and so a compiler or a language interpreter should
+avoid even trying to. Existing languages with handlers solve the problem by
+ignoring the equations. This is not as bad as it sounds, because in practice we
+often want handlers that break the equations. Moreover, dropping equations just
+means that we work with trees as representatives of their equivalence classes,
+which is a common implementation technique (for instance, when we represent
+finite sets by lists).
 
 
 \section{Making a programming language}
