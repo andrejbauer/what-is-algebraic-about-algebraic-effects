@@ -1,4 +1,4 @@
-s\documentclass{amsart}
+\documentclass{amsart}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -16,10 +16,12 @@ s\documentclass{amsart}
 \newcommand{\equations}[1]{\mathcal{E}_{\theory{#1}}} % Equations of a theory
 
 \newcommand{\Mod}[1]{\text{\textbf{Mod}}(\theory{#1})} % Models of a theory in Set
-\newcommand{\ModC}[2]{\text{\textbf{Mod}}_{\category{#1}}(\theory{#2})} % Models of a theory in a category
+\newcommand{\ModC}[2]{\text{\textbf{Mod}}_{#1}(\theory{#2})} % Models of a theory in a category
+\newcommand{\ComodC}[2]{\text{\textbf{Comod}}_{#1}(\theory{#2})} % Comodels of a theory in a category
 
 \newcommand{\category}[1]{\text{\textbf{#1}}} % A named category
 \newcommand{\Set}{\category{Set}} % The category of sets
+\newcommand{\opcat}[1]{{#1}^{\mathsf{op}}} % Opposite category
 
 \newcommand{\carrier}[1]{|#1|} % carrier of a model
 \newcommand{\Free}[2]{F_{\theory{#1}}(#2)} % free model
@@ -391,8 +393,10 @@ the following data:
 \item for each operation symbol $\op{i}$ a map
   %
   \begin{equation*}
-    \sem{\op{i}}_I : \underbrace{\carrier{I} \times \cdots \times \carrier{I}}_{\arity{i}} \to \carrier{I}.
+    \sem{\op{i}}_I : \underbrace{\carrier{I} \times \cdots \times \carrier{I}}_{\arity{i}} \to \carrier{I},
   \end{equation*}
+  %
+  called an \emph{operation}.
 \end{enumerate}
 %
 The double bracket $\sem{{\ }}_I$ is called the \emph{semantic bracket} and is typically
@@ -732,7 +736,7 @@ $\op{i}$,
 \end{equation*}
 %
 The $\theory{T}$-models and $\theory{T}$-homomorphisms in a category $\category{C}$ form a
-category $\ModC{C}{T}$.
+category $\ModC{\category{C}}{T}$.
 
 \begin{example}
   A model of the theory of a group $\theory{Group}$ in the category $\category{Top}$ of
@@ -766,7 +770,7 @@ category $\ModC{C}{T}$.
   \end{equation*}
   %
   The conclusion is that a group in the category of groups is an abelian group. The
-  category $\ModC{Grp}{Group}$ is therefore equivalent to the category of abelian groups.
+  category $\ModC{\category{Grp}}{Group}$ is therefore equivalent to the category of abelian groups.
 \end{example}
 
 \begin{example}
@@ -1514,7 +1518,7 @@ The non-standard arrow $\leadsto$ is there to remind you that $\kode{op}$ is
     \opdecl{\kode{put}_\iota}{S_\iota}{\one},
   \end{equation*}
   %
-  satisfying the above equations. In addition, we have postulate
+  satisfying the above equations. In addition, we postulate
   \emph{distributivity} laws expressing the fact that operations from
   instance~$\iota$ distribute over those of instance~$\iota'$, so long as
   $\iota \neq \iota'$:
@@ -1977,6 +1981,210 @@ continuations, probabilistic programming, and many others. As this note is
 already getting quite long, we recommend existing
 tutorials~\cite{handler-tutorials}.
 
+\section{What is coalgebraic about algebraic effects and handlers?}
+\label{sec:what-coalg-about}
+
+Handlers are a form of flow control (like loops, conditional statements,
+exceptions, coroutines, and the dreaded `goto'), to be used by programmers in
+programs. In other words, they can be used to \emph{simulate} computational
+effects, a bit like monads in functional programming can simulate
+computatational effects in a purely functional language. What we still lack is a
+mathematical model of computational effects at the level of the program runtime
+environment. There is always a barrier between the program and its exernal
+environment, be it a virtual machine, the operating system, or the underlying
+hardware. The actual computational effects cross the barrier, and cannot be
+modeled as handlers. A handler gets access to the continuation, but when a real
+computational effects happens, the continuation is not available. If it were,
+then after having launched missiles, the program could change its mind, restart
+the continuation, and establish world peace.
+
+\subsection{Comodels of algebraic theories}
+\label{sec:comod-algebr-theor}
+
+We shall model the toplevel computational effects with comodels, which were
+proposed by Gordon Plotkin and John Power~\cite{comodels}. A \emph{comodel} of a
+theory~$\theory{T}$ in a category~$\category{C}$ is a model in the opposite
+category~$\opcat{\category{C}}$. Comodels form a category
+%
+\begin{equation*}
+  \ComodC{\category{C}}{T} \defeq \opcat{(\ModC{\opcat{\category{C}}}{T})}.
+\end{equation*}
+%
+We steer away from category-theory and just spell out what a comodel is in the
+category of sets. When we pass to the dual category all morphisms turn around,
+and concepts are replaced with their duals.
+
+Recall that the interpretation of an operation $\opdecl{\kode{op}}{P}{A}$ in a
+model~$M$ is a map
+%
+\begin{equation*}
+  \sem{\kode{op}}_M :
+  P \times |M|^A \longrightarrow |M|,
+\end{equation*}
+%
+which in the curried form is
+%
+\begin{equation*}
+  |M|^A \longrightarrow |M|^P.
+\end{equation*}
+%
+In the opposite category the map turns its direction, and the exponentials
+become products:
+%
+\begin{equation*}
+  A \times |M| \longleftarrow P \times |M|.
+\end{equation*}
+%
+Thus, in a comodel~$W$ an operation $\opdecl{\kode{op}}{P}{A}$ is interpreted as a map
+%
+\begin{equation*}
+  \sem{\kode{op}}^W : P \times |W| \to A \times |W|,
+\end{equation*}
+%
+which we call a \emph{cooperation}.
+
+\begin{example}
+  Non-deterministic choice $\opdecl{\kode{choose}}{\one}{\bool}$ is
+  interpreted as a cooperation
+  %
+  \begin{equation*}
+    |W| \to {\bool} \times |W|,
+  \end{equation*}
+  %
+  where on the left we replaced $\one \times |W|$ with the isomorphic set $|W|$.
+  If we think of $|W|$ as the set of all possible worlds, the cooperation
+  $\kode{choose}$ is the action by which the world produces a boolean value and
+  the next state of the world. An external source of binary non-determinism is a
+  stream of booleans.
+\end{example}
+
+\begin{example}
+  Printing to standard output $\opdecl{\kode{print}}{S}{\one}$ is interpreted as
+  a cooperation
+  %
+  \begin{equation*}
+    S \times |W| \to |W|.
+  \end{equation*}
+  %
+  As a cooperation, printing is the action by which the world is modified
+  according to the message that is printed (for example, the implants on your
+  retina might induce your visual center to see the message).
+\end{example}
+
+\begin{example}
+  Reading from standard input $\opdecl{\kode{read}}{\one}{S}$ is interpreted as
+  a cooperation
+  %
+  \begin{equation*}
+    |W| \to S \times |W|.
+  \end{equation*}
+  %
+  This is quite similar to non-deterministich choice, except that the world
+  provides an element of~$S$ rather than a boolean value. The world might
+  accomplish such a task by inducing the user (who is considered as part of the
+  world) to press buttons on the keyboard.
+\end{example}
+
+\begin{example}
+  An exception $\opdecl{\kode{abort}}{\one \to \emptyset}$ is interpreted as a
+  cooperation
+  %
+  \begin{equation*}
+    \one \times |W| \to \emptyset \times |W|.
+  \end{equation*}
+  %
+  Unless $|W|$ is the emtpy set, there is no such map. An exception cannot
+  propagate to the outer world. The universe is safe from the null pointer exception.
+\end{example}
+
+The examples are encouraging, so let us backtrack and spell out the basic
+definitions properly. A \emph{cointerpretation}~$I$ of a signature $\Sigma$ is
+given by a carrier set $\carrier{I}$, and for each operation symbol $\opdecl{\kode{op}}{P}{A}$
+a map
+%
+\begin{equation*}
+  \sem{\kode{op}}^I : P \times \carrier{I} \to A \times \carrier{I},
+\end{equation*}
+%
+called a \emph{cooperation}. The cointerpretation $I$ may be extended to terms
+in contexts. A term $x_1, \ldots, x_k \mid t$ is interpreted as a map
+%
+\begin{equation*}
+  \sem{t}^I : \carrier{I} \to [k] \times \carrier{I}
+\end{equation*}
+%
+as follows:
+%
+\begin{enumerate}
+\item the variable $x_i$ is interpreted as the $i$-th injection,
+  %
+  \begin{align*}
+    \sem{x_1, \ldots, x_k \mid x_i}^I = \iota_i : \carrier{I} \to [k] \times \carrier{I}
+  \end{align*}
+  %
+  which takes $x$ to $(i, x)$,
+\item a compound term in context
+  %
+  \begin{equation*}
+    x_1, \ldots, x_k \mid \op{i}(p, \kappa)
+  \end{equation*}
+  %
+  is interpreted as the map
+  %
+  \begin{align*}
+    \sem{x_1, \ldots, x_k \mid \op{i}(p, \kappa)}^I &: \carrier{I} \to [k] \times \carrier{I},\\
+    \sem{x_1, \ldots, x_k \mid \op{i}(p, \kappa)}^I &: \omega \to 
+       \begin{aligned}[t]
+         &\sem{x_1, \ldots, x_k \mid \kappa(a)}^I(\varpi) \\
+         &\qquad\text{where $(a, \varpi) = \sem{\op{i}}^{I}(p, \omega)$.}
+       \end{aligned}
+  \end{align*}
+\end{enumerate}
+%
+A \emph{comodel~$W$} of a theory~$\theory{T}$ is a
+$\signature{T}$-cointerpretation which validates all the
+equations~$\equations{T}$. As before, an equation is valid when the
+interpretations of its left- and right-hand sides yield equal maps.
+
+\begin{example}
+  Let us work out what constitutes a comodel~$W$ of the theory of state, cf.\
+  Example~\ref{ex:theory-single-state}. The operations
+  %
+  \begin{equation*}
+    \opdecl{\kode{get}}{\one}{S}
+    \qquad\text{and}\qquad
+    \opdecl{\kode{put}}{S}{\one}
+  \end{equation*}
+  %
+  are respectively interpreted by cooperations
+  %
+  \begin{equation*}
+    g : \carrier{W} \to S \times \carrier{W}
+    \qquad\text{and}\qquad
+    p : S \times \carrier{W} \to \carrier{W},
+  \end{equation*}
+  %
+  where we replaced $\one \times \carrier{W}$ with the isomorphic
+  set~$\carrier{W}$. The cooperations~$p$ and~$g$ must satisfy the equations
+  from Example~\ref{ex:theory-single-state}. Let us consider the second equation
+  first. For all $\kappa : \one to \Tree{State}{X}$
+  % %
+  % g(w) = (s, w')
+  % p(s, w') = w''
+  % kappa () w'' = kappa() w'
+
+
+
+
+
+\end{example}
+
+
+
+\section{Making a programming language}
+\label{sec:making-progr-lang}
+
+
 There is a programming language design question regarding handlers.
 For~\eqref{eq:handler-notation} to define a handler
 $\Free{Exn}{X} \hto \Free{T}{Y}$, the operation clauses $h_i$ must satisfy the
@@ -1989,9 +2197,11 @@ means that we work with trees as representatives of their equivalence classes,
 which is a common implementation technique (for instance, when we represent
 finite sets by lists).
 
+Recursion.
 
-\section{Making a programming language}
-\label{sec:making-progr-lang}
+Operational semantics.
+
+Types.
 
 
 \begin{figure}[ht]
