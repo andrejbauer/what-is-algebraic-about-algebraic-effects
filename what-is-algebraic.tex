@@ -1359,8 +1359,8 @@ effects under consideration.
   $\kappa = \lam{s} \leaf{s}$. Unless specified otherwise, we shall always
   take~$\kappa$ to be such a generic continuation.
 
-  We also have equations stating that lookups and updated from \emph{different}
-  locations $\ell \neq \ell'$ distribute over each other:
+  There is a second set of equations stating that lookups and updated from
+  \emph{different} locations $\ell \neq \ell'$ distribute over each other:
   %
   \begin{align*}
     \opcall{lookup}{\ell}{
@@ -1489,7 +1489,8 @@ effects under consideration.
   %
   The equations are
   %
-  \begin{align*}
+  \begin{align}
+    \label{eq:state-get-get}%
     \opcall{get}{\unit}{
       \lam{s}{
         \opcall{get}{\unit}{
@@ -1498,23 +1499,26 @@ effects under consideration.
     } &=
     \opcall{get}{\unit}{\lam{s}{\kappa \, s \, s}}
     \\
+    \label{eq:state-get-put}%
     \opcall{get}{\unit}{
       \lam{s} \opcall{put}{s}{\kappa}
     } &=
     \kappa \, ()
     \\
+    \label{eq:state-put-get}%
     \opcall{put}{s}{
       \lam{\_} \opcall{get}{\unit}{\kappa}
     } &=
     \opcall{put}{s}{\lam{\_} \kappa \, s}
     \\
+    \label{eq:state-put-put}%
     \opcall{put}{s}{
       \lam{\_} \opcall{put}{t}{\kappa}
     } &=
     \opcall{put}{t}{\kappa}
-  \end{align*}
+  \end{align}
   %
-  These are just the first three equations from Example~\ref{ex:theory-state},
+  These is just the first group of equations from Example~\ref{ex:theory-state},
   except that we need not specify which memory location to read from. It is thus
   natural to ask how to combine many instances of the theory of a single state
   to get a theory of many states. To model $I$-many states, where for each
@@ -1704,8 +1708,8 @@ $\theory{T}$-homomorphism. We leave the verification of the monad laws as
 exercise.
 
 \begin{example}
-  Let us resume the previous example. If there's any justice, the monad for
-  $\FreeFun{State}$ should be isomorphic to the usual state monad
+  Let us resume the previous example. If there's any beauty in mathematics, the
+  monad for $\FreeFun{State}$ should be isomorphic to the usual state monad
   $(T, \theta, {}^{*})$, given by
   %
   \begin{align*}
@@ -2116,38 +2120,30 @@ a map
   \sem{\kode{op}}^I : P \times \carrier{I} \to A \times \carrier{I},
 \end{equation*}
 %
-called a \emph{cooperation}. The cointerpretation $I$ may be extended to terms
-in contexts. A term $x_1, \ldots, x_k \mid t$ is interpreted as a map
+called a \emph{cooperation}. The cointerpretation $I$ may be extended to
+well-founded trees. A tree $t \in \Tree{\Sigma}{X}$ is interpreted as a map
 %
 \begin{equation*}
-  \sem{t}^I : \carrier{I} \to [k] \times \carrier{I}
+  \sem{t}^I : \carrier{I} \to X \times \carrier{I}
 \end{equation*}
 %
 as follows:
 %
 \begin{enumerate}
-\item the variable $x_i$ is interpreted as the $i$-th injection,
+\item a leaf $\leaf{x}$ is interpreted as the $x$-th injection,
   %
   \begin{align*}
-    \sem{x_1, \ldots, x_k \mid x_i}^I = \iota_i : \carrier{I} \to [k] \times \carrier{I}
+    \sem{X \mid x}^I &: \carrier{I} \to X \times \carrier{I},\\
+    \sem{X \mid x}^I &: \omega \to (x, \omega).\\
   \end{align*}
   %
-  which takes $x$ to $(i, x)$,
-\item a compound term in context
-  %
-  \begin{equation*}
-    x_1, \ldots, x_k \mid \op{i}(p, \kappa)
-  \end{equation*}
-  %
-  is interpreted as the map
+\item a compound tree $X \mid \op{i}(p, \kappa)$ is interpreted as the map
   %
   \begin{align*}
-    \sem{x_1, \ldots, x_k \mid \op{i}(p, \kappa)}^I &: \carrier{I} \to [k] \times \carrier{I},\\
-    \sem{x_1, \ldots, x_k \mid \op{i}(p, \kappa)}^I &: \omega \to 
-       \begin{aligned}[t]
-         &\sem{x_1, \ldots, x_k \mid \kappa(a)}^I(\varpi) \\
-         &\qquad\text{where $(a, \varpi) = \sem{\op{i}}^{I}(p, \omega)$.}
-       \end{aligned}
+    \sem{X \mid \op{i}(p, \kappa)}^I &: \carrier{I} \to X \times \carrier{I},\\
+    \sem{X \mid \op{i}(p, \kappa)}^I &: \omega \to
+         \sem{X \mid \kappa(a)}^I(\varpi)
+         \quad\text{where $(a, \varpi) = \sem{\op{i}}^{I}(p, \omega)$.}
   \end{align*}
 \end{enumerate}
 %
@@ -2169,22 +2165,69 @@ interpretations of its left- and right-hand sides yield equal maps.
   are respectively interpreted by cooperations
   %
   \begin{equation*}
-    g : \carrier{W} \to S \times \carrier{W}
+    g : \one \times \carrier{W} \to S \times \carrier{W}
     \qquad\text{and}\qquad
-    p : S \times \carrier{W} \to \carrier{W},
+    p : S \times \carrier{W} \to \one \times \carrier{W},
   \end{equation*}
   %
-  where we replaced $\one \times \carrier{W}$ with the isomorphic
-  set~$\carrier{W}$. The cooperations~$p$ and~$g$ must satisfy the equations
-  from Example~\ref{ex:theory-single-state}. Let us consider the second equation
-  first. For all $\kappa : \one to \Tree{State}{X}$
-  % %
-  % g(w) = (s, w')
-  % p(s, w') = w''
-  % kappa () w'' = kappa() w'
-
-
-
+  The cooperations~$p$ and~$g$ must satisfy the equations from
+  Example~\ref{ex:theory-single-state}. We first unravel the interpretation of
+  equation~\eqref{eq:state-get-put}. Recall that $\kappa$ is the generic
+  continuation $\kappa \, \unit = \leaf{\unit}$, and the context is the domain
+  of~$\kappa$, which is~$\one$. Thus the right- and left-hand sides are
+  interpreted as maps $\carrier{W} \to \one \times \carrier{W}$, namely
+  %
+  \begin{align*}
+    \sem{\kappa\,\unit}^W &: w \mapsto (\unit, w),\\
+    \sem{\opcall{get}{\unit}{\lam{s} \opcall{put}{s}{\kappa}}}^W &:
+     w \mapsto (\unit, p(g(\unit, w)))).
+  \end{align*}
+  %
+  To say that these two maps are equal is just a convoluted way of stating
+  %
+  \begin{equation*}
+    p(g(\unit, w)) = w,
+  \end{equation*}
+  %
+  whose meaning is intuitively clear: the external world does not change when we
+  read the state and write it right back. The other three
+  equations may be interpreted and simplified in a similar fashion to give:
+  %
+  \begin{align*}
+    g(\unit, \pi_2 (g (\unit, w))) &= g(\unit, w), \\
+    g(p(s, w)) &= (s, \pi_2 (p (s, w))), \\
+    p(t, \pi_2(p(s, w))) &= p(t, w).
+  \end{align*}
+  %
+  %
+  % get-get:
+  % RHS:
+  % g((), w) = (s, w')
+  % g((), w') = (t, w'')
+  % ((s,t), w'')
+  % LHS:
+  % g((), w) = (r, w')
+  % ((r,r), w')
+  % simplifies to:
+  % g((), w) = (s, w')
+  % g((), w') = (s, w'')
+  %
+  % put-get:
+  % RHS:
+  % put(s,w) = ((), w')
+  % get((),w') = (s, w'')
+  % LHS:
+  % put(s,w) = ((), w')
+  % kappa s = (s, w')
+  %
+  % put-put:
+  % RHS:
+  % put(s,w) = ((), w')
+  % put(t,w') = ((), w'')
+  % LHS:
+  % put(t,w) = ((), w''')
+  %
+  
 
 
 \end{example}
