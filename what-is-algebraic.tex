@@ -63,6 +63,9 @@
 
 \newcommand{\defeq}{\mathbin{{:}{=}}} % definitional equality
 
+\newcommand{\tensor}[2]{#1 \otimes #2} % tensor of a model and a comodel
+\newcommand{\opair}[2]{\langle #1, #2 \rangle} % the tensor of a progrqm and a world
+
 %%% Macros for the programming language
 
 % General syntactic constructs
@@ -1437,6 +1440,8 @@ effects under consideration.
 \end{example}
 
 \begin{example}
+  \label{ex:non-determinism}
+  %
   Let us take the theory of semilattice, cf.\ Example~\ref{ex:semi-lattice}, but without the
   unit. It has a binary operation~$\vee$ satisfying
   %
@@ -2058,8 +2063,8 @@ Thus, in a comodel~$W$ an operation $\opdecl{\kode{op}}{P}{A}$ is interpreted as
 which we call a \emph{cooperation}.
 
 \begin{example}
-  Non-deterministic choice $\opdecl{\kode{choose}}{\one}{\bool}$ is
-  interpreted as a cooperation
+  Non-deterministic choice $\opdecl{\kode{choose}}{\one}{\bool}$, cf.\
+  Example~\ref{ex:non-determinism}, is interpreted as a cooperation
   %
   \begin{equation*}
     |W| \to {\bool} \times |W|,
@@ -2181,25 +2186,35 @@ interpretations of its left- and right-hand sides yield equal maps.
   %
   \begin{align*}
     \sem{\kappa\,\unit}^W &: w \mapsto w,\\
-    \sem{\opcall{get}{\unit}{\lam{s} \opcall{put}{s}{\kappa}}}^W &:
-     w \mapsto p(g(\unit, w)).
+    \sem{\opcall{get}{\unit}{\lam{s} \opcall{put}{s}{\kappa}}}^W &: w \mapsto p(g(w)).
   \end{align*}
   %
-  To say that these two maps are equal is just a convoluted way of stating
+  To say that these two maps are equal is just a convoluted way of stating that,
+  for all $w \in |W|$,
   %
-  \begin{equation*}
-    p(g(\unit, w)) = w,
-  \end{equation*}
+  \begin{equation}
+    \label{eq:state-comodel-p-g}
+    p(g(w)) = w.
+  \end{equation}
   %
-  whose meaning is intuitively clear: the external world does not change when we
-  read the state and write it right back. The other three
-  equations may be interpreted and simplified in a similar fashion to give:
+  Keeping in mind that the dual nature of cooperations requires reading of
+  expressions from inside out, so that in $p(g(w))$ the cooperation~$g$ happens
+  before~$p$, the intuitive meaning of the equation is clear: the external world
+  does not change when we read the state and write it right back.
+  Equations~\eqref{eq:state-get-get}, \eqref{eq:state-put-get}, and
+  \eqref{eq:state-put-put} may be similarly interpreted and simplified
+  respectively to
   %
-  \begin{align*}
-    g(\pi_2 (g (w))) &= g(w), \\
-    g(p(s, w)) &= (s, p (s, w)), \\
+  \begin{align}
+    \label{eq:state-comodel-g-g}
+    g(\pi_2 (g (w))) &= g(w),
+    \\
+    \notag
+    g(p(s, w)) &= (s, p (s, w)),
+    \\
+    \notag
     p(t, p(s, w)) &= p(t, w).
-  \end{align*}
+  \end{align}
   %
   %
   % get-get:
@@ -2226,11 +2241,86 @@ interpretations of its left- and right-hand sides yield equal maps.
   % LHS:
   % put(t,w) = w'''
   %
-  
-
-
+  From these equations various others can be derived.
+  By~\eqref{eq:state-comodel-p-g}, the cooperation~$g$ is a section of~$p$,
+  therefore we may cancel it on both sides of~\eqref{eq:state-comodel-g-g} and
+  get $\pi_2(g(w)) = w$, which says that world is still the same after reading.
 \end{example}
 
+\begin{example}
+  A comodel~$W$ of the theory of non-determinism, cf.\
+  Example~\ref{ex:non-determinism}, is given by a cooperation
+  %
+  \begin{equation*}
+    c : \carrier{W} \to \bool \times \carrier{W}
+  \end{equation*}
+  %
+  The cooperation must satisfy (the interpretations of) associativity,
+  idempotency, and commutativity. Commutativity is problematic because we get
+  from it that if $c(w) = (b, w')$ then also
+  $c(w) = (\mathop{\mathsf{not}} b, w')$, implying the non-sensical requirement
+  $b = \mathop{\mathsf{not}} b$. It appears that comodels of non-determinisms require
+  fancier categories than the good old sets.
+\end{example}
+
+\subsection{Tensoring comodels and models}
+\label{sec:tens-comod-models}
+
+
+If we construe the elements of a $\theory{T}$-model~$\carrier{M}$ as effectful
+computations and the elements of a $\theory{T}$-comodel ~$\carrier{W}$ as
+external environments, it is natural to ask whether $M$ and $W$ interact to give
+an account of running effectful programs in effectful external environments.
+%
+Let $\sim_\theory{T}$ be the least equivalence relation
+on~$\carrier{M} \times \carrier{W}$ such that, for every opeation symbol
+$\opdecl{\kode{op}}{P}{A}$ in $\signature{T}$, and for all $p \in P$, $a \in A$,
+$\kappa : A \to \carrier{M}$, and $w, w' \in \carrier{M}$ such that
+$\sem{\kode{op}}^W(p, w) = (a, w')$,
+%
+\begin{equation}
+  \label{eq:tensor-equivalence}
+  %
+  (\sem{\kode{op}}_M(p, \kappa), w) \sim_\theory{T} (\kappa(a), w').
+\end{equation}
+%
+Defne the \emph{tensor $\tensor{M}{W}$} to be the quotient set
+$(\carrier{M} \times \carrier{W})/{\sim_\theory{T}}$.
+
+The tensor represents the interaction of~$M$ and $W$. The equivalence
+$\sim_\theory{T}$ in~\eqref{eq:tensor-equivalence} has an operational reading:
+to perform the operation $\sem{\kode{op}}_M(p, \kappa)$ in the external
+environment~$w$, run the corresponding cooperation $\sem{\kode{op}}^W(p, w)$ to
+obtain $a \in A$ and a new environment~$w'$, then proceed by executing
+$\kappa(a)$ in environment~$w'$.
+
+\begin{example}
+  Let us compute the tensor of $M = \Free{\theory{State}}{X}$, the free model of
+  the theory of state generated by~$X$, and the comodel $W$ defined by
+  %
+  \begin{equation*}
+    |W| \defeq S,
+    \qquad
+    \sem{\kode{get}}^W \defeq \lam{s} (s, s),
+    \qquad
+    \sem{\kode{put}}^W \defeq \lam{(s,t)} s.
+  \end{equation*}
+  %
+  Let us write $\sim$ for $\sim_{\theory{State}}$.
+  We may read the equivalences
+  %
+  \begin{align*}
+    (\sem{\opcall{get}{\unit}{\kappa}}_M, s) &\sim (\sem{\kappa}_M (s), s), \\
+    (\sem{\opcall{put}{t}{\kappa}}_M, s) &\sim (\sem{\kappa}_M \unit, t),
+  \end{align*}
+  %
+  from left to right as rewrite rules which allows us to ``execute away'' all the
+  operations until we are left with a pair of the form $(\sem{\return{x}}_M, s)$.
+  Because $(\sem{\return{x}}_M, s) \sim (\sem{\return{y}}_M, t)$ implies $x = y$
+  and $s = t$ (the proof of which we skip), it follows that $\tensor{M}{W}$ is
+  isomorphic to $X \times S$. In other words, the execution of a program in an
+  initial state always leads to a return value paired with the final state.
+\end{example}
 
 
 \section{Making a programming language}
