@@ -2165,22 +2165,24 @@ interpretations of its left- and right-hand sides yield equal maps.
   are respectively interpreted by cooperations
   %
   \begin{equation*}
-    g : \one \times \carrier{W} \to S \times \carrier{W}
+    g : \carrier{W} \to S \times \carrier{W}
     \qquad\text{and}\qquad
-    p : S \times \carrier{W} \to \one \times \carrier{W},
+    p : S \times \carrier{W} \to \carrier{W},
   \end{equation*}
   %
+  where we replaced $\one \times \carrier{W}$ with the isomorphic
+  set~$\carrier{W}$ (and we shall continue doing so in the rest of the example).
   The cooperations~$p$ and~$g$ must satisfy the equations from
   Example~\ref{ex:theory-single-state}. We first unravel the interpretation of
   equation~\eqref{eq:state-get-put}. Recall that $\kappa$ is the generic
   continuation $\kappa \, \unit = \leaf{\unit}$, and the context is the domain
   of~$\kappa$, which is~$\one$. Thus the right- and left-hand sides are
-  interpreted as maps $\carrier{W} \to \one \times \carrier{W}$, namely
+  interpreted as maps $\carrier{W} \to \carrier{W}$, namely
   %
   \begin{align*}
-    \sem{\kappa\,\unit}^W &: w \mapsto (\unit, w),\\
+    \sem{\kappa\,\unit}^W &: w \mapsto w,\\
     \sem{\opcall{get}{\unit}{\lam{s} \opcall{put}{s}{\kappa}}}^W &:
-     w \mapsto (\unit, p(g(\unit, w)))).
+     w \mapsto p(g(\unit, w)).
   \end{align*}
   %
   To say that these two maps are equal is just a convoluted way of stating
@@ -2194,38 +2196,35 @@ interpretations of its left- and right-hand sides yield equal maps.
   equations may be interpreted and simplified in a similar fashion to give:
   %
   \begin{align*}
-    g(\unit, \pi_2 (g (\unit, w))) &= g(\unit, w), \\
-    g(p(s, w)) &= (s, \pi_2 (p (s, w))), \\
-    p(t, \pi_2(p(s, w))) &= p(t, w).
+    g(\pi_2 (g (w))) &= g(w), \\
+    g(p(s, w)) &= (s, p (s, w)), \\
+    p(t, p(s, w)) &= p(t, w).
   \end{align*}
   %
   %
   % get-get:
   % RHS:
-  % g((), w) = (s, w')
-  % g((), w') = (t, w'')
+  % g(w) = (s, w')
+  % g(w') = (t, w'')
   % ((s,t), w'')
   % LHS:
-  % g((), w) = (r, w')
+  % g(w) = (r, w')
   % ((r,r), w')
-  % simplifies to:
-  % g((), w) = (s, w')
-  % g((), w') = (s, w'')
   %
   % put-get:
   % RHS:
-  % put(s,w) = ((), w')
-  % get((),w') = (s, w'')
+  % put(s,w) = w'
+  % get(w') = (s, w'')
   % LHS:
-  % put(s,w) = ((), w')
+  % put(s,w) = w'
   % kappa s = (s, w')
   %
   % put-put:
   % RHS:
-  % put(s,w) = ((), w')
-  % put(t,w') = ((), w'')
+  % put(s,w) = w'
+  % put(t,w') = w''
   % LHS:
-  % put(t,w) = ((), w''')
+  % put(t,w) = w'''
   %
   
 
