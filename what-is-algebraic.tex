@@ -135,7 +135,6 @@ with Matija and is based on his Dagstuhl tutorial with the same title.
 \section{Algebraic theories}
 \label{sec:algebraic-theories}
 
-
 In algebra we study mathematical structures that are equipped with operations satisfying
 equational laws. For example, a group is a structure $(G, \mathsf{u}, {\cdot}, {}^{-1})$,
 where $\mathsf{u}$~is a constant, $\cdot$~is a binary operation, and ${}^{-1}$~is a unary
@@ -1255,9 +1254,10 @@ built as a quotient of the set of well-founded trees.
 \label{sec:comp-effects-as}
 
 It is high time we provide some examples from programming. The original insight
-by Gordon Plotkin and John Power~\cite{plotkin-power} was that many
-computational effects are naturally described by algebraic theories. What
-precisely does this mean?
+by Gordon Plotkin and John
+Power~\cite{plotkin01:_seman_algeb_operat,plotkin03:_algeb_operat_gener_effec}
+was that many computational effects are naturally described by algebraic
+theories. What precisely does this mean?
 
 When a program runs on a computer, it interacts with the environment by
 performing \emph{operations}, such as printing on the screen, reading from the
@@ -2021,7 +2021,8 @@ the continuation, and establish world peace.
 \label{sec:comod-algebr-theor}
 
 We shall model the top-level computational effects with comodels, which were
-proposed by Gordon Plotkin and John Power~\cite{comodels}. A \emph{comodel} of a
+proposed by Gordon Plotkin and John
+Power~\cite{plotkin08:_tensor_comod_model_operat_seman}. A \emph{comodel} of a
 theory~$\theory{T}$ in a category~$\category{C}$ is a model in the opposite
 category~$\opcat{\category{C}}$. Comodels form a category
 %
@@ -2388,15 +2389,15 @@ corresponds to the free model $\Free{T}{A}$ where $\theory{T}$ is the theory
 with operations $\op{1}, \ldots, \op{k}$ without any equations. The rest of the
 table should look familiar. And operational semantics and typing rules still
 have to be given. For these we refer to Matija Pretnar's
-tutorial~\cite{matija-tutorial}, and
-to~\cite{effect-system-paper,inferring-effects} for a more thorough treatment of
-the language.
+tutorial~\cite{pretnar15:_introd_algeb_effec_handl}, and
+to~\cite{bauer14:_effec_system_algeb_effec_handl,pretnar14:_infer_algeb_effec}
+for a more thorough treatment of the language.
 
 The programming language in Figure~\ref{fig:mini-eff} can express only the
 terminating computations. To make it more realistic, we should add to it general
 recursion and allow non-terminating computations. Such modifications cannot be
 accommodated by the set-theoretic semantics, but they can be handled by domain
-theory, as was shown in~\cite{effect-system-paper}. Therein an adequate
+theory, as was shown in~\cite{bauer14:_effec_system_algeb_effec_handl}. Therein an adequate
 domain-theoretic semantics for algebraic effects and handlers with support for
 general recursion.
 
@@ -2409,11 +2410,13 @@ unifies and generalizes a number of techniques: exception handlers, backtracking
 and other search strategies, I/O redirection, transactional memory, coroutines,
 cooperative multi-threading, delimited continuations, probabilistic programming,
 and many others. As this note is already getting quite long, we recommend
-existing tutorials~\cite{handler-tutorials} for further reading. For
-experimenting with handlers in practice, you can try out one of the languages
-that implements handlers. The first such language was Eff~\cite{eff}, but there
-are by now others. The Effects Rosetta Stone~\cite{rosetta} is a good starting
-point to learn about them and to see how they compare.
+existing
+material~\cite{pretnar15:_introd_algeb_effec_handl,bauer15:_progr,kammar13:_handl}
+for further reading. For experimenting with handlers in practice, you can try
+out one of the languages that implements handlers. The first such language was
+Eff~\cite{bauer:_eff}, but there are by now others. The Effects Rosetta
+Stone~\cite{effec_roset_stone} is a good starting point to learn about them and
+to see how they compare.
 
 \section{Exploring new territories}
 \label{sec:expl-new-terr}
@@ -2440,7 +2443,7 @@ the interaction between a program and its environment is very pleasing, but has
 largely not been taken advantage of. There should be a useful programming
 concept in there, especially if we can make tensoring a user-definable feature
 of a programming language. The only known (to me) attempt to do so were the
-\emph{resources} in an early version of Eff~\cite{eff-resources}, but those
+\emph{resources} in an early version of Eff~\cite{bauer15:_progr}, but those
 disappeared from later version of Eff. May they see the light of day again.
 
 At the Dagstuhl seminar~\cite{chandrasekaran18:_algeb} the topic of dynamic
@@ -2452,7 +2455,8 @@ deallocates memory, spawns or terminates a new thread, etc. How should such
 phenomena be accounted for mathematically? A good answer would likely lead to
 new programming concepts for general resource management. Once again, the only
 known implementation of dynamically created instances of effects was provided in
-the original version of Eff~\cite{eff-instances}.
+the original version of Eff~\cite{bauer15:_progr}, although some languages allow
+dynamic creation of new effects by indirect means.
 
 
 \bibliographystyle{plain}
