@@ -6,6 +6,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{times}
 \usepackage{xypic}
+\usepackage{booktabs}
 
 \newcommand{\NN}{\mathbb{N}} % natural numbers
 \newcommand{\RR}{\mathbb{R}} % real numbers
@@ -66,6 +67,9 @@
 \newcommand{\tensor}[2]{#1 \otimes #2} % tensor of a model and a comodel
 \newcommand{\opair}[2]{\langle #1, #2 \rangle} % the tensor of a progrqm and a world
 
+\newcommand{\ct}[1]{\underline{#1}} % computation type symbol
+\newcommand{\dirt}[2]{#1 \mathbin{!} #2} % type with dirt
+
 %%% Macros for the programming language
 
 % General syntactic constructs
@@ -73,8 +77,6 @@
 
 % Core syntax
 \newcommand{\seq}[2]{\kode{do}\; #1 \leftarrow #2 \;\kode{in}\;}
-\newcommand{\conditional}[3]{\kode{if}\; #1 \;\kode{then}\; #2 \;\kode{else}\; #3}
-\newcommand{\fun}[1]{\kode{fun}\; #1 \mapsto}
 \newcommand{\handler}{\kode{handler}\;}
 \newcommand{\xopgen}[2]{\overline{#1}(#2)}
 \newcommand{\opgen}[2]{\xopgen{\kode{#1}}{#2}}
@@ -109,12 +111,12 @@ Slovenia}
 
 \maketitle
 
-This note recapitulates and expands the contents of a tutorial on mathematical
-background of algebraic effects and handlers which I gave at the Dagstuhl
-seminar \emph{``Algebraic effect handlers go
-  mainstream''}~\cite{chandrasekaran18:_algeb} You might find it relevant if you
-already are familiar with algebraic effects and handlers as programming concepts
-and would like to know what they have to do with algebra.
+This note recapitulates and expands the contents of a tutorial on the
+mathematical theory of algebraic effects and handlers which I gave at the
+Dagstuhl seminar \emph{``Algebraic effect handlers go
+  mainstream''}~\cite{chandrasekaran18:_algeb}. You might find it relevant if
+you already are familiar with algebraic effects and handlers as programming
+concepts and would like to know what they have to do with algebra.
 
 Our goal is to draw an uninterrupted line of thought between algebra and
 computational effects. We begin on the mathematical side of things, by reviewing
@@ -122,6 +124,12 @@ the classic notions of universal algebra: signatures, algebraic theories, and
 their models. We then generalize and adapt the theory so that it applies to
 computational effects. In the last step we replace traditional mathematical
 notation with one that is closer to programming languages.
+
+\subsubsection*{Acknowledgment}
+
+I thank Matija Pretnar for discussion and planning of the Dagstuhl tutorial and
+these notes. Section~\ref{sec:what-coalg-about} on comodels was written jointly
+with Matija and is based on his Dagstuhl tutorial with the same title.
 
 
 \section{Algebraic theories}
@@ -1179,7 +1187,7 @@ as follows:
 \end{enumerate}
 %
 The usual $\Sigma$-terms in context $x_1, \ldots, x_k$ correspond to
-$\Tree{\Sigma}{\set{x_1, \ldots, x_k}}$. Or to put it diffrently, the elements
+$\Tree{\Sigma}{\set{x_1, \ldots, x_k}}$. Or to put it differently, the elements
 of $\Tree{\Sigma}{X}$ may be thought of as terms with variables~$X$. In fact, we
 shall customarily refer to them as terms.
 
@@ -1992,14 +2000,6 @@ handler~\eqref{eq:handler-notation}:
   handles both the exception and the return value.
 \end{example}
 
-We could now give many examples of handlers to show that they are a very useful
-programming concept which unifies and generalizes a number of techniques:
-exception handlers, backtracking and other search strategies, I/O redirection,
-transactional memory, coroutines, cooperative multi-threading, delimited
-continuations, probabilistic programming, and many others. As this note is
-already getting quite long, we recommend existing
-tutorials~\cite{handler-tutorials}.
-
 \section{What is coalgebraic about algebraic effects and handlers?}
 \label{sec:what-coalg-about}
 
@@ -2007,9 +2007,9 @@ Handlers are a form of flow control (like loops, conditional statements,
 exceptions, coroutines, and the dreaded `goto'), to be used by programmers in
 programs. In other words, they can be used to \emph{simulate} computational
 effects, a bit like monads in functional programming can simulate
-computatational effects in a purely functional language. What we still lack is a
+computational effects in a purely functional language. What we still lack is a
 mathematical model of computational effects at the level of the program runtime
-environment. There is always a barrier between the program and its exernal
+environment. There is always a barrier between the program and its external
 environment, be it a virtual machine, the operating system, or the underlying
 hardware. The actual computational effects cross the barrier, and cannot be
 modeled as handlers. A handler gets access to the continuation, but when a real
@@ -2020,7 +2020,7 @@ the continuation, and establish world peace.
 \subsection{Comodels of algebraic theories}
 \label{sec:comod-algebr-theor}
 
-We shall model the toplevel computational effects with comodels, which were
+We shall model the top-level computational effects with comodels, which were
 proposed by Gordon Plotkin and John Power~\cite{comodels}. A \emph{comodel} of a
 theory~$\theory{T}$ in a category~$\category{C}$ is a model in the opposite
 category~$\opcat{\category{C}}$. Comodels form a category
@@ -2098,7 +2098,7 @@ which we call a \emph{cooperation}.
     |W| \to S \times |W|.
   \end{equation*}
   %
-  This is quite similar to non-deterministich choice, except that the world
+  This is quite similar to non-deterministic choice, except that the world
   provides an element of~$S$ rather than a boolean value. The world might
   accomplish such a task by inducing the user (who is considered as part of the
   world) to press buttons on the keyboard.
@@ -2112,7 +2112,7 @@ which we call a \emph{cooperation}.
     \one \times |W| \to \emptyset \times |W|.
   \end{equation*}
   %
-  Unless $|W|$ is the emtpy set, there is no such map. An exception cannot
+  Unless $|W|$ is the empty set, there is no such map. An exception cannot
   propagate to the outer world. The universe is safe from the null pointer exception.
 \end{example}
 
@@ -2258,8 +2258,8 @@ interpretations of its left- and right-hand sides yield equal maps.
   The cooperation must satisfy (the interpretations of) associativity,
   idempotency, and commutativity. Commutativity is problematic because we get
   from it that if $c(w) = (b, w')$ then also
-  $c(w) = (\mathop{\mathsf{not}} b, w')$, implying the non-sensical requirement
-  $b = \mathop{\mathsf{not}} b$. It appears that comodels of non-determinisms require
+  $c(w) = (\mathop{\mathsf{not}} b, w')$, implying the nonsensical requirement
+  $b = \mathop{\mathsf{not}} b$. It appears that comodels of non-determinism require
   fancier categories than the good old sets.
 \end{example}
 
@@ -2273,7 +2273,7 @@ external environments, it is natural to ask whether $M$ and $W$ interact to give
 an account of running effectful programs in effectful external environments.
 %
 Let $\sim_\theory{T}$ be the least equivalence relation
-on~$\carrier{M} \times \carrier{W}$ such that, for every opeation symbol
+on~$\carrier{M} \times \carrier{W}$ such that, for every operation symbol
 $\opdecl{\kode{op}}{P}{A}$ in $\signature{T}$, and for all $p \in P$, $a \in A$,
 $\kappa : A \to \carrier{M}$, and $w, w' \in \carrier{M}$ such that
 $\sem{\kode{op}}^W(p, w) = (a, w')$,
@@ -2284,7 +2284,7 @@ $\sem{\kode{op}}^W(p, w) = (a, w')$,
   (\sem{\kode{op}}_M(p, \kappa), w) \sim_\theory{T} (\kappa(a), w').
 \end{equation}
 %
-Defne the \emph{tensor $\tensor{M}{W}$} to be the quotient set
+Define the \emph{tensor $\tensor{M}{W}$} to be the quotient set
 $(\carrier{M} \times \carrier{W})/{\sim_\theory{T}}$.
 
 The tensor represents the interaction of~$M$ and $W$. The equivalence
@@ -2322,60 +2322,138 @@ $\kappa(a)$ in environment~$w'$.
   initial state always leads to a return value paired with the final state.
 \end{example}
 
+The next time the subject of tensor products come up, you may impress your
+mathematician friends by mentioning that you know how to tensor software with
+hardware.
+
 
 \section{Making a programming language}
 \label{sec:making-progr-lang}
 
 
-There is a programming language design question regarding handlers.
-For~\eqref{eq:handler-notation} to define a handler
-$\Free{Exn}{X} \hto \Free{T}{Y}$, the operation clauses $h_i$ must satisfy the
-equations of~$\theory{T}$. In general it is impossible to check algorithmically
-whether this is the case, and so a compiler or a language interpreter should
-avoid even trying to. Existing languages with handlers solve the problem by
-ignoring the equations. This is not as bad as it sounds, because in practice we
-often want handlers that break the equations. Moreover, dropping equations just
-means that we work with trees as representatives of their equivalence classes,
-which is a common implementation technique (for instance, when we represent
-finite sets by lists).
-
-Recursion.
-
-Operational semantics.
-
-Types.
-
+The mathematical theory of algebraic effects and handlers may be used in
+programming language design, both as a mathematical foundation and a source of
+inspiration for new programming concepts. This is a broad topic which far
+exceeds the purpose and scope of these notes, so we only touch on the main
+questions and issues, and provide references for further reading.
 
 \begin{figure}[ht]
-  \centering
-  \parbox{0.75\textwidth}{
+  \small
+  \fbox{\parbox{\textwidth}{
+    \centering
     \newcommand{\bnfis}{\mathrel{\;{:}{:}\!=}\;}
     \newcommand{\bnfor}{\mathrel{\;\big|\;}}
     \begin{align*}
       \text{Value}\ v
         \bnfis& x                                & & \text{variable} \\
         \bnfor& \kode{false} \bnfor \kode{true}  & & \text{boolean constant} \\
-        \bnfor& \fun{x} c                        & & \text{function} \\
+        \bnfor& \lam{x} c                        & & \text{function} \\
         \bnfor&
           \handler \{
           \begin{aligned}[t]
             & \retclause{x} c_r, \\
-            & \opclause{\op{1}}{x}{k} c_1, \ldots, \opclause{\op{n}}{x}{k} c_n\}
+            & \ldots, \opclause{\op{i}}{x}{k} c_i, \ldots \}
           \end{aligned}
           & & \text{handler}
       \\
       \text{Computation}\ c
-        \bnfis& \return{v}                       & & \text{return a value} \\
-        \bnfor& \opcall{\op{i}}{v}{y}{c}         & & \text{operation call} \\
+        \bnfis& \return{v}                       & & \text{pure computation} \\
+        \bnfor& \opgen{op}{v}                    & & \text{operation} \\
         \bnfor& \seq{x}{c_1} c_2                 & & \text{sequencing} \\
-        \bnfor& \conditional{v}{c_1}{c_2}        & & \text{conditional} \\
+        \bnfor& \cond{v}{c_1}{c_2}               & & \text{conditional} \\
         \bnfor& v_1 \, v_2                       & & \text{application} \\
-        \bnfor& \withhandle{v}{c}                & & \text{handle a computation}
+        \bnfor& \withhandle{v}{c}                & & \text{handling}
+      \\
+      \text{Value type}\ A, B
+         \bnfis& \kode{bool}                     & & \text{boolean type} \\
+         \bnfor& A \times B                      & & \text{product type} \\
+         \bnfor& A \to \ct{C}                    & & \text{function type} \\
+         \bnfor& \ct{C} \hto \ct{D}              & & \text{handler type}
+      \\
+      \text{Computation type}\ \ct{C}, \ct{D}
+         \bnfis& \dirt{A}{\{\op{1}, \ldots, \op{k}\}}
     \end{align*}
-  }
-  \caption{Syntax of miniEff}
+  }}
+  \caption{A core language with algebraic effects and handlers}
   \label{fig:mini-eff}
 \end{figure}
+
+Figure~\ref{fig:mini-eff} shows the outline of a core language based on
+algebraic theories, as presented so far. Apart from a couple of changes in
+terminology and notation there is nothing new. Instead of generators and
+generating sets we speak of \emph{values} and \emph{value types}, and instead of
+trees and free models we speak of \emph{computations} and \emph{computation
+  types}. The computation type $\dirt{A}{\{\op{1}, \ldots, \op{k}\}}$
+corresponds to the free model $\Free{T}{A}$ where $\theory{T}$ is the theory
+with operations $\op{1}, \ldots, \op{k}$ without any equations. The rest of the
+table should look familiar. And operational semantics and typing rules still
+have to be given. For these we refer to Matija Pretnar's
+tutorial~\cite{matija-tutorial}, and
+to~\cite{effect-system-paper,inferring-effects} for a more thorough treatment of
+the language.
+
+The programming language in Figure~\ref{fig:mini-eff} can express only the
+terminating computations. To make it more realistic, we should add to it general
+recursion and allow non-terminating computations. Such modifications cannot be
+accommodated by the set-theoretic semantics, but they can be handled by domain
+theory, as was shown in~\cite{effect-system-paper}. Therein an adequate
+domain-theoretic semantics for algebraic effects and handlers with support for
+general recursion.
+
+Once a programming language is in place, the next task is to explore its
+possibilities. Are user-defined operations and handlers good for anything?
+Practice so far has shown that indeed they can be used for all sorts of things,
+but also that it is possible to overused and misuse them, just like any
+programming concepts. Handlers have turned out to be a versatile tool that
+unifies and generalizes a number of techniques: exception handlers, backtracking
+and other search strategies, I/O redirection, transactional memory, coroutines,
+cooperative multi-threading, delimited continuations, probabilistic programming,
+and many others. As this note is already getting quite long, we recommend
+existing tutorials~\cite{handler-tutorials} for further reading. For
+experimenting with handlers in practice, you can try out one of the languages
+that implements handlers. The first such language was Eff~\cite{eff}, but there
+are by now others. The Effects Rosetta Stone~\cite{rosetta} is a good starting
+point to learn about them and to see how they compare.
+
+\section{Exploring new territories}
+\label{sec:expl-new-terr}
+
+Lastly, we mention several aspects of algebraic effects and handlers that have
+largely remained unexplored so far.
+
+Perhaps the most obvious one is that existing implementations of effects and
+handlers largely ignore equations. In a sense this is expected and
+understandable. For~\eqref{eq:handler-notation} to define a handler
+$\Free{Exn}{X} \hto \Free{T}{Y}$, the operation clauses $h_i$ must satisfy the
+equations of~$\theory{T}$. In general it is impossible to check algorithmically
+whether this is the case, and so a compiler or a language interpreter should
+avoid trying to do so. Thus existing languages with handlers solve the problem
+by ignoring the equations. This is not as bad as it sounds, because in practice
+we often want handlers that break the equations. Moreover, dropping equations
+just means that we work with trees as representatives of their equivalence
+classes, which is a common implementation technique (for instance, when we
+represent finite sets by lists). Nevertheless, incorporating equations into
+programming languages would have clear benefits.
+
+Next, the idea of tensoring comodels and models as a mathematical explanation of
+the interaction between a program and its environment is very pleasing, but has
+largely not been taken advantage of. There should be a useful programming
+concept in there, especially if we can make tensoring a user-definable feature
+of a programming language. The only known (to me) attempt to do so were the
+\emph{resources} in an early version of Eff~\cite{eff-resources}, but those
+disappeared from later version of Eff. May they see the light of day again.
+
+At the Dagstuhl seminar~\cite{chandrasekaran18:_algeb} the topic of dynamic
+creation of computational effects was recognized as important and unsolved. The
+operations of an algebraic theory are fixed by the signature, but in real-world
+situations new instances of computational effects are created and destroyed
+dynamically, for example, when a program opens or closes a file, allocates or
+deallocates memory, spawns or terminates a new thread, etc. How should such
+phenomena be accounted for mathematically? A good answer would likely lead to
+new programming concepts for general resource management. Once again, the only
+known implementation of dynamically created instances of effects was provided in
+the original version of Eff~\cite{eff-instances}.
+
 
 \bibliographystyle{plain}
 \bibliography{what-is-algebraic}
