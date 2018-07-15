@@ -187,7 +187,7 @@ to indicate that $t$ is a $\Sigma$-term in the given context. A \emph{closed
   $\Sigma$-term} is a $\Sigma$-term in the empty context. No variables occur
 in a closed term.
 
-A \emph{$\Sigma$-equation} is a pair of $\Sigma$-terms $\ell$ and $r$ in context
+A \emph{$\Sigma$-equation} is a pair of $\Sigma$-terms $\ell$ and $r$ in a context
 $x_1, \ldots, x_k$. We write
 %
 \begin{equation*}
@@ -237,7 +237,7 @@ terms and equations instead of $\Sigma$-terms and $\Sigma$-equations.
   \end{equation*}
   %
   It is customary to write a nullary symbol $\mathsf{u}()$ simply as $\mathsf{u}$, and to
-  use infix an infix operator~$\cdot$ in place of~$\mathsf{m}$. With such notation the
+  use the infix operator~$\cdot$ in place of~$\mathsf{m}$. With such notation the
   above equation would be written as
   %
   \begin{equation*}
@@ -250,15 +250,15 @@ terms and equations instead of $\Sigma$-terms and $\Sigma$-equations.
   $\mathsf{u} \, x \, y$, and we are left with $y \, x = \mathsf{u} \, x \, y$,
   which is what your algebra professor might write down. Note that we are
   \emph{not} discussing validity of equations but only ways of displaying them.
-  It is irrelevant whether the above equation is valid in monoids.
 \end{example}
 
 
 \subsection{Algebraic theories}
 \label{sec:algebraic-theories-1}
 
-An \emph{algebraic theory $\theory{T} = (\signature{T}, \equations{T})$} is given by a
-signature~$\signature{T}$ and a collection $\equations{T}$ of $\signature{T}$-equations.
+An \emph{algebraic theory $\theory{T} = (\signature{T}, \equations{T})$}, also
+called an \emph{equational theory}, is given by a signature~$\signature{T}$ and
+a collection $\equations{T}$ of $\signature{T}$-equations.
 %
 We impose no restrictions on the number of operation symbols or equations, but at least in
 classical treatments of the subject certain complications are avoided by insisting that
@@ -410,7 +410,7 @@ the following data:
 \end{enumerate}
 %
 The double bracket $\sem{{\ }}_I$ is called the \emph{semantic bracket} and is typically
-used when syntactic entities (operation symbols, terms, equations) are mapped by~$I$ to
+used when syntactic entities (operation symbols, terms, equations) are mapped to
 their mathematical counterparts. When no confusion can arise, we omit the subscript~$I$
 and write just~$\sem{{\ }}$.
 
@@ -484,9 +484,7 @@ as follows:
     (a, b, c) &\mapsto (b+1)^3 b^6 + 2 (3 + \sqrt{5}).
   \end{align*}
   %
-  These are not the same map, as they do not even have the same domains! It is irrelevant
-  whether this interpretation satisfies the monoid laws because we have not considered any
-  equations yet.
+  These are not the same map, as they do not even have the same domains!
 \end{example}
 
 The previous examples shows why contexts should not be ignored. In mathematical practice
@@ -523,15 +521,16 @@ a \emph{$\theory{T}$-algebra}.
   carrier set $\carrier{G}$ and maps
   %
   \begin{equation*}
-    u : \one \to \carrier{G},\qquad
-    m : \carrier{G} \times \carrier{G} \to \carrier{G},\qquad
-    i : \carrier{G} \to \carrier{G},
+    \sem{u}_G : \one \to \carrier{G},\qquad
+    \sem{m}_G : \carrier{G} \times \carrier{G} \to \carrier{G},\qquad
+    \sem{i}_G : \carrier{G} \to \carrier{G},
   \end{equation*}
   %
-  interpreting the operation symbols $\mathsf{u}$, $\mathsf{m}$, and $\mathsf{i}$,
-  respectively, such that the equations~$\equations{Group}$. This amounts precisely to
-  $(\carrier{G}, u, m, i)$ being a group, except that the unit $u$ is viewed as a map
-  $\one \to \carrier{G}$ instead of an element of~$\carrier{G}$.
+  interpreting the operation symbols $\mathsf{u}$, $\mathsf{m}$, and
+  $\mathsf{i}$, respectively, such that the equations~$\equations{Group}$. This
+  amounts precisely to $(\carrier{G}, \sem{u}_G, \sem{m}_G, \sem{i}_G)$ being a
+  group, except that the unit is viewed as a map $\one \to \carrier{G}$ instead
+  of an element of~$\carrier{G}$.
 \end{example}
 
 \begin{example}
@@ -2438,7 +2437,7 @@ classes, which is a common implementation technique (for instance, when we
 represent finite sets by lists). Nevertheless, incorporating equations into
 programming languages would have clear benefits.
 
-Next, the idea of tensoring comodels and models as a mathematical explanation of
+The idea of tensoring comodels and models as a mathematical explanation of
 the interaction between a program and its environment is very pleasing, but has
 largely not been taken advantage of. There should be a useful programming
 concept in there, especially if we can make tensoring a user-definable feature
