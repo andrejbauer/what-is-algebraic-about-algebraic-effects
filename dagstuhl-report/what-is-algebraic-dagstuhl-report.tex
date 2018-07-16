@@ -1,0 +1,69 @@
+\documentclass[a4paper,UKenglish]{dagrep-v2018}
+
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}%if unwanted, comment out or use option "draft"
+\bibliographystyle{plain}%the recommnded bibstyle
+
+\begin{document}
+
+\subject{Report from Dagstuhl Seminar 18172}
+
+\title{Algebraic effects and handlers go mainstream}
+
+\author[1]{A.~U.~Thor}
+
+\maketitle
+
+\abstracttitle{What is algebraic about algebraic effects and handlers?}
+\abstractauthor[Andrej Bauer]{Andrej Bauer (University of Ljubljana, SI)}
+\license
+
+In this tutorial we reviewed the classic treatment of algebraic theories and
+their models in the category of sets. We then drew an uninterrupted line of
+thought from the classical theory to algebraic effects and handlers. First we
+generalized operations with integral arities to parameterized operations with
+arbitrary arities, as these are needed for modeling computational effects. The
+free models of theories with generalized operations can be used as denotations
+of effectful programs. The universal property of a free models can be used to
+derive the notion of handlers. At the level of types, the value types correspond
+to sets of generators and the computation types to the free models. The naive
+set-theoretic treatment presented in the tutorial should be replaced with a
+domain-theoretic one if we wanted adequate denotational semantics of a realistic
+programming language with general recursion.
+
+
+\abstracttitle{What is coalgebraic about algebraic effects and handlers?}
+\abstractauthor[Matija Pretnar]{Matija Pretnar (University of Ljubljana, SI)}
+\license
+
+In this tutorial we reviewed the work of Gordon Plotkin and John
+Power~\cite{plotkin08:_tensor_comod_model_operat_seman} in which they proposed
+comodels of algebraic theories and tensoring of comodels and models as a
+mathematical model for the interaction of an effectful program with its external
+environment. A comodel of a theory $\mathsf{T}$ in a category $\mathbf{C}$ is a
+model of~$\mathsf{T}$ in the opposite category $\mathbf{C}^{\mathrm{op}}$, and
+the category of comodels in~$\mathbf{C}$ is the opposite of the category of
+models in $\mathbf{C}^{\mathrm{op}}$. We may define the tensor $M \otimes W$ of
+a comodel~$W$ and a model~$M$, which is a certain quotient of the product
+$M \times W$. A pair $(p, w) \in M \times W$ may be viewed as a program~$p$
+running in the external environment~$w$. The comodel~$W$ provides resources
+needed for execution of algebraic operations in~$M$. In the tutorial we
+emphasized the fact that comodels and tensoring are a more appropriate model of
+top-level behavior of effectful program than various notions of ``top-level'' or
+``default'' handlers. A handler has access to the continuation, but at the top
+level this is not the case, or else programs would be able to control the
+external world. It has to be the other way around.
+
+
+\begin{thebibliography}{10}
+
+\bibitem{plotkin08:_tensor_comod_model_operat_seman}
+Gordon~D. Plotkin and John Power.
+\newblock Tensors of comodels and models for operational semantics.
+\newblock {\em Electronic Notes in Theoretical Computer Science}, 218:295--311,
+  2008.
+
+\end{thebibliography}
+
+
+\end{document}
