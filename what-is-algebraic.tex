@@ -1,12 +1,14 @@
 \documentclass{amsart}
 
+% PACKAGES
+
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[hidelinks]{hyperref}
-\usepackage{amsmath,amssymb,amsthm}
 \usepackage{times}
 \usepackage{xypic}
-\usepackage{booktabs}
+
+% MACROS
 
 \newcommand{\NN}{\mathbb{N}} % natural numbers
 \newcommand{\RR}{\mathbb{R}} % real numbers
@@ -87,11 +89,11 @@
 \newcommand{\withhandle}[2]{\kode{with}\; #1\; \kode{handle}\; #2}
 
 
-
 {\theoremstyle{definition}
-\newtheorem{definition}{Definition}[section]
-\newtheorem{example}[definition]{Example}
+\newtheorem{example}{Example}[section]
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
@@ -107,7 +109,6 @@ Slovenia}
 \email{Andrej.Bauer@andrej.com}
 \thanks{This material is based upon work supported by the Air Force Office of
   Scientific Research under award number FA9550-17-1-0326.}
-
 
 \maketitle
 
