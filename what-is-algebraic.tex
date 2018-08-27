@@ -473,13 +473,13 @@ as follows:
   \end{align*}
   %
   The term in context $x, y \mid \mathsf{m}(\mathsf{u}, \mathsf{m}(x, x))$ is interpreted
-  as the map $\RR \to \RR$, given by the rule
+  as the map $\RR \times \RR \to \RR$, given by the rule
   %
   \begin{equation*}
     (a, b) \mapsto (a+1)^3 a^6 + 2 (3 + \sqrt{5}).
   \end{equation*}
   %
-  The same term in a context $y, x, z$ is interpreted as the map $\RR \times \RR \to \RR$,
+  The same term in a context $y, x, z$ is interpreted as the map $\RR \times \RR \times \RR \to \RR$,
   given by the rule
   %
   \begin{align*}
@@ -1891,7 +1891,7 @@ an ML-style language is none other than $\kode{let}$-binding,
 
 So far the main take-away is that computations returning values from~$V$ and
 performing operations of a theory~$\theory{T}$ are the elements of the free
-model $\Free{T}{X}$. What about \emph{transformations} between computations,
+model $\Free{T}{V}$. What about \emph{transformations} between computations,
 what are they? An easy but useless answer is that they are just maps between the
 carriers of free models,
 %
