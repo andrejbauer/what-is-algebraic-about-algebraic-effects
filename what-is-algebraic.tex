@@ -1288,7 +1288,7 @@ aside momentarily, we note that a computation may be
 \end{equation*}
 %
 for a pure computation that returns the value~$v$. Think of a value as an inert
-datum that needs no further computation, such as a boolean constant, an numeral,
+datum that needs no further computation, such as a boolean constant, a numeral,
 or a $\lambda$-abstraction. An operation takes a \emph{parameter}~$p$, for
 instance the memory location to be read, or the string to be printed, and a
 \emph{continuation}~$\kappa$, which is a suspended computation expecting the
@@ -1453,7 +1453,7 @@ effects under consideration.
     }
   \end{equation*}
   %
-  reads an integer~$x$ from standard input, rises an exception if $x$ is
+  reads an integer~$x$ from standard input, raises an exception if $x$ is
   negative, otherwise it returns its successor.
 \end{example}
 
@@ -1541,12 +1541,12 @@ effects under consideration.
     \opcall{put}{t}{\kappa}
   \end{align}
   %
-  These is just the first group of equations from Example~\ref{ex:theory-state},
+  This is just the first group of equations from Example~\ref{ex:theory-state},
   except that we need not specify which memory location to read from. 
 
   Can we ask whether the theory of states with locations from
   Example~\ref{ex:theory-state} can be obtained by a combination of many
-  instances of the theory of a single state. That is, to model $I$-many states,
+  instances of the theory of a single state? That is, to model $I$-many states,
   we combine $I$-many copies of the theory of a single state, so that for every
   $\iota \in I$ we have operations
   %
@@ -1656,7 +1656,7 @@ free model ought to be the desired one.
   %
   The isomorphism takes the element represented by~\eqref{eq:state-normal-form}
   to the function $\lam{s} (f(s), g(s))$. (It takes extra effort to show that
-  each element is represented by unique $f$ and $g$). The inverse takes a
+  each element is represented by unique $f$ and $g$.) The inverse takes a
   function $h : S \to S \times V$ to the computation represented by the tree
   %
   \begin{equation*}
@@ -1723,7 +1723,7 @@ Concretely, $\lift{\phi}$ is defined by recursion on
 where~$\kode{op}$ ranges over the operations of~$\theory{T}$. The first equation
 holds because the above diagram commutes, and the second because $\lift{\phi}$ is a
 $\theory{T}$-homomorphism. We leave the verification of the monad laws as
-exercise.
+an exercise.
 
 \begin{example}
   Let us resume the previous example. If there is any beauty in mathematics, the
@@ -2016,7 +2016,7 @@ exceptions, coroutines, and the dreaded ``goto''), to be used by programmers in
 programs. In other words, they can be used to \emph{simulate} computational
 effects, a bit like monads can simulate computational effects in a purely
 functional language. What we still lack is a mathematical model of computational
-effects at the level of external environment in which the program runs. There is
+effects at the level of the external environment in which the program runs. There is
 always a barrier between the program and its external environment, be it a
 virtual machine, the operating system, or the underlying hardware. The actual
 computational effects cross the barrier, and cannot be modeled as handlers. A
@@ -2331,7 +2331,7 @@ $\kappa(a)$ in environment~$w'$.
   the final state.
 \end{example}
 
-The next time the subject of tensor products come up, you may impress your
+The next time the subject of tensor products comes up, you may impress your
 mathematician friends by mentioning that you know how to tensor software with
 hardware.
 
