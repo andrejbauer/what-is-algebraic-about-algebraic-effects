@@ -347,11 +347,15 @@ arities be non-negative integers.
     x \vee y &= y \vee x,                     &      x \wedge y &= y \wedge x,\\
     x \vee x &= x,                            &      x \wedge x &= x,\\
     x \vee \bot &= x,                         &      x \wedge \top &= x.
+    %
+   \intertext{In addition we need the \emph{absorbtion} laws:}
+    x \vee (x \wedge y) &= x,                  & x \wedge (x \vee y) &= x.
   \end{align*}
   %
-  Notice that the theory of a bounded lattice is simply the juxtaposition of two copies of
-  the theory of a semi-lattice from Example~\ref{ex:semi-lattice}. The partial order is
-  recovered because $x \leq y$ is equivalent to $x \vee y = y$ and to $x \wedge y = x$.
+  Notice that the theory of a bounded lattice is the juxtaposition of two copies of
+  the theory of a semi-lattice from Example~\ref{ex:semi-lattice}, augmented with laws that relate them.
+  The partial order is recovered because $x \leq y$ is equivalent to
+  $x \vee y = y$ and to $x \wedge y = x$.
 \end{example}
 
 \begin{example}
@@ -1372,13 +1376,12 @@ effects under consideration.
   of~$\kappa$ in the above equations. If we translate the earlier examples into
   the present notation, we see that~$\kappa$ corresponds to variables, which
   leads to the idea that we should use a \emph{generic}~$\kappa$. Thus we let
-  each of the above equations have as its context the domain of~$\kappa$, and
-  let $\kappa$ map each argument to the corresponding variable. Thus, the first
-  equation is in context $S \times S$ and
-  $\kappa = \lam{s \, t } \leaf {(s, t)}$; the second and fourth equations are
-  in context $\one$ and $\kappa = \lam{\_} \leaf{\unit}$; the third equation is
-  in context $S$ and $\kappa = \lam{s} \leaf{s}$. Unless specified otherwise, we
-  shall always take~$\kappa$ to be such a generic continuation.
+  $\kappa$ take some arguments and just return them as a tuple. In the first
+  equation we take $\kappa = \lam{s \, t } \leaf {(s, t)}$; in the second and
+  fourth equations are $\kappa = \lam{\_} \leaf{\unit}$; and in the third
+  equation $\kappa = \lam{s} \leaf{s}$. All equations have empty contexts, as no
+  free variables occur in them. Unless specified otherwise, we shall
+  always take~$\kappa$ to be such a generic continuation.
 
   There is a second set of equations stating that lookups and updates from
   \emph{different} locations $\ell \neq \ell'$ distribute over each other:
@@ -1544,8 +1547,8 @@ effects under consideration.
   This is just the first group of equations from Example~\ref{ex:theory-state},
   except that we need not specify which memory location to read from. 
 
-  Can we ask whether the theory of states with locations from
-  Example~\ref{ex:theory-state} can be obtained by a combination of many
+  Can the theory of states with many locations from
+  Example~\ref{ex:theory-state} be obtained by a combination of many
   instances of the theory of a single state? That is, to model $I$-many states,
   we combine $I$-many copies of the theory of a single state, so that for every
   $\iota \in I$ we have operations
@@ -1622,8 +1625,8 @@ free model ought to be the desired one.
   equations from Example~\ref{ex:theory-single-state}, we may contract any two
   consecutive $\kode{get}$'s to a single one, and similarly for consecutive
   $\kode{put}$'s, we may disregard a $\kode{get}$ after a $\kode{put}$, and
-  cancel a~$\kode{get}$ followed by a~$\kode{put}$. Thus every tree is congruent
-  to one of the four forms
+  cancel a~$\kode{get}$ followed by a~$\kode{put}$. We are left with four
+  forms of trees,
   %
   \begin{gather*}
     \return{v},\\
@@ -2122,7 +2125,7 @@ which we call a \emph{cooperation}.
   \end{equation*}
   %
   Unless $|W|$ is the empty set, there is no such map. An exception cannot
-  propagate to the outer world. The universe is safe from the null pointer exception.
+  propagate to the outer world. The universe is safe from segmentation fault!
 \end{example}
 
 The examples are encouraging, so let us backtrack and spell out the basic
@@ -2189,8 +2192,8 @@ interpretations of its left- and right-hand sides yield equal maps.
   The cooperations~$p$ and~$g$ must satisfy the equations from
   Example~\ref{ex:theory-single-state}. We first unravel the interpretation of
   equation~\eqref{eq:state-get-put}. Recall that $\kappa$ is the generic
-  continuation $\kappa \, \unit = \leaf{\unit}$, and the context is the domain
-  of~$\kappa$, which is~$\one$. Thus the right- and left-hand sides are
+  continuation $\kappa \, \unit = \leaf{\unit}$, and the context contains no variables
+  so it is interpreted by~$\one$. Thus the right- and left-hand sides are
   interpreted as maps $\carrier{W} \to \carrier{W}$, namely
   %
   \begin{align*}
@@ -2260,7 +2263,7 @@ interpretations of its left- and right-hand sides yield equal maps.
   Example~\ref{ex:non-determinism}, is given by a cooperation
   %
   \begin{equation*}
-    c : \carrier{W} \to \bool \times \carrier{W}
+    c : \carrier{W} \to \bool \times \carrier{W}.
   \end{equation*}
   %
   The cooperation must satisfy (the interpretations of) associativity,
@@ -2405,9 +2408,9 @@ The programming language in Figure~\ref{fig:mini-eff} can express only the
 terminating computations. To make it more realistic, we should add to it general
 recursion and allow non-terminating computations. Such modifications cannot be
 accommodated by the set-theoretic semantics, but they can be handled by domain
-theory, as was shown in~\cite{bauer14:_effec_system_algeb_effec_handl}. Therein an adequate
-domain-theoretic semantics for algebraic effects and handlers with support for
-general recursion.
+theory, as was shown in~\cite{bauer14:_effec_system_algeb_effec_handl}. Therein
+you can find an adequate domain-theoretic semantics for algebraic effects and
+handlers with support for general recursion.
 
 Once a programming language is in place, the next task is to explore its
 possibilities. Are user-defined operations and handlers good for anything?
