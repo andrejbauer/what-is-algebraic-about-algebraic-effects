@@ -1545,7 +1545,7 @@ effects under consideration.
   \end{align}
   %
   This is just the first group of equations from Example~\ref{ex:theory-state},
-  except that we need not specify which memory location to read from. 
+  except that we need not specify which memory location to read from.
 
   Can the theory of states with many locations from
   Example~\ref{ex:theory-state} be obtained by a combination of many
@@ -1640,7 +1640,7 @@ free model ought to be the desired one.
   but the first three may be brought into the form of the fourth one:
   %
   \begin{align*}
-    \return{v} &= 
+    \return{v} &=
     \opcall{get}{\unit}{\lam{s} \opcall{put}{s}{\lam{\_} \return{v}}},
     \\
     \opcall{get}{\unit}{\lam{s} \return{g(s)}} &=
@@ -2023,8 +2023,8 @@ effects at the level of the external environment in which the program runs. Ther
 always a barrier between the program and its external environment, be it a
 virtual machine, the operating system, or the underlying hardware. The actual
 computational effects cross the barrier, and cannot be modeled as handlers. A
-handler gets access to the continuation, but when a real computational effects
-happens, the continuation is not available. If it were, then after having
+handler gets access to the continuation, but when a real computational effect
+happens, its continuation is not available. If it were, then after having
 launched missiles, the program could change its mind, restart the continuation,
 and establish world peace.
 
@@ -2324,7 +2324,7 @@ $\kappa(a)$ in environment~$w'$.
     (\sem{\opcall{put}{t}{\kappa}}_M, s) &\sim_{\theory{State}} (\sem{\kappa}_M \unit, t),
   \end{align*}
   %
-  from left to right as rewrite rules which allows us to ``execute away'' all
+  from left to right as rewrite rules which allow us to ``execute away'' all
   the operations until we are left with a pair of the form
   $(\sem{\return{x}}_M, s)$. Because
   $(\sem{\return{x}}_M, s) \sim_{\theory{State}} (\sem{\return{y}}_M, t)$
